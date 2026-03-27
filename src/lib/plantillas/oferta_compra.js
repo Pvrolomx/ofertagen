@@ -165,10 +165,28 @@ const PLANTILLA_OFERTA_COMPRA = {
     notario: {
       etiqueta: 'Notario designado',
       etiqueta_en: 'Designated notary',
+      catalogo: [
+        { id: 'careaga_12', nombre: 'Lic. Jorge Careaga Jiménez', numero: '12', ciudad: 'Puerto Vallarta, Jalisco' },
+        { id: 'meza_29', nombre: 'Lic. Adán Meza Barajas', numero: '29', ciudad: 'Bucerías, Nayarit' },
+        { id: 'ramirez_2', nombre: 'Lic. Teodoro Ramírez Valenzuela', numero: '2', ciudad: 'Bucerías, Nayarit' },
+        { id: 'agraz_3', nombre: 'Lic. José Agraz Cabrales', numero: '3', ciudad: 'Puerto Vallarta, Jalisco' },
+        { id: 'navarrete_1', nombre: 'Lic. Rafael Navarrete Castellanos', numero: '1', ciudad: 'Bucerías, Nayarit' },
+        { id: 'leon_5', nombre: 'Lic. Ricardo León Gutiérrez', numero: '5', ciudad: 'Puerto Vallarta, Jalisco' },
+        { id: 'otro', nombre: '', numero: '', ciudad: '' },
+      ],
       campos: [
-        { id: 'nombre_notario', tipo: 'texto', requerido: true, etiqueta: 'Nombre del notario', placeholder: 'Lic. Teodoro Ramírez Valenzuela' },
-        { id: 'numero_notaria', tipo: 'texto', requerido: true, etiqueta: 'Número de notaría' },
-        { id: 'ciudad_notaria', tipo: 'texto', requerido: true, etiqueta: 'Ciudad', placeholder: 'Bucerias, Nayarit' },
+        { id: 'notario_seleccion', tipo: 'select', requerido: true, etiqueta: 'Notario', opciones: [
+          { valor: 'careaga_12', texto: 'Notaría 12 — Lic. Jorge Careaga (PV, Jalisco)' },
+          { valor: 'meza_29', texto: 'Notaría 29 — Lic. Adán Meza Barajas (Bucerías, Nay.)' },
+          { valor: 'ramirez_2', texto: 'Notaría 2 — Lic. Teodoro Ramírez Valenzuela (Bucerías, Nay.)' },
+          { valor: 'agraz_3', texto: 'Notaría 3 — Lic. José Agraz Cabrales (PV, Jalisco)' },
+          { valor: 'navarrete_1', texto: 'Notaría 1 — Lic. Rafael Navarrete (Bucerías, Nay.)' },
+          { valor: 'leon_5', texto: 'Notaría 5 — Lic. Ricardo León Gutiérrez (PV, Jalisco)' },
+          { valor: 'otro', texto: 'Otro notario (captura manual)' },
+        ] },
+        { id: 'nombre_notario', tipo: 'texto', requerido: false, etiqueta: 'Nombre del notario (manual)', placeholder: 'Solo si seleccionaste "Otro"' },
+        { id: 'numero_notaria', tipo: 'texto', requerido: false, etiqueta: 'Número de notaría (manual)' },
+        { id: 'ciudad_notaria', tipo: 'texto', requerido: false, etiqueta: 'Ciudad (manual)' },
       ],
     },
 

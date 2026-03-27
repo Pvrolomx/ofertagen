@@ -182,7 +182,26 @@ export function ensamblarContexto(plantilla, datos) {
   // 7. RESOLVER NOTARIO, ESCROW, COMISIÓN, JURISDICCIÓN, INSPECCIÓN
   // ============================================================
 
-  ctx.notario = datos.campos?.notario || {};
+  // Notario: resolver desde catálogo o manual
+  const notarioRaw = datos.campos?.notario || {};
+  const catalogo = plantilla.campos?.notario?.catalogo || [];
+  const seleccion = notarioRaw.notario_seleccion || '';
+  const notarioCat = catalogo.find(n => n.id === seleccion);
+
+  if (notarioCat && seleccion !== 'otro') {
+    ctx.notario = {
+      nombre_notario: notarioCat.nombre,
+      numero_notaria: notarioCat.numero,
+      ciudad_notaria: notarioCat.ciudad,
+    };
+  } else {
+    ctx.notario = {
+      nombre_notario: notarioRaw.nombre_notario || '',
+      numero_notaria: notarioRaw.numero_notaria || '',
+      ciudad_notaria: notarioRaw.ciudad_notaria || '',
+    };
+  }
+
   ctx.escrow = datos.campos?.escrow || {};
   ctx.comision = datos.campos?.comision || {};
   ctx.jurisdiccion = datos.campos?.jurisdiccion || {};
