@@ -98,16 +98,27 @@ const PLANTILLA_OFERTA_COMPRA = {
         { id: 'notario_anterior', tipo: 'texto', requerido: true, etiqueta: 'Nombre del notario', placeholder: 'Lic. Teodoro Ramírez Valenzuela' },
         { id: 'numero_notaria_anterior', tipo: 'texto', requerido: true, etiqueta: 'Número de notaría' },
         { id: 'ciudad_notaria_anterior', tipo: 'texto', requerido: true, etiqueta: 'Ciudad de la notaría', placeholder: 'Bucerias, Nayarit' },
-        { id: 'tipo_registro', tipo: 'select', requerido: false, etiqueta: 'Tipo de registro', opciones: [
-          { valor: 'folio_real_electronico', texto: 'Folio Real Electrónico (Nayarit)' },
-          { valor: 'folio_real', texto: 'Folio Real (Jalisco)' },
-          { valor: 'libro_partida', texto: 'Libro/Sección/Serie/Partida (legacy)' },
-        ], default: 'folio_real_electronico' },
+        { id: 'estado_registro', tipo: 'select', requerido: false, etiqueta: 'Estado del RPP', opciones: [
+          { valor: 'nayarit', texto: 'Nayarit (Bahía de Banderas, Bucerías)' },
+          { valor: 'jalisco', texto: 'Jalisco (Puerto Vallarta)' },
+        ], default: 'nayarit' },
+        { id: 'tipo_registro', tipo: 'select', requerido: false, etiqueta: 'Tipo de inscripción', opciones: [
+          { valor: 'folio_real', texto: 'Folio Real / Folio Real Electrónico' },
+          { valor: 'legacy', texto: 'Inscripción tradicional (legacy)' },
+        ], default: 'folio_real' },
+        // Folio Real (ambos estados)
         { id: 'folio_real', tipo: 'texto', requerido: false, etiqueta: 'Folio Real / Folio Real Electrónico', placeholder: 'Ej: 54832' },
-        { id: 'libro_rpp', tipo: 'texto', requerido: false, etiqueta: 'Libro RPP (legacy)' },
-        { id: 'seccion_rpp', tipo: 'texto', requerido: false, etiqueta: 'Sección RPP' },
-        { id: 'serie_rpp', tipo: 'texto', requerido: false, etiqueta: 'Serie RPP' },
-        { id: 'partida_rpp', tipo: 'texto', requerido: false, etiqueta: 'Partida RPP' },
+        // Legacy Nayarit: Libro, Sección, Serie, Partida
+        { id: 'libro_rpp', tipo: 'texto', requerido: false, etiqueta: 'Libro' },
+        { id: 'seccion_rpp', tipo: 'texto', requerido: false, etiqueta: 'Sección' },
+        { id: 'serie_rpp', tipo: 'texto', requerido: false, etiqueta: 'Serie' },
+        { id: 'partida_rpp', tipo: 'texto', requerido: false, etiqueta: 'Partida' },
+        // Legacy Jalisco: Documento, Folios, Libro, Sección
+        { id: 'documento_rpp', tipo: 'texto', requerido: false, etiqueta: 'Documento' },
+        { id: 'folios_rpp', tipo: 'texto', requerido: false, etiqueta: 'Folios' },
+        { id: 'libro_jal', tipo: 'texto', requerido: false, etiqueta: 'Libro' },
+        { id: 'seccion_jal', tipo: 'texto', requerido: false, etiqueta: 'Sección' },
+        // Predial (ambos)
         { id: 'cuenta_predial', tipo: 'texto', requerido: false, etiqueta: 'Cuenta predial' },
       ],
     },
@@ -271,22 +282,30 @@ const PLANTILLA_OFERTA_COMPRA = {
       siempre: true,
       titulo: { es: 'ANTECEDENTE DEL INMUEBLE', en: 'THE PROPERTY' },
       render: (ctx) => {
-        // Resolver inscripción registral según tipo
+        // Resolver inscripción registral según estado + tipo
         let inscripcionEs = '';
         let inscripcionEn = '';
-        const tr = ctx.antecedente.tipo_registro || 'folio_real_electronico';
+        const estado = ctx.antecedente.estado_registro || 'nayarit';
+        const tipo = ctx.antecedente.tipo_registro || 'folio_real';
+        const rpp = `Registro Público de la Propiedad y de comercio de ${ctx.antecedente.ciudad_notaria_anterior}`;
+        const rppEn = `Public Registry of Property and Commerce of ${ctx.antecedente.ciudad_notaria_anterior}`;
 
-        if (ctx.antecedente.folio_real) {
-          if (tr === 'folio_real_electronico') {
-            inscripcionEs = `, Inscrito ante el Registro Público de la Propiedad y de comercio de ${ctx.antecedente.ciudad_notaria_anterior}, bajo Folio Real Electrónico ${ctx.antecedente.folio_real}`;
-            inscripcionEn = `, Registered before the Public Registry of Property and Commerce of ${ctx.antecedente.ciudad_notaria_anterior}, under Electronic Real Folio ${ctx.antecedente.folio_real}`;
-          } else if (tr === 'folio_real') {
-            inscripcionEs = `, Inscrito ante el Registro Público de la Propiedad y de comercio de ${ctx.antecedente.ciudad_notaria_anterior}, bajo Folio Real ${ctx.antecedente.folio_real}`;
-            inscripcionEn = `, Registered before the Public Registry of Property and Commerce of ${ctx.antecedente.ciudad_notaria_anterior}, under Real Folio ${ctx.antecedente.folio_real}`;
+        if (tipo === 'folio_real' && ctx.antecedente.folio_real) {
+          // Folio Real: Nayarit = "Folio Real Electrónico", Jalisco = "Folio Real"
+          const frLabel = estado === 'nayarit' ? 'Folio Real Electrónico' : 'Folio Real';
+          const frLabelEn = estado === 'nayarit' ? 'Electronic Real Folio' : 'Real Folio';
+          inscripcionEs = `, Inscrito ante el ${rpp}, bajo ${frLabel} ${ctx.antecedente.folio_real}`;
+          inscripcionEn = `, Registered before the ${rppEn}, under ${frLabelEn} ${ctx.antecedente.folio_real}`;
+        } else if (tipo === 'legacy') {
+          if (estado === 'nayarit' && ctx.antecedente.libro_rpp) {
+            // Nayarit legacy: Libro, Sección, Serie, Partida
+            inscripcionEs = `, Inscrito ante el ${rpp}, bajo Libro ${ctx.antecedente.libro_rpp}, Sección ${ctx.antecedente.seccion_rpp || ''}, Serie ${ctx.antecedente.serie_rpp || ''}, Partida ${ctx.antecedente.partida_rpp || ''}`;
+            inscripcionEn = `, Registered before the ${rppEn}, under Book ${ctx.antecedente.libro_rpp}, Section ${ctx.antecedente.seccion_rpp || ''}, Series ${ctx.antecedente.serie_rpp || ''}, Entry ${ctx.antecedente.partida_rpp || ''}`;
+          } else if (estado === 'jalisco' && ctx.antecedente.documento_rpp) {
+            // Jalisco legacy: Documento, Folios, Libro, Sección
+            inscripcionEs = `, Inscrito ante el ${rpp}, bajo Documento ${ctx.antecedente.documento_rpp}, Folios ${ctx.antecedente.folios_rpp || ''}, Libro ${ctx.antecedente.libro_jal || ''}, Sección ${ctx.antecedente.seccion_jal || ''}`;
+            inscripcionEn = `, Registered before the ${rppEn}, under Document ${ctx.antecedente.documento_rpp}, Folios ${ctx.antecedente.folios_rpp || ''}, Book ${ctx.antecedente.libro_jal || ''}, Section ${ctx.antecedente.seccion_jal || ''}`;
           }
-        } else if (ctx.antecedente.libro_rpp) {
-          inscripcionEs = `, Inscrito ante el Registro Público de la Propiedad y de comercio de ${ctx.antecedente.ciudad_notaria_anterior}, bajo Libro ${ctx.antecedente.libro_rpp}, Sección ${ctx.antecedente.seccion_rpp}, Serie ${ctx.antecedente.serie_rpp}, Partida ${ctx.antecedente.partida_rpp}`;
-          inscripcionEn = `, Registered before the Public Registry of Property and Commerce of ${ctx.antecedente.ciudad_notaria_anterior}, under Book ${ctx.antecedente.libro_rpp}, Section ${ctx.antecedente.seccion_rpp}, Series ${ctx.antecedente.serie_rpp}, Entry ${ctx.antecedente.partida_rpp}`;
         }
 
         return {

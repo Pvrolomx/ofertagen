@@ -189,20 +189,31 @@ export default function OfertaGenPage() {
             <Input label="No. notaría" value={data.campos.antecedente?.numero_notaria_anterior} onChange={v=>upCampo("antecedente","numero_notaria_anterior",v)} required />
             <Input label="Ciudad" value={data.campos.antecedente?.ciudad_notaria_anterior} onChange={v=>upCampo("antecedente","ciudad_notaria_anterior",v)} required />
             <div className="flex flex-col gap-1">
-              <label className="text-xs font-medium text-gray-500">Tipo de registro</label>
-              <select value={data.campos.antecedente?.tipo_registro||"folio_real_electronico"} onChange={e=>upCampo("antecedente","tipo_registro",e.target.value)} className="border border-gray-200 dark:border-gray-600 rounded-lg px-3 py-2 text-sm bg-white dark:bg-gray-800">
-                <option value="folio_real_electronico">Folio Real Electrónico (Nayarit)</option>
-                <option value="folio_real">Folio Real (Jalisco)</option>
-                <option value="libro_partida">Libro/Sección/Serie/Partida (legacy)</option>
+              <label className="text-xs font-medium text-gray-500">Estado del RPP</label>
+              <select value={data.campos.antecedente?.estado_registro||"nayarit"} onChange={e=>upCampo("antecedente","estado_registro",e.target.value)} className="border border-gray-200 dark:border-gray-600 rounded-lg px-3 py-2 text-sm bg-white dark:bg-gray-800">
+                <option value="nayarit">Nayarit (Bahía de Banderas, Bucerías)</option>
+                <option value="jalisco">Jalisco (Puerto Vallarta)</option>
               </select>
             </div>
-            {(data.campos.antecedente?.tipo_registro||"folio_real_electronico") !== "libro_partida" ? (
-              <Input label={data.campos.antecedente?.tipo_registro === "folio_real" ? "Folio Real" : "Folio Real Electrónico"} value={data.campos.antecedente?.folio_real} onChange={v=>upCampo("antecedente","folio_real",v)} placeholder="Ej: 54832" />
-            ) : (<>
-              <Input label="Libro RPP" value={data.campos.antecedente?.libro_rpp} onChange={v=>upCampo("antecedente","libro_rpp",v)} />
+            <div className="flex flex-col gap-1">
+              <label className="text-xs font-medium text-gray-500">Tipo de inscripción</label>
+              <select value={data.campos.antecedente?.tipo_registro||"folio_real"} onChange={e=>upCampo("antecedente","tipo_registro",e.target.value)} className="border border-gray-200 dark:border-gray-600 rounded-lg px-3 py-2 text-sm bg-white dark:bg-gray-800">
+                <option value="folio_real">{(data.campos.antecedente?.estado_registro||"nayarit") === "nayarit" ? "Folio Real Electrónico" : "Folio Real"}</option>
+                <option value="legacy">Inscripción tradicional (legacy)</option>
+              </select>
+            </div>
+            {(data.campos.antecedente?.tipo_registro||"folio_real") === "folio_real" ? (
+              <Input label={(data.campos.antecedente?.estado_registro||"nayarit") === "nayarit" ? "Folio Real Electrónico" : "Folio Real"} value={data.campos.antecedente?.folio_real} onChange={v=>upCampo("antecedente","folio_real",v)} placeholder="Ej: 54832" />
+            ) : (data.campos.antecedente?.estado_registro||"nayarit") === "nayarit" ? (<>
+              <Input label="Libro" value={data.campos.antecedente?.libro_rpp} onChange={v=>upCampo("antecedente","libro_rpp",v)} />
               <Input label="Sección" value={data.campos.antecedente?.seccion_rpp} onChange={v=>upCampo("antecedente","seccion_rpp",v)} />
               <Input label="Serie" value={data.campos.antecedente?.serie_rpp} onChange={v=>upCampo("antecedente","serie_rpp",v)} />
               <Input label="Partida" value={data.campos.antecedente?.partida_rpp} onChange={v=>upCampo("antecedente","partida_rpp",v)} />
+            </>) : (<>
+              <Input label="Documento" value={data.campos.antecedente?.documento_rpp} onChange={v=>upCampo("antecedente","documento_rpp",v)} />
+              <Input label="Folios" value={data.campos.antecedente?.folios_rpp} onChange={v=>upCampo("antecedente","folios_rpp",v)} />
+              <Input label="Libro" value={data.campos.antecedente?.libro_jal} onChange={v=>upCampo("antecedente","libro_jal",v)} />
+              <Input label="Sección" value={data.campos.antecedente?.seccion_jal} onChange={v=>upCampo("antecedente","seccion_jal",v)} />
             </>)}
             <Input label="Cuenta predial" value={data.campos.antecedente?.cuenta_predial} onChange={v=>upCampo("antecedente","cuenta_predial",v)} />
           </Section>
