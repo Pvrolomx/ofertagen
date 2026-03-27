@@ -98,7 +98,13 @@ const PLANTILLA_OFERTA_COMPRA = {
         { id: 'notario_anterior', tipo: 'texto', requerido: true, etiqueta: 'Nombre del notario', placeholder: 'Lic. Teodoro Ramírez Valenzuela' },
         { id: 'numero_notaria_anterior', tipo: 'texto', requerido: true, etiqueta: 'Número de notaría' },
         { id: 'ciudad_notaria_anterior', tipo: 'texto', requerido: true, etiqueta: 'Ciudad de la notaría', placeholder: 'Bucerias, Nayarit' },
-        { id: 'libro_rpp', tipo: 'texto', requerido: false, etiqueta: 'Libro RPP' },
+        { id: 'tipo_registro', tipo: 'select', requerido: false, etiqueta: 'Tipo de registro', opciones: [
+          { valor: 'folio_real_electronico', texto: 'Folio Real Electrónico (Nayarit)' },
+          { valor: 'folio_real', texto: 'Folio Real (Jalisco)' },
+          { valor: 'libro_partida', texto: 'Libro/Sección/Serie/Partida (legacy)' },
+        ], default: 'folio_real_electronico' },
+        { id: 'folio_real', tipo: 'texto', requerido: false, etiqueta: 'Folio Real / Folio Real Electrónico', placeholder: 'Ej: 54832' },
+        { id: 'libro_rpp', tipo: 'texto', requerido: false, etiqueta: 'Libro RPP (legacy)' },
         { id: 'seccion_rpp', tipo: 'texto', requerido: false, etiqueta: 'Sección RPP' },
         { id: 'serie_rpp', tipo: 'texto', requerido: false, etiqueta: 'Serie RPP' },
         { id: 'partida_rpp', tipo: 'texto', requerido: false, etiqueta: 'Partida RPP' },
@@ -123,7 +129,11 @@ const PLANTILLA_OFERTA_COMPRA = {
       etiqueta_en: 'Escrow account',
       visible_si: 'bloques.escrow',
       campos: [
-        { id: 'empresa_escrow', tipo: 'texto', requerido: true, etiqueta: 'Empresa escrow', default: 'STEWART TITLE LATIN AMERICA' },
+        { id: 'empresa_escrow', tipo: 'select', requerido: true, etiqueta: 'Empresa escrow', opciones: [
+          { valor: 'STEWART TITLE LATIN AMERICA', texto: 'Stewart Title Latin America (STLA)' },
+          { valor: 'ARMOUR SETTLEMENT SERVICES', texto: 'Armour Settlement Services' },
+          { valor: 'TITLE LATIN AMERICA (TLA)', texto: 'Title Latin America (TLA)' },
+        ], default: 'STEWART TITLE LATIN AMERICA' },
       ],
     },
 
@@ -179,6 +189,17 @@ const PLANTILLA_OFERTA_COMPRA = {
       etiqueta_en: 'Jurisdiction',
       campos: [
         { id: 'ciudad_jurisdiccion', tipo: 'texto', requerido: true, etiqueta: 'Ciudad de jurisdicción', default: 'Bucerias, Nayarit, México' },
+      ],
+    },
+
+    coordinador: {
+      etiqueta: 'Coordinador de cierre',
+      etiqueta_en: 'Closing coordinator',
+      campos: [
+        { id: 'nombre_coordinador', tipo: 'texto', requerido: false, etiqueta: 'Nombre del coordinador', placeholder: 'Lic. Rolando Romero García' },
+        { id: 'empresa_coordinador', tipo: 'texto', requerido: false, etiqueta: 'Empresa', placeholder: 'Expat Advisor MX' },
+        { id: 'celular_coordinador', tipo: 'tel', requerido: false, etiqueta: 'Celular/WhatsApp' },
+        { id: 'email_coordinador', tipo: 'email', requerido: false, etiqueta: 'Email' },
       ],
     },
 
@@ -249,10 +270,30 @@ const PLANTILLA_OFERTA_COMPRA = {
       numero: 3,
       siempre: true,
       titulo: { es: 'ANTECEDENTE DEL INMUEBLE', en: 'THE PROPERTY' },
-      render: (ctx) => ({
-        es: `Que en fecha ${ctx.antecedente.fecha_escritura_es}, mediante escritura pública ${ctx.antecedente.numero_escritura} ante ${ctx.antecedente.notario_anterior}, Notario Público ${ctx.antecedente.numero_notaria_anterior} de ${ctx.antecedente.ciudad_notaria_anterior}, adquirió los derechos fideicomisarios sobre el siguiente inmueble:\n\n${ctx.inmueble.descripcion_corta}, que se ubica ${ctx.inmueble.ubicacion_completa}${ctx.inmueble.nivel_torre ? ', ubicado en el ' + ctx.inmueble.nivel_torre : ''}${ctx.inmueble.descripcion_interior ? ' y consta de ' + ctx.inmueble.descripcion_interior : ''}, con una superficie de construcción de ${ctx.inmueble.superficie_m2} ${ctx.inmueble.superficie_letras} cuadrados${ctx.inmueble.indiviso ? ', le corresponde un indiviso del ' + ctx.inmueble.indiviso + ' por ciento de las áreas comunes' : ''}, y tiene las medidas y linderos descritos en la escritura antes mencionada${ctx.antecedente.libro_rpp ? ', Inscrito ante el Registro Público de la Propiedad y de comercio de ' + ctx.antecedente.ciudad_notaria_anterior + ', bajo Libro ' + ctx.antecedente.libro_rpp + ', Sección ' + ctx.antecedente.seccion_rpp + ', Serie ' + ctx.antecedente.serie_rpp + ', Partida ' + ctx.antecedente.partida_rpp : ''}${ctx.antecedente.cuenta_predial ? ', y Cuenta Predial ' + ctx.antecedente.cuenta_predial : ''} (en lo sucesivo referido como EL INMUEBLE).`,
-        en: `That on date ${ctx.antecedente.fecha_escritura_en}, by way of deed ${ctx.antecedente.numero_escritura} before ${ctx.antecedente.notario_anterior}, Notary Public ${ctx.antecedente.numero_notaria_anterior} of ${ctx.antecedente.ciudad_notaria_anterior}, acquired the trust rights over the following property:\n\n${ctx.inmueble.descripcion_corta}, located ${ctx.inmueble.ubicacion_completa}${ctx.inmueble.nivel_torre ? ', on the ' + ctx.inmueble.nivel_torre : ''}${ctx.inmueble.descripcion_interior ? ' consisting of ' + ctx.inmueble.descripcion_interior : ''}, with a construction area of ${ctx.inmueble.superficie_m2} ${ctx.inmueble.superficie_letras} square meters${ctx.inmueble.indiviso ? ', corresponding to an undivided ' + ctx.inmueble.indiviso + ' percent of the common areas' : ''}, with the measurements and boundaries described in the aforementioned deed${ctx.antecedente.libro_rpp ? ', Registered before the Public Registry of Property and Commerce of ' + ctx.antecedente.ciudad_notaria_anterior + ', under Book ' + ctx.antecedente.libro_rpp + ', Section ' + ctx.antecedente.seccion_rpp + ', Series ' + ctx.antecedente.serie_rpp + ', Entry ' + ctx.antecedente.partida_rpp : ''}${ctx.antecedente.cuenta_predial ? ', and Property Tax Account ' + ctx.antecedente.cuenta_predial : ''} (hereinafter referred to as THE PROPERTY).`,
-      }),
+      render: (ctx) => {
+        // Resolver inscripción registral según tipo
+        let inscripcionEs = '';
+        let inscripcionEn = '';
+        const tr = ctx.antecedente.tipo_registro || 'folio_real_electronico';
+
+        if (ctx.antecedente.folio_real) {
+          if (tr === 'folio_real_electronico') {
+            inscripcionEs = `, Inscrito ante el Registro Público de la Propiedad y de comercio de ${ctx.antecedente.ciudad_notaria_anterior}, bajo Folio Real Electrónico ${ctx.antecedente.folio_real}`;
+            inscripcionEn = `, Registered before the Public Registry of Property and Commerce of ${ctx.antecedente.ciudad_notaria_anterior}, under Electronic Real Folio ${ctx.antecedente.folio_real}`;
+          } else if (tr === 'folio_real') {
+            inscripcionEs = `, Inscrito ante el Registro Público de la Propiedad y de comercio de ${ctx.antecedente.ciudad_notaria_anterior}, bajo Folio Real ${ctx.antecedente.folio_real}`;
+            inscripcionEn = `, Registered before the Public Registry of Property and Commerce of ${ctx.antecedente.ciudad_notaria_anterior}, under Real Folio ${ctx.antecedente.folio_real}`;
+          }
+        } else if (ctx.antecedente.libro_rpp) {
+          inscripcionEs = `, Inscrito ante el Registro Público de la Propiedad y de comercio de ${ctx.antecedente.ciudad_notaria_anterior}, bajo Libro ${ctx.antecedente.libro_rpp}, Sección ${ctx.antecedente.seccion_rpp}, Serie ${ctx.antecedente.serie_rpp}, Partida ${ctx.antecedente.partida_rpp}`;
+          inscripcionEn = `, Registered before the Public Registry of Property and Commerce of ${ctx.antecedente.ciudad_notaria_anterior}, under Book ${ctx.antecedente.libro_rpp}, Section ${ctx.antecedente.seccion_rpp}, Series ${ctx.antecedente.serie_rpp}, Entry ${ctx.antecedente.partida_rpp}`;
+        }
+
+        return {
+          es: `Que en fecha ${ctx.antecedente.fecha_escritura_es}, mediante escritura pública ${ctx.antecedente.numero_escritura} ante ${ctx.antecedente.notario_anterior}, Notario Público ${ctx.antecedente.numero_notaria_anterior} de ${ctx.antecedente.ciudad_notaria_anterior}, adquirió los derechos fideicomisarios sobre el siguiente inmueble:\n\n${ctx.inmueble.descripcion_corta}, que se ubica ${ctx.inmueble.ubicacion_completa}${ctx.inmueble.nivel_torre ? ', ubicado en el ' + ctx.inmueble.nivel_torre : ''}${ctx.inmueble.descripcion_interior ? ' y consta de ' + ctx.inmueble.descripcion_interior : ''}, con una superficie de construcción de ${ctx.inmueble.superficie_m2} ${ctx.inmueble.superficie_letras} cuadrados${ctx.inmueble.indiviso ? ', le corresponde un indiviso del ' + ctx.inmueble.indiviso + ' por ciento de las áreas comunes' : ''}, y tiene las medidas y linderos descritos en la escritura antes mencionada${inscripcionEs}${ctx.antecedente.cuenta_predial ? ', y Cuenta Predial ' + ctx.antecedente.cuenta_predial : ''} (en lo sucesivo referido como EL INMUEBLE).`,
+          en: `That on date ${ctx.antecedente.fecha_escritura_en}, by way of deed ${ctx.antecedente.numero_escritura} before ${ctx.antecedente.notario_anterior}, Notary Public ${ctx.antecedente.numero_notaria_anterior} of ${ctx.antecedente.ciudad_notaria_anterior}, acquired the trust rights over the following property:\n\n${ctx.inmueble.descripcion_corta}, located ${ctx.inmueble.ubicacion_completa}${ctx.inmueble.nivel_torre ? ', on the ' + ctx.inmueble.nivel_torre : ''}${ctx.inmueble.descripcion_interior ? ' consisting of ' + ctx.inmueble.descripcion_interior : ''}, with a construction area of ${ctx.inmueble.superficie_m2} ${ctx.inmueble.superficie_letras} square meters${ctx.inmueble.indiviso ? ', corresponding to an undivided ' + ctx.inmueble.indiviso + ' percent of the common areas' : ''}, with the measurements and boundaries described in the aforementioned deed${inscripcionEn}${ctx.antecedente.cuenta_predial ? ', and Property Tax Account ' + ctx.antecedente.cuenta_predial : ''} (hereinafter referred to as THE PROPERTY).`,
+        };
+      },
     },
 
     // ---- CLÁUSULA 4: PRECIO Y CONDICIONES DE PAGO ----
@@ -490,10 +531,18 @@ const PLANTILLA_OFERTA_COMPRA = {
       numero: 17,
       siempre: true,
       titulo: { es: 'COMUNICACIONES POR CORREO ELECTRÓNICO (EMAIL)', en: 'ELECTRONIC MAIL COMMUNICATION (EMAIL)' },
-      render: (ctx) => ({
-        es: `Las comunicaciones entre las partes relacionadas con la presente oferta por email y whatsapp serán consideradas como documental privada siempre y cuando éstas indiquen la fecha y la hora que fueron enviadas y contengan el nombre y firma del remitente.\n\nPara este efecto, las partes señalan las siguientes direcciones electrónicas:\n\n${ctx.ofertante.referencia_negrita}: Celular/Whatsapp: ${ctx.ofertante.celular}; Email: ${ctx.ofertante.email}\n\n${ctx.propietario.referencia_negrita}: Celular/Whatsapp: ${ctx.propietario.celular}; Email: ${ctx.propietario.email}\n\nNo obstante, los contratos deberán ser remitidos a las partes con firma original en el plazo no mayor a 15 días naturales siguientes a la fecha en que se suscriban vía correo electrónico.`,
-        en: `Communications by email or whatsapp among the parties related to the present offer will be considered as valid evidence provided that those indicate the date and time when they were sent as well as the name and signature of the sender.\n\nTo this effect, the parties point out the following email addresses:\n\n${ctx.ofertante.en.referencia_negrita}: Phone/Whatsapp: ${ctx.ofertante.celular}; Email: ${ctx.ofertante.email}\n\n${ctx.propietario.en.referencia_negrita}: Phone/Whatsapp: ${ctx.propietario.celular}; Email: ${ctx.propietario.email}\n\nHowever, contracts must be sent to the parties with original signature in the term no later than 15 calendar days following the date they are subscribed via email.`,
-      }),
+      render: (ctx) => {
+        const coord = ctx.coordinador?.nombre_coordinador
+          ? `\n\nCOORDINADOR DE CIERRE / CLOSING COORDINATOR: ${ctx.coordinador.nombre_coordinador}${ctx.coordinador.empresa_coordinador ? ' — ' + ctx.coordinador.empresa_coordinador : ''}; Celular/Whatsapp: ${ctx.coordinador.celular_coordinador || ''}; Email: ${ctx.coordinador.email_coordinador || ''}`
+          : '';
+        const coordEn = ctx.coordinador?.nombre_coordinador
+          ? `\n\nCLOSING COORDINATOR: ${ctx.coordinador.nombre_coordinador}${ctx.coordinador.empresa_coordinador ? ' — ' + ctx.coordinador.empresa_coordinador : ''}; Phone/Whatsapp: ${ctx.coordinador.celular_coordinador || ''}; Email: ${ctx.coordinador.email_coordinador || ''}`
+          : '';
+        return {
+          es: `Las comunicaciones entre las partes relacionadas con la presente oferta por email y whatsapp serán consideradas como documental privada siempre y cuando éstas indiquen la fecha y la hora que fueron enviadas y contengan el nombre y firma del remitente.\n\nPara este efecto, las partes señalan las siguientes direcciones electrónicas:\n\n${ctx.ofertante.referencia_negrita}: Celular/Whatsapp: ${ctx.ofertante.celular}; Email: ${ctx.ofertante.email}\n\n${ctx.propietario.referencia_negrita}: Celular/Whatsapp: ${ctx.propietario.celular}; Email: ${ctx.propietario.email}${coord}\n\nNo obstante, los contratos deberán ser remitidos a las partes con firma original en el plazo no mayor a 15 días naturales siguientes a la fecha en que se suscriban vía correo electrónico.`,
+          en: `Communications by email or whatsapp among the parties related to the present offer will be considered as valid evidence provided that those indicate the date and time when they were sent as well as the name and signature of the sender.\n\nTo this effect, the parties point out the following email addresses:\n\n${ctx.ofertante.en.referencia_negrita}: Phone/Whatsapp: ${ctx.ofertante.celular}; Email: ${ctx.ofertante.email}\n\n${ctx.propietario.en.referencia_negrita}: Phone/Whatsapp: ${ctx.propietario.celular}; Email: ${ctx.propietario.email}${coordEn}\n\nHowever, contracts must be sent to the parties with original signature in the term no later than 15 calendar days following the date they are subscribed via email.`,
+        };
+      },
     },
 
     // ---- CLÁUSULA 18: PENALIDAD ----

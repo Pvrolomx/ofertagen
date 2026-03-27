@@ -188,10 +188,22 @@ export default function OfertaGenPage() {
             <Input label="Notario" value={data.campos.antecedente?.notario_anterior} onChange={v=>upCampo("antecedente","notario_anterior",v)} required />
             <Input label="No. notaría" value={data.campos.antecedente?.numero_notaria_anterior} onChange={v=>upCampo("antecedente","numero_notaria_anterior",v)} required />
             <Input label="Ciudad" value={data.campos.antecedente?.ciudad_notaria_anterior} onChange={v=>upCampo("antecedente","ciudad_notaria_anterior",v)} required />
-            <Input label="Libro RPP" value={data.campos.antecedente?.libro_rpp} onChange={v=>upCampo("antecedente","libro_rpp",v)} />
-            <Input label="Sección" value={data.campos.antecedente?.seccion_rpp} onChange={v=>upCampo("antecedente","seccion_rpp",v)} />
-            <Input label="Serie" value={data.campos.antecedente?.serie_rpp} onChange={v=>upCampo("antecedente","serie_rpp",v)} />
-            <Input label="Partida" value={data.campos.antecedente?.partida_rpp} onChange={v=>upCampo("antecedente","partida_rpp",v)} />
+            <div className="flex flex-col gap-1">
+              <label className="text-xs font-medium text-gray-500">Tipo de registro</label>
+              <select value={data.campos.antecedente?.tipo_registro||"folio_real_electronico"} onChange={e=>upCampo("antecedente","tipo_registro",e.target.value)} className="border border-gray-200 dark:border-gray-600 rounded-lg px-3 py-2 text-sm bg-white dark:bg-gray-800">
+                <option value="folio_real_electronico">Folio Real Electrónico (Nayarit)</option>
+                <option value="folio_real">Folio Real (Jalisco)</option>
+                <option value="libro_partida">Libro/Sección/Serie/Partida (legacy)</option>
+              </select>
+            </div>
+            {(data.campos.antecedente?.tipo_registro||"folio_real_electronico") !== "libro_partida" ? (
+              <Input label={data.campos.antecedente?.tipo_registro === "folio_real" ? "Folio Real" : "Folio Real Electrónico"} value={data.campos.antecedente?.folio_real} onChange={v=>upCampo("antecedente","folio_real",v)} placeholder="Ej: 54832" />
+            ) : (<>
+              <Input label="Libro RPP" value={data.campos.antecedente?.libro_rpp} onChange={v=>upCampo("antecedente","libro_rpp",v)} />
+              <Input label="Sección" value={data.campos.antecedente?.seccion_rpp} onChange={v=>upCampo("antecedente","seccion_rpp",v)} />
+              <Input label="Serie" value={data.campos.antecedente?.serie_rpp} onChange={v=>upCampo("antecedente","serie_rpp",v)} />
+              <Input label="Partida" value={data.campos.antecedente?.partida_rpp} onChange={v=>upCampo("antecedente","partida_rpp",v)} />
+            </>)}
             <Input label="Cuenta predial" value={data.campos.antecedente?.cuenta_predial} onChange={v=>upCampo("antecedente","cuenta_predial",v)} />
           </Section>
         </>}
@@ -213,7 +225,14 @@ export default function OfertaGenPage() {
             </div>}
           </Section>
           <Section title="Escrow">
-            <Input label="Empresa escrow" value={data.campos.escrow?.empresa_escrow} onChange={v=>upCampo("escrow","empresa_escrow",v)} wide />
+            <div className="flex flex-col gap-1 col-span-2">
+              <label className="text-xs font-medium text-gray-500">Empresa escrow</label>
+              <select value={data.campos.escrow?.empresa_escrow||"STEWART TITLE LATIN AMERICA"} onChange={e=>upCampo("escrow","empresa_escrow",e.target.value)} className="border border-gray-200 dark:border-gray-600 rounded-lg px-3 py-2 text-sm bg-white dark:bg-gray-800">
+                <option value="STEWART TITLE LATIN AMERICA">Stewart Title Latin America (STLA)</option>
+                <option value="ARMOUR SETTLEMENT SERVICES">Armour Settlement Services</option>
+                <option value="TITLE LATIN AMERICA (TLA)">Title Latin America (TLA)</option>
+              </select>
+            </div>
           </Section>
           <Section title="Fechas y plazos">
             <Input label="Fecha presentación" value={data.campos.fechas?.fecha_presentacion} onChange={v=>upCampo("fechas","fecha_presentacion",v)} type="date" required />
@@ -244,6 +263,12 @@ export default function OfertaGenPage() {
           <Section title="Penalidad / Jurisdicción">
             <Input label="% penalidad" value={data.campos.penalidad?.porcentaje_penalidad} onChange={v=>upCampo("penalidad","porcentaje_penalidad",v)} />
             <Input label="Jurisdicción" value={data.campos.jurisdiccion?.ciudad_jurisdiccion} onChange={v=>upCampo("jurisdiccion","ciudad_jurisdiccion",v)} />
+          </Section>
+          <Section title="Coordinador de cierre / Closing coordinator">
+            <Input label="Nombre" value={data.campos.coordinador?.nombre_coordinador} onChange={v=>upCampo("coordinador","nombre_coordinador",v)} placeholder="Lic. Rolando Romero García" />
+            <Input label="Empresa" value={data.campos.coordinador?.empresa_coordinador} onChange={v=>upCampo("coordinador","empresa_coordinador",v)} placeholder="Expat Advisor MX" />
+            <Input label="Celular/WhatsApp" value={data.campos.coordinador?.celular_coordinador} onChange={v=>upCampo("coordinador","celular_coordinador",v)} type="tel" />
+            <Input label="Email" value={data.campos.coordinador?.email_coordinador} onChange={v=>upCampo("coordinador","email_coordinador",v)} type="email" />
           </Section>
         </>}
 

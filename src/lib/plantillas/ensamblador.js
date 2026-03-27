@@ -186,6 +186,7 @@ export function ensamblarContexto(plantilla, datos) {
   ctx.escrow = datos.campos?.escrow || {};
   ctx.comision = datos.campos?.comision || {};
   ctx.jurisdiccion = datos.campos?.jurisdiccion || {};
+  ctx.coordinador = datos.campos?.coordinador || {};
 
   // Inspección con letras
   const insData = datos.campos?.inspeccion || {};
