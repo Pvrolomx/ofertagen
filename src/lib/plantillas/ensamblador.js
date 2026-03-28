@@ -155,13 +155,38 @@ export function ensamblarContexto(plantilla, datos) {
   };
 
   if (fechasDatos.fecha_vigencia) {
+    const horaVig = fechasDatos.hora_vigencia || 'medianoche';
+    const horasEn = {
+      'medianoche': 'midnight',
+      'mediodía': 'noon',
+    };
+    const horaEn = horasEn[horaVig] || horaVig.replace('horas', 'hours');
     const venc = vencimiento(
       fechasDatos.fecha_vigencia,
-      'medianoche',
+      horaVig,
       fechasDatos.ciudad_presentacion || 'Bucerias, Nayarit'
     );
     ctx.fechas.vencimiento_es = venc.es;
     ctx.fechas.vencimiento_en = venc.en;
+  }
+
+  // Días para saldo y anticipo de gastos
+  const diasSaldo = datos.campos?.precio?.dias_saldo || 5;
+  ctx.precio.dias_saldo = diasSaldo;
+  ctx.precio.dias_saldo_letras = diasALetras(diasSaldo);
+  ctx.precio.dias_saldo_letras_en = diasALetrasEn(diasSaldo);
+
+  const anticipoGastos = parseInt(datos.campos?.precio?.anticipo_gastos) || 0;
+  ctx.precio.anticipo_gastos = anticipoGastos;
+  if (anticipoGastos > 0) {
+    ctx.precio.anticipo_completo = bloquePrecio(anticipoGastos, moneda);
+  }
+
+  // Honorarios escrow
+  const honEscrow = datos.campos?.escrow?.honorarios_escrow || 750;
+  ctx.escrow.honorarios_escrow = honEscrow;
+  if (honEscrow > 0) {
+    ctx.escrow.honorarios_completo = bloquePrecio(honEscrow, moneda);
   }
 
   // ============================================================

@@ -135,7 +135,17 @@ const PLANTILLA_OFERTA_COMPRA = {
         { id: 'moneda', tipo: 'select', requerido: true, etiqueta: 'Moneda', opciones: [{ valor: 'USD', texto: 'Dólares (USD)' }, { valor: 'MXN', texto: 'Pesos (MXN)' }], default: 'USD' },
         { id: 'deposito_escrow', tipo: 'moneda', requerido_si: 'bloques.escrow', etiqueta: 'Monto depósito escrow' },
         { id: 'saldo', tipo: 'moneda', requerido: false, etiqueta: 'Saldo restante', calculado: 'precio_total - deposito_escrow' },
-        { id: 'dias_deposito', tipo: 'numero', requerido_si: 'bloques.escrow', etiqueta: 'Días hábiles para depositar', default: 3 },
+        { id: 'dias_deposito', tipo: 'numero', requerido_si: 'bloques.escrow', etiqueta: 'Días hábiles para depositar escrow', default: 3 },
+        { id: 'dias_saldo', tipo: 'numero', requerido: false, etiqueta: 'Días hábiles para saldo (antes del cierre)', default: 5 },
+        { id: 'anticipo_gastos', tipo: 'select', requerido: false, etiqueta: 'Anticipo de gastos de escrituración', opciones: [
+          { valor: '0', texto: 'Sin anticipo' },
+          { valor: '1000', texto: '$1,000 USD' },
+          { valor: '2000', texto: '$2,000 USD' },
+          { valor: '3000', texto: '$3,000 USD' },
+          { valor: '5000', texto: '$5,000 USD' },
+          { valor: '7500', texto: '$7,500 USD' },
+          { valor: '10000', texto: '$10,000 USD' },
+        ], default: '0' },
       ],
     },
 
@@ -149,6 +159,7 @@ const PLANTILLA_OFERTA_COMPRA = {
           { valor: 'ARMOUR SETTLEMENT SERVICES', texto: 'Armour Settlement Services' },
           { valor: 'TITLE LATIN AMERICA (TLA)', texto: 'Title Latin America (TLA)' },
         ], default: 'STEWART TITLE LATIN AMERICA' },
+        { id: 'honorarios_escrow', tipo: 'moneda', requerido: false, etiqueta: 'Honorarios escrow (USD)', default: 750 },
       ],
     },
 
@@ -158,7 +169,8 @@ const PLANTILLA_OFERTA_COMPRA = {
       campos: [
         { id: 'fecha_presentacion', tipo: 'fecha', requerido: true, etiqueta: 'Fecha de presentación de oferta' },
         { id: 'ciudad_presentacion', tipo: 'texto', requerido: true, etiqueta: 'Ciudad de presentación', default: 'Bucerias, Nayarit' },
-        { id: 'fecha_vigencia', tipo: 'fecha', requerido: true, etiqueta: 'Vigencia de oferta (vence a medianoche)' },
+        { id: 'fecha_vigencia', tipo: 'fecha', requerido: true, etiqueta: 'Fecha de vencimiento de oferta' },
+        { id: 'hora_vigencia', tipo: 'texto', requerido: false, etiqueta: 'Hora de vencimiento', placeholder: 'Ej: 17:00 horas, medianoche', default: 'medianoche' },
         { id: 'fecha_formalizacion', tipo: 'texto', requerido: true, etiqueta: 'Fecha/rango de formalización', placeholder: 'cualquier día hábil dentro de las primeras dos semanas del mes de Mayo de 2023' },
         { id: 'fecha_formalizacion_en', tipo: 'texto', requerido: false, etiqueta: 'Formalización (inglés)', placeholder: 'any business day within the first two weeks of the month of May 2023' },
         { id: 'fecha_extension', tipo: 'texto', requerido: false, etiqueta: 'Extensión automática', placeholder: 'las primeras dos semanas del mes de Junio 2023' },
@@ -383,8 +395,8 @@ const PLANTILLA_OFERTA_COMPRA = {
       despues_de: 'escrow',
       sub_clausula: 'B',
       render: (ctx) => ({
-        es: `B) La cantidad restante, o sea ${ctx.saldo.completo}, deberá ser pagada ${ctx.bloques.escrow ? '(mediante carta instrucción/distribución a escrow)' : ''} a más tardar en la FECHA DE FORMALIZACIÓN, la cual se estipula más adelante.`,
-        en: `B) The balance, that is ${ctx.saldo.completo}, shall be paid ${ctx.bloques.escrow ? '(by way of instruction/disbursement letter to escrow)' : ''} no later than THE FORMALIZING DATE which is stipulated below.`,
+        es: `B) La cantidad restante, o sea ${ctx.saldo.completo}, deberá ser pagada ${ctx.bloques.escrow ? 'mediante transferencia a la cuenta asignada por la empresa depositaria, ' : ''}al menos ${ctx.precio.dias_saldo_letras} (${ctx.precio.dias_saldo}) días hábiles anteriores a la FECHA DE FORMALIZACIÓN, la cual se estipula más adelante.`,
+        en: `B) The balance, that is ${ctx.saldo.completo}, shall be paid ${ctx.bloques.escrow ? 'by wire transfer to the account assigned by the escrow company, ' : ''}at least ${ctx.precio.dias_saldo_letras_en} (${ctx.precio.dias_saldo}) business days prior to THE FORMALIZING DATE which is stipulated below.`,
       }),
     },
 
@@ -442,10 +454,24 @@ const PLANTILLA_OFERTA_COMPRA = {
       numero: 9,
       siempre: true,
       titulo: { es: 'GASTOS DE ESCRITURACIÓN', en: 'CLOSING COSTS' },
-      render: (ctx) => ({
-        es: `Los gastos, impuestos y honorarios notariales de formalización del contrato definitivo, los cuales comúnmente se conocen como GASTOS DE ESCRITURACIÓN serán por cuenta de ${ctx.ofertante.referencia_negrita}${ctx.bloques.escrow ? ' así como los honorarios por concepto de la CUENTA ESCROW, en su caso' : ''}.`,
-        en: `The expenses, taxes and Notary's fee for formalizing of the definitive contract, which are customarily known as CLOSING COSTS, will be at the expense of ${ctx.ofertante.en.referencia_negrita}${ctx.bloques.escrow ? ', including the ESCROW ACCOUNT fees, in its case' : ''}.`,
-      }),
+      render: (ctx) => {
+        const escrowFee = ctx.bloques.escrow && ctx.escrow.honorarios_completo
+          ? `, así como los honorarios por concepto de la CUENTA ESCROW por la cantidad de ${ctx.escrow.honorarios_completo.completo}`
+          : (ctx.bloques.escrow ? ', así como los honorarios por concepto de la CUENTA ESCROW' : '');
+        const escrowFeeEn = ctx.bloques.escrow && ctx.escrow.honorarios_completo
+          ? `, including the ESCROW ACCOUNT fees in the amount of ${ctx.escrow.honorarios_completo.completo}`
+          : (ctx.bloques.escrow ? ', including the ESCROW ACCOUNT fees' : '');
+        const anticipo = ctx.precio.anticipo_gastos > 0
+          ? `\n\n${ctx.ofertante.referencia_negrita} deberá establecer de inmediato con el Notario Público designado un anticipo de gastos de escrituración por la cantidad de ${ctx.precio.anticipo_completo.completo}, a fin de poder llevar a cabo dentro del término establecido los trámites correspondientes, abonando el saldo pendiente en la FECHA DE FORMALIZACIÓN.`
+          : '';
+        const anticipoEn = ctx.precio.anticipo_gastos > 0
+          ? `\n\n${ctx.ofertante.en.referencia_negrita} shall immediately provide the designated Notary Public with a deposit for closing costs in the amount of ${ctx.precio.anticipo_completo.completo}, in order to convey within the term established the corresponding legal procedures, the balance shall be paid on THE FORMALIZING DATE.`
+          : '';
+        return {
+          es: `Los gastos, impuestos y honorarios notariales de formalización del contrato definitivo, los cuales comúnmente se conocen como GASTOS DE ESCRITURACIÓN serán por cuenta de ${ctx.ofertante.referencia_negrita}${escrowFee}.${anticipo}`,
+          en: `The expenses, taxes and Notary's fee for formalizing of the definitive contract, which are customarily known as CLOSING COSTS, will be at the expense of ${ctx.ofertante.en.referencia_negrita}${escrowFeeEn}.${anticipoEn}`,
+        };
+      },
     },
 
     // ---- CLÁUSULA 10: ISR ----

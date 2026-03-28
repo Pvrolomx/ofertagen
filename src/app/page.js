@@ -241,6 +241,20 @@ export default function OfertaGenPage() {
               </select>
             </div>
             <Input label="Depósito escrow" value={data.campos.precio?.deposito_escrow} onChange={v=>upCampo("precio","deposito_escrow",v)} type="number" />
+            <Input label="Días hábiles para depositar" value={data.campos.precio?.dias_deposito||3} onChange={v=>upCampo("precio","dias_deposito",v)} type="number" />
+            <Input label="Días hábiles saldo (antes del cierre)" value={data.campos.precio?.dias_saldo||5} onChange={v=>upCampo("precio","dias_saldo",v)} type="number" />
+            <div className="flex flex-col gap-1">
+              <label className="text-xs font-medium text-gray-500">Anticipo gastos de escrituración</label>
+              <select value={data.campos.precio?.anticipo_gastos||"0"} onChange={e=>upCampo("precio","anticipo_gastos",e.target.value)} className="border border-gray-200 dark:border-gray-600 rounded-lg px-3 py-2 text-sm bg-white dark:bg-gray-800">
+                <option value="0">Sin anticipo</option>
+                <option value="1000">$1,000 USD</option>
+                <option value="2000">$2,000 USD</option>
+                <option value="3000">$3,000 USD</option>
+                <option value="5000">$5,000 USD</option>
+                <option value="7500">$7,500 USD</option>
+                <option value="10000">$10,000 USD</option>
+              </select>
+            </div>
             {ctx && <div className="col-span-2 p-3 bg-blue-50 dark:bg-blue-900/20 rounded-xl text-xs space-y-1 border border-blue-100 dark:border-blue-800">
               <div><span className="text-gray-500">Total:</span> <span className="font-medium">{ctx.precio?.completo}</span></div>
               <div><span className="text-gray-500">Depósito:</span> <span className="font-medium">{ctx.deposito?.completo}</span></div>
@@ -256,12 +270,13 @@ export default function OfertaGenPage() {
                 <option value="TITLE LATIN AMERICA (TLA)">Title Latin America (TLA)</option>
               </select>
             </div>
+            <Input label="Honorarios escrow (USD)" value={data.campos.escrow?.honorarios_escrow||750} onChange={v=>upCampo("escrow","honorarios_escrow",v)} type="number" />
           </Section>
           <Section title="Fechas y plazos">
             <Input label="Fecha presentación" value={data.campos.fechas?.fecha_presentacion} onChange={v=>upCampo("fechas","fecha_presentacion",v)} type="date" required />
             <Input label="Ciudad" value={data.campos.fechas?.ciudad_presentacion} onChange={v=>upCampo("fechas","ciudad_presentacion",v)} required />
-            <Input label="Vigencia (vence medianoche)" value={data.campos.fechas?.fecha_vigencia} onChange={v=>upCampo("fechas","fecha_vigencia",v)} type="date" required />
-            <div />
+            <Input label="Fecha de vencimiento" value={data.campos.fechas?.fecha_vigencia} onChange={v=>upCampo("fechas","fecha_vigencia",v)} type="date" required />
+            <Input label="Hora de vencimiento" value={data.campos.fechas?.hora_vigencia||"medianoche"} onChange={v=>upCampo("fechas","hora_vigencia",v)} placeholder="medianoche, 17:00 horas..." />
             <Input label="Formalización (ES)" value={data.campos.fechas?.fecha_formalizacion} onChange={v=>upCampo("fechas","fecha_formalizacion",v)} wide />
             <Input label="Formalización (EN)" value={data.campos.fechas?.fecha_formalizacion_en} onChange={v=>upCampo("fechas","fecha_formalizacion_en",v)} wide />
             <Input label="Extensión (ES)" value={data.campos.fechas?.fecha_extension} onChange={v=>upCampo("fechas","fecha_extension",v)} />
