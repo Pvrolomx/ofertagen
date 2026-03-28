@@ -86,6 +86,10 @@ const PLANTILLA_OFERTA_COMPRA = {
         { id: 'superficie_m2', tipo: 'numero', requerido: true, etiqueta: 'Superficie de construcción (m²)' },
         { id: 'superficie_letras', tipo: 'texto', requerido: true, etiqueta: 'Superficie en letras', placeholder: 'ciento veintinueve metros ochenta y cinco centímetros cuadrados' },
         { id: 'indiviso', tipo: 'texto', requerido: false, etiqueta: 'Indiviso (% áreas comunes)', placeholder: '1.6790%' },
+        { id: 'tiene_uso_exclusivo', tipo: 'boolean', requerido: false, etiqueta: 'Incluir notas de uso exclusivo', default: false },
+        { id: 'notas_uso_exclusivo', tipo: 'textarea', requerido: false, etiqueta: 'Notas (uso exclusivo, estacionamiento, bodega, servidumbre...)', placeholder: 'Ej: un estacionamiento con superficie descubierta de 14.40 m² y una bodega con superficie de construcción cubierta de 2.80 m²' },
+        { id: 'notas_uso_exclusivo_en', tipo: 'textarea', requerido: false, etiqueta: 'Notas uso exclusivo (inglés)', placeholder: 'a parking space with an uncovered surface area of 14.40 sq m and a storage room with a covered area of 2.80 sq m' },
+        { id: 'clave_catastral', tipo: 'texto', requerido: false, etiqueta: 'Clave catastral', placeholder: '020-024-01-039-258-000' },
       ],
     },
 
@@ -326,9 +330,20 @@ const PLANTILLA_OFERTA_COMPRA = {
           }
         }
 
+        // Uso exclusivo (estacionamiento, bodega, servidumbre, etc.)
+        const usoEs = ctx.inmueble.tiene_uso_exclusivo && ctx.inmueble.notas_uso_exclusivo
+          ? `. A esta unidad le pertenece el uso exclusivo de ${ctx.inmueble.notas_uso_exclusivo}` : '';
+        const usoEn = ctx.inmueble.tiene_uso_exclusivo && ctx.inmueble.notas_uso_exclusivo_en
+          ? `. This unit has the exclusive use of ${ctx.inmueble.notas_uso_exclusivo_en}`
+          : (ctx.inmueble.tiene_uso_exclusivo && ctx.inmueble.notas_uso_exclusivo ? `. This unit has the exclusive use of ${ctx.inmueble.notas_uso_exclusivo}` : '');
+
+        // Clave catastral
+        const catEs = ctx.inmueble.clave_catastral ? ` y clave catastral ${ctx.inmueble.clave_catastral}` : '';
+        const catEn = ctx.inmueble.clave_catastral ? ` and cadastral key ${ctx.inmueble.clave_catastral}` : '';
+
         return {
-          es: `Que en fecha ${ctx.antecedente.fecha_escritura_es}, mediante escritura pública ${ctx.antecedente.numero_escritura} ante ${ctx.antecedente.notario_anterior}, Notario Público ${ctx.antecedente.numero_notaria_anterior} de ${ctx.antecedente.ciudad_notaria_anterior}, adquirió los derechos fideicomisarios sobre el siguiente inmueble:\n\n${ctx.inmueble.descripcion_corta}, que se ubica ${ctx.inmueble.ubicacion_completa}${ctx.inmueble.nivel_torre ? ', ubicado en el ' + ctx.inmueble.nivel_torre : ''}${ctx.inmueble.descripcion_interior ? ' y consta de ' + ctx.inmueble.descripcion_interior : ''}, con una superficie de construcción de ${ctx.inmueble.superficie_m2} ${ctx.inmueble.superficie_letras} cuadrados${ctx.inmueble.indiviso ? ', le corresponde un indiviso del ' + ctx.inmueble.indiviso + ' por ciento de las áreas comunes' : ''}, y tiene las medidas y linderos descritos en la escritura antes mencionada${inscripcionEs}${ctx.antecedente.cuenta_predial ? ', y Cuenta Predial ' + ctx.antecedente.cuenta_predial : ''} (en lo sucesivo referido como EL INMUEBLE).`,
-          en: `That on date ${ctx.antecedente.fecha_escritura_en}, by way of deed ${ctx.antecedente.numero_escritura} before ${ctx.antecedente.notario_anterior}, Notary Public ${ctx.antecedente.numero_notaria_anterior} of ${ctx.antecedente.ciudad_notaria_anterior}, acquired the trust rights over the following property:\n\n${ctx.inmueble.descripcion_corta}, located ${ctx.inmueble.ubicacion_completa}${ctx.inmueble.nivel_torre ? ', on the ' + ctx.inmueble.nivel_torre : ''}${ctx.inmueble.descripcion_interior ? ' consisting of ' + ctx.inmueble.descripcion_interior : ''}, with a construction area of ${ctx.inmueble.superficie_m2} ${ctx.inmueble.superficie_letras} square meters${ctx.inmueble.indiviso ? ', corresponding to an undivided ' + ctx.inmueble.indiviso + ' percent of the common areas' : ''}, with the measurements and boundaries described in the aforementioned deed${inscripcionEn}${ctx.antecedente.cuenta_predial ? ', and Property Tax Account ' + ctx.antecedente.cuenta_predial : ''} (hereinafter referred to as THE PROPERTY).`,
+          es: `Que en fecha ${ctx.antecedente.fecha_escritura_es}, mediante escritura pública ${ctx.antecedente.numero_escritura} ante ${ctx.antecedente.notario_anterior}, Notario Público ${ctx.antecedente.numero_notaria_anterior} de ${ctx.antecedente.ciudad_notaria_anterior}, adquirió los derechos fideicomisarios sobre el siguiente inmueble:\n\n${ctx.inmueble.descripcion_corta}, que se ubica ${ctx.inmueble.ubicacion_completa}${ctx.inmueble.nivel_torre ? ', ubicado en el ' + ctx.inmueble.nivel_torre : ''}${ctx.inmueble.descripcion_interior ? ' y consta de ' + ctx.inmueble.descripcion_interior : ''}, con una superficie de construcción de ${ctx.inmueble.superficie_m2} ${ctx.inmueble.superficie_letras} cuadrados${ctx.inmueble.indiviso ? ', le corresponde un indiviso del ' + ctx.inmueble.indiviso + ' por ciento de las áreas comunes' : ''}${usoEs}, y tiene las medidas y linderos descritos en la escritura antes mencionada${inscripcionEs}${ctx.antecedente.cuenta_predial ? ', Cuenta Predial ' + ctx.antecedente.cuenta_predial : ''}${catEs} (en lo sucesivo referido como EL INMUEBLE).`,
+          en: `That on date ${ctx.antecedente.fecha_escritura_en}, by way of deed ${ctx.antecedente.numero_escritura} before ${ctx.antecedente.notario_anterior}, Notary Public ${ctx.antecedente.numero_notaria_anterior} of ${ctx.antecedente.ciudad_notaria_anterior}, acquired the trust rights over the following property:\n\n${ctx.inmueble.descripcion_corta}, located ${ctx.inmueble.ubicacion_completa}${ctx.inmueble.nivel_torre ? ', on the ' + ctx.inmueble.nivel_torre : ''}${ctx.inmueble.descripcion_interior ? ' consisting of ' + ctx.inmueble.descripcion_interior : ''}, with a construction area of ${ctx.inmueble.superficie_m2} ${ctx.inmueble.superficie_letras} square meters${ctx.inmueble.indiviso ? ', corresponding to an undivided ' + ctx.inmueble.indiviso + ' percent of the common areas' : ''}${usoEn}, with the measurements and boundaries described in the aforementioned deed${inscripcionEn}${ctx.antecedente.cuenta_predial ? ', Property Tax Account ' + ctx.antecedente.cuenta_predial : ''}${catEn} (hereinafter referred to as THE PROPERTY).`,
         };
       },
     },

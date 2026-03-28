@@ -181,6 +181,18 @@ export default function OfertaGenPage() {
             <Input label="Superficie m²" value={data.campos.inmueble?.superficie_m2} onChange={v=>upCampo("inmueble","superficie_m2",v)} type="number" required />
             <Input label="Superficie en letras" value={data.campos.inmueble?.superficie_letras} onChange={v=>upCampo("inmueble","superficie_letras",v)} required />
             <Input label="Indiviso %" value={data.campos.inmueble?.indiviso} onChange={v=>upCampo("inmueble","indiviso",v)} />
+            <Input label="Clave catastral" value={data.campos.inmueble?.clave_catastral} onChange={v=>upCampo("inmueble","clave_catastral",v)} placeholder="020-024-01-039-258-000" />
+            <div className="col-span-2 flex items-center gap-3 p-3 bg-gray-50 dark:bg-gray-800/50 rounded-lg">
+              <input type="checkbox" checked={!!data.campos.inmueble?.tiene_uso_exclusivo} onChange={e=>upCampo("inmueble","tiene_uso_exclusivo",e.target.checked)} className="rounded" />
+              <div>
+                <label className="text-sm font-medium">Incluir notas de uso exclusivo</label>
+                <p className="text-xs text-gray-400">Estacionamiento, bodega, servidumbre, terraza privada...</p>
+              </div>
+            </div>
+            {data.campos.inmueble?.tiene_uso_exclusivo && <>
+              <Input label="Notas uso exclusivo (ES)" value={data.campos.inmueble?.notas_uso_exclusivo} onChange={v=>upCampo("inmueble","notas_uso_exclusivo",v)} wide rows={2} placeholder="un estacionamiento con superficie descubierta de 14.40 m² y una bodega de 2.80 m²" />
+              <Input label="Notas uso exclusivo (EN)" value={data.campos.inmueble?.notas_uso_exclusivo_en} onChange={v=>upCampo("inmueble","notas_uso_exclusivo_en",v)} wide rows={2} placeholder="a parking space of 14.40 sq m and a storage room of 2.80 sq m" />
+            </>}
           </Section>
           <Section title="Antecedente registral">
             <Input label="Fecha escritura" value={data.campos.antecedente?.fecha_escritura} onChange={v=>upCampo("antecedente","fecha_escritura",v)} type="date" required />
