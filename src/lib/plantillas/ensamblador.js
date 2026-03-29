@@ -262,6 +262,9 @@ export function ensamblarContexto(plantilla, datos) {
   // Inventario
   ctx.inventario = datos.campos?.inventario || {};
 
+  // Arrendamientos
+  ctx.arrendamientos = datos.campos?.arrendamientos || {};
+
   // Comisión con letras
   if (ctx.comision.porcentaje_total) {
     const pctNum = parseInt(ctx.comision.porcentaje_total);

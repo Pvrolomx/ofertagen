@@ -311,6 +311,16 @@ export default function OfertaGenPage() {
             <Input label="Exclusiones (ES)" value={data.campos.inventario?.exclusiones} onChange={v=>upCampo("inventario","exclusiones",v)} wide rows={2} placeholder="obras de arte, artículos personales del vendedor" />
             <Input label="Exclusiones (EN)" value={data.campos.inventario?.exclusiones_en} onChange={v=>upCampo("inventario","exclusiones_en",v)} wide rows={2} placeholder="artwork, seller personal items" />
           </Section>}
+          {data.bloques.arrendamientos && <Section title="Arrendamientos vigentes">
+            <div className="flex flex-col gap-1 col-span-2">
+              <label className="text-xs font-medium text-gray-500">Vendedor percibe rentas hasta...</label>
+              <select value={data.campos.arrendamientos?.renta_hasta||"escrow"} onChange={e=>upCampo("arrendamientos","renta_hasta",e.target.value)} className="border border-gray-200 dark:border-gray-600 rounded-lg px-3 py-2 text-sm bg-white dark:bg-gray-800">
+                <option value="escrow">Hasta que el dinero se refleje en escrow</option>
+                <option value="cuenta_vendedor">Hasta que el dinero se refleje en cuenta del vendedor</option>
+                <option value="cierre">Hasta la fecha de formalización</option>
+              </select>
+            </div>
+          </Section>}
           <Section title="Comisión inmobiliaria">
             <Input label="% total" value={data.campos.comision?.porcentaje_total} onChange={v=>upCampo("comision","porcentaje_total",v)} />
             <div className="flex items-center gap-2 self-end pb-2">
