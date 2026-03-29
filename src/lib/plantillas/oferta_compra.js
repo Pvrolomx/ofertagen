@@ -543,6 +543,32 @@ const PLANTILLA_OFERTA_COMPRA = {
       }),
     },
 
+    // ---- CLÁUSULA: OBLIGACIONES DEL VENDEDOR PREVIAS A LA FORMALIZACIÓN ----
+    {
+      id: 'obligaciones_vendedor',
+      condicional: true,
+      default: true,
+      etiqueta: 'Obligaciones del vendedor previas a la formalización',
+      etiqueta_en: 'Seller obligations prior to formalizing',
+      render: (ctx) => ({
+        es: `${ctx.propietario.referencia_negrita} se obliga a cumplir las siguientes obligaciones previas y/o en la FECHA DE FORMALIZACIÓN, según aplique:\n\n- Liquidar a sus empleados, en su caso, ante las autoridades laborales correspondientes, debiendo proporcionar constancia de ello a ${ctx.ofertante.referencia} previo a la FECHA DE FORMALIZACIÓN.\n\n- Proporcionar una carta de no adeudo emitida por la Administración de Condóminos.${ctx.bloques.obligaciones_vendedor_agua ? '\n\n- Solicitar y entregar un certificado de no adeudo de agua del organismo operador correspondiente, por tratarse de un inmueble fuera de régimen de condominio.' : ''}\n\n- Transmitir el dominio de EL INMUEBLE libre de litigios, cuentas por pagar por servicios, así como libre de toda carga y gravamen, tal y como conste en el Certificado de No Gravamen emitido por el Registro Público de la Propiedad dentro de los 30 (treinta) días naturales antes de la FECHA DE FORMALIZACIÓN.\n\n- Realizar la transmisión de EL INMUEBLE en el mismo estado y condiciones en que se encontraba en la fecha de inspección, así como con todas las instalaciones y electrodomésticos funcionando correctamente. En caso de incumplimiento, ${ctx.propietario.referencia} tendrá 3 (tres) días naturales para subsanarlo a entera satisfacción de ${ctx.ofertante.referencia}.\n\n- El pago de las cuotas ordinarias y extraordinarias de condóminos, mantenimiento, consumos por servicios e impuesto predial serán prorrateados en la FECHA DE FORMALIZACIÓN, correspondiendo a ${ctx.propietario.referencia} el pago de los mismos hasta dicha fecha y a ${ctx.ofertante.referencia} a partir de la misma.\n\n- Permitir a ${ctx.ofertante.referencia} una visita de inspección (walk-through) de EL INMUEBLE dentro de los 3 (tres) días naturales previos a la FECHA DE FORMALIZACIÓN para verificar las condiciones del inmueble y que todos los servicios, instalaciones y electrodomésticos estén funcionando.\n\n- ${ctx.propietario.referencia} deberá ceder los contratos de servicios con los que cuenta EL INMUEBLE y que ${ctx.ofertante.referencia} decida mantener, tales como electricidad (CFE), telefonía, televisión por cable, internet y/o cualquier otro servicio, y cancelar aquellos que ${ctx.ofertante.referencia} no elija.`,
+        en: `${ctx.propietario.en.referencia_negrita} is obligated to fulfill the following obligations prior to and/or at THE FORMALIZING DATE, as applicable:\n\n- Liquidate and terminate employees, if any, before the corresponding labor authorities, providing proof of such to ${ctx.ofertante.en.referencia} prior to THE FORMALIZING DATE.\n\n- Provide a no-debt letter issued by the Homeowner's Administration.${ctx.bloques.obligaciones_vendedor_agua ? '\n\n- Obtain and deliver a water utility no-debt certificate from the corresponding water authority, as the property is outside a condominium regime.' : ''}\n\n- Transfer the domain of THE PROPERTY free of all litigations, utility bills, liens and burdens, as established by the Certificate of No Liens issued by the Public Registry of Property within 30 (thirty) calendar days before THE FORMALIZING DATE.\n\n- Transfer THE PROPERTY in the same condition as of the inspection date, with all installations and appliances fully functioning. In case of default, ${ctx.propietario.en.referencia} will have 3 (three) calendar days to correct the default to the satisfaction of ${ctx.ofertante.en.referencia}.\n\n- The payment of ordinary and extraordinary homeowner's dues, maintenance, consumption for services and property tax shall be prorated on THE FORMALIZING DATE, corresponding to ${ctx.propietario.en.referencia} such payments until said date and to ${ctx.ofertante.en.referencia} from said date on.\n\n- Allow ${ctx.ofertante.en.referencia} a walk-through inspection of THE PROPERTY within 3 (three) calendar days prior to THE FORMALIZING DATE to verify the condition of the property and that all services, installations and appliances are properly functioning.\n\n- ${ctx.propietario.en.referencia} shall transfer all service contracts existing in THE PROPERTY that ${ctx.ofertante.en.referencia} decides to keep, such as electricity (CFE), telephone, cable TV, internet, and/or any other, and cancel those not elected by ${ctx.ofertante.en.referencia}.`,
+      }),
+    },
+
+    // ---- CLÁUSULA: DERECHO DE DEDUCCIÓN DEL PRECIO ----
+    {
+      id: 'derecho_deduccion',
+      condicional: true,
+      default: true,
+      etiqueta: 'Derecho de deducción del precio',
+      etiqueta_en: 'Right to deduct from purchase price',
+      render: (ctx) => ({
+        es: `${ctx.ofertante.referencia_negrita} podrá deducir del precio pactado de compra cualquier cantidad que haya sido pagada por éste a cuenta o en satisfacción de reclamos o demandas hechas en contra de EL INMUEBLE, o que pudieran limitar su goce y disfrute, siempre que ${ctx.propietario.referencia} no lo haya resuelto dentro de los 10 (diez) días naturales de recibir el aviso por parte de ${ctx.ofertante.referencia}.\n\n${ctx.propietario.referencia} deberá liberar a ${ctx.ofertante.referencia} de cualquier eventualidad o reclamos futuros que deriven de la falta de revelar información relevante, omisión o desinformación proporcionada.`,
+        en: `${ctx.ofertante.en.referencia_negrita} may deduct from the agreed purchase price any amount paid to cover claims or lawsuits against THE PROPERTY, or that could limit its use and enjoyment, as long as ${ctx.propietario.en.referencia} has not already resolved them within the next 10 (ten) calendar days of receiving written notice by ${ctx.ofertante.en.referencia} of such situation.\n\n${ctx.propietario.en.referencia} shall hold ${ctx.ofertante.en.referencia} harmless in the event of any future claims caused by lack of disclosure of relevant information, omission or misinformation provided.`,
+      }),
+    },
+
     // ---- CLÁUSULA 13: POSESIÓN ----
     {
       id: 'cl_posesion',
