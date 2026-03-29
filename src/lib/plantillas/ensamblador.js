@@ -250,6 +250,18 @@ export function ensamblarContexto(plantilla, datos) {
     dias_revision_letras_en: diasALetrasEn(insData.dias_revision || 5),
   };
 
+  // Financiamiento
+  const finData = datos.campos?.financiamiento || {};
+  ctx.financiamiento = {
+    ...finData,
+    dias_due_diligence: finData.dias_due_diligence || 30,
+    dias_due_diligence_letras: diasALetras(finData.dias_due_diligence || 30),
+    dias_due_diligence_letras_en: diasALetrasEn(finData.dias_due_diligence || 30),
+  };
+
+  // Inventario
+  ctx.inventario = datos.campos?.inventario || {};
+
   // Comisión con letras
   if (ctx.comision.porcentaje_total) {
     const pctNum = parseInt(ctx.comision.porcentaje_total);

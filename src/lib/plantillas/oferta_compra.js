@@ -270,6 +270,26 @@ const PLANTILLA_OFERTA_COMPRA = {
         { id: 'dias_revision', tipo: 'numero', requerido: true, etiqueta: 'Días naturales para revisión del reporte', default: 5 },
       ],
     },
+
+    financiamiento: {
+      etiqueta: 'Sujeto a financiamiento',
+      etiqueta_en: 'Subject to financing',
+      visible_si: 'bloques.financiamiento',
+      campos: [
+        { id: 'dias_due_diligence', tipo: 'numero', requerido: true, etiqueta: 'Días naturales para due diligence del lender', default: 30 },
+        { id: 'nombre_lender', tipo: 'texto', requerido: false, etiqueta: 'Nombre del prestamista / lender', placeholder: 'Ej: MXMORTGAGE, Intercam, etc.' },
+      ],
+    },
+
+    inventario: {
+      etiqueta: 'Inventario / Inclusion list',
+      etiqueta_en: 'Inventory / Inclusion list',
+      visible_si: 'bloques.inventario',
+      campos: [
+        { id: 'exclusiones', tipo: 'textarea', requerido: false, etiqueta: 'Exclusiones (lo que NO se incluye)', placeholder: 'Ej: obras de arte, artículos personales del vendedor' },
+        { id: 'exclusiones_en', tipo: 'textarea', requerido: false, etiqueta: 'Exclusiones (inglés)', placeholder: 'artwork, seller personal items' },
+      ],
+    },
   },
 
   // ============================================================
@@ -601,6 +621,42 @@ const PLANTILLA_OFERTA_COMPRA = {
         es: `B) Que ${ctx.propietario.referencia} envíe a ${ctx.ofertante.referencia_negrita} copia completa de EL FIDEICOMISO original a que hace referencia el punto 3 de la presente oferta, así como copia simple de las dos últimas actas de asambleas del condominio y sus estados financieros.`,
         en: `B) That ${ctx.propietario.en.referencia} send ${ctx.ofertante.en.referencia_negrita} a complete copy of THE ORIGINAL TRUST referred to in point 3 of this offer, as well as a simple copy of the last two condominium assembly minutes and their financial statements.`,
       }),
+    },
+
+    // ---- SUB-BLOQUE: SUJETO A FINANCIAMIENTO ----
+    {
+      id: 'financiamiento',
+      condicional: true,
+      default: false,
+      despues_de: 'doc_fideicomiso',
+      etiqueta: 'Sujeto a financiamiento (compra con crédito)',
+      etiqueta_en: 'Subject to financing (mortgage purchase)',
+      render: (ctx) => ({
+        es: `C) La presente oferta está sujeta a la aprobación del financiamiento por parte del prestamista${ctx.financiamiento?.nombre_lender ? ' (' + ctx.financiamiento.nombre_lender + ')' : ''} que ${ctx.ofertante.referencia} elija. ${ctx.propietario.referencia} deberá proporcionar al prestamista, dentro del plazo de due diligence, la siguiente documentación: escritura vigente del inmueble, plano del departamento, factura de impuesto predial del año en curso (pagada), reglamento y estatutos del condominio, estados de cuenta del fondo de reserva, estados financieros anuales más recientes, acta de la última reunión de la junta directiva del condominio, comprobante de seguro de áreas comunes, y cualquier otro documento que el prestamista requiera para la verificación y tasación de la propiedad.\n\nEl prestamista necesitará ${ctx.financiamiento?.dias_due_diligence || 30} (${ctx.financiamiento?.dias_due_diligence_letras || 'treinta'}) días naturales a partir de la recepción de los documentos para verificar legalmente toda la documentación y proporcionar la tasación de la propiedad. Una vez obtenida la aprobación financiera, ${ctx.ofertante.referencia} realizará el depósito en garantía dentro del plazo establecido.\n\nEn caso de que el financiamiento no sea aprobado, la presente oferta quedará sin efectos legales para las partes, y cualquier cantidad depositada le será reembolsada a ${ctx.ofertante.referencia}. Las partes podrán prorrogar el período de due diligence por escrito si ambas lo acuerdan.`,
+        en: `C) The present offer is subject to financing approval by the lender${ctx.financiamiento?.nombre_lender ? ' (' + ctx.financiamiento.nombre_lender + ')' : ''} of ${ctx.ofertante.en.referencia}'s choice. ${ctx.propietario.en.referencia} shall provide the lender, within the due diligence period, the following documentation: existing title deed, floor plan, current year's property tax bill (paid), condominium regime and bylaws, reserve fund account statements, most recent annual financial statements, most recent condominium board meeting minutes, proof of common area insurance, and any other documents required by the lender for verification and property appraisal.\n\nThe lender will need ${ctx.financiamiento?.dias_due_diligence || 30} (${ctx.financiamiento?.dias_due_diligence_letras_en || 'thirty'}) calendar days from receipt of the documents to legally verify all documentation and provide the property appraisal. Upon financial approval, ${ctx.ofertante.en.referencia} will fund escrow within the established timeframe.\n\nIn the event that financing is not approved, the present offer will not cause any legal effect to the Parties, and any amounts deposited shall be reimbursed to ${ctx.ofertante.en.referencia}. The parties may extend the due diligence period in writing if agreed upon by both parties.`,
+      }),
+    },
+
+    // ---- SUB-BLOQUE: INVENTARIO / INCLUSION LIST ----
+    {
+      id: 'inventario',
+      condicional: true,
+      default: false,
+      despues_de: 'financiamiento',
+      etiqueta: 'Inventario detallado / Inclusion list',
+      etiqueta_en: 'Detailed inventory / Inclusion list',
+      render: (ctx) => {
+        const exclEs = ctx.inventario?.exclusiones
+          ? `\n\nQuedan expresamente excluidos del inventario: ${ctx.inventario.exclusiones}.`
+          : '';
+        const exclEn = ctx.inventario?.exclusiones_en
+          ? `\n\nExpressly excluded from the inventory: ${ctx.inventario.exclusiones_en}.`
+          : (ctx.inventario?.exclusiones ? `\n\nExpressly excluded from the inventory: ${ctx.inventario.exclusiones}.` : '');
+        return {
+          es: `D) Que ${ctx.propietario.referencia} proporcione a ${ctx.ofertante.referencia} copia del inventario detallado del inmueble (lista de inclusiones), junto con fotografías del mismo. ${ctx.propietario.referencia} tiene prohibido retirar o modificar el contenido del inventario a partir de la aceptación de la presente oferta. El inmueble se transmitirá con todos los bienes muebles, instalaciones y electrodomésticos incluidos en dicho inventario.${exclEs}`,
+          en: `D) That ${ctx.propietario.en.referencia} provide ${ctx.ofertante.en.referencia} a copy of the detailed inventory of the property (inclusion list), together with photographs thereof. ${ctx.propietario.en.referencia} is forbidden to remove or modify the content of the inventory from the date of acceptance of the present offer. The property shall be transferred with all furniture, fixtures and appliances included in said inventory.${exclEn}`,
+        };
+      },
     },
 
     // ---- CLÁUSULA 16: COMISIÓN ----
