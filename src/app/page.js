@@ -394,7 +394,7 @@ export default function OfertaGenPage() {
           <Toggle label="Derecho de deducción del precio" sub="Comprador deduce del precio reclamos no resueltos en 10 días" checked={data.bloques.derecho_deduccion} onChange={()=>togBloque("derecho_deduccion")} />
           <Toggle label="Auditoría de Hacienda" sub="Vendedor informa auditorías fiscales; responsable de adeudos pre-cierre" checked={data.bloques.auditoria_hacienda} onChange={()=>togBloque("auditoria_hacienda")} />
           <Toggle label="Holdback escrow condominio" sub="Retención en escrow por assessments pendientes; carta del administrador requerida" checked={data.bloques.holdback_escrow} onChange={()=>togBloque("holdback_escrow")} />
-          <Toggle label="Caso fortuito y fuerza mayor" sub="Fallecimiento → continúa con beneficiarios; desastre → cancela sin penalidad" checked={data.bloques.fuerza_mayor} onChange={()=>togBloque("fuerza_mayor")} />
+          <Toggle label="Caso fortuito y fuerza mayor" sub="Fallecimiento → beneficiarios; pandemias/huracanes/guerras → extensión 90 días + consentimiento mutuo" checked={data.bloques.fuerza_mayor} onChange={()=>togBloque("fuerza_mayor")} />
           <Toggle label="Factura complementaria" sub="Solo cuando vendedor es persona moral mexicana (PDF+XML)" checked={data.bloques.factura_complementaria} onChange={()=>togBloque("factura_complementaria")} />
           <Toggle label="Disclosure / Deslinde" sub="Notario neutral, agencia no asesora legal/fiscal, hold harmless" checked={data.bloques.disclosure} onChange={()=>togBloque("disclosure")} />
           <Toggle label="Documentos integrales" sub="Lista de documentos que forman parte de la oferta" checked={data.bloques.documentos_integrales} onChange={()=>togBloque("documentos_integrales")} />
