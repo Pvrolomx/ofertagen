@@ -286,6 +286,14 @@ log("page.js: Opción 'Hasta que el dinero se refleje en cuenta del vendedor'",
 log("page.js: Opción 'Hasta la fecha de formalización'",
     "fecha de formalización" in pagejs.lower())
 
+# Export/Import borradores (Sprint M)
+log("page.js: exportDraft function existe", "const exportDraft" in pagejs)
+log("page.js: importDraft function existe", "const importDraft" in pagejs)
+log("page.js: Botón Guardar (export)", "Guardar" in pagejs and "exportDraft" in pagejs)
+log("page.js: Botón Cargar (import)", "Cargar" in pagejs and "importDraft" in pagejs)
+log("page.js: Export incluye version", 'version: "3.0"' in pagejs or "version:" in pagejs)
+log("page.js: Import maneja legacy format", "Legacy format" in pagejs or "data at root" in pagejs)
+
 
 # ═══════════════════════════════════════════════════════════════
 # 9. ENSAMBLADOR — CONTEXT RESOLUTION

@@ -116,6 +116,43 @@ export default function OfertaGenPage() {
   const loadDemo = () => setData(JSON.parse(JSON.stringify(DEMO)));
   const resetAll = () => { setData(JSON.parse(JSON.stringify(INIT))); setStep(0); localStorage.removeItem("ofertagen_draft"); };
 
+  // Export/Import borradores
+  const exportDraft = useCallback(() => {
+    const nombre = data.partes?.ofertante?.personas?.[0]?.nombre?.split(" ")[0] || "BORRADOR";
+    const fecha = new Date().toISOString().slice(0, 10);
+    const blob = new Blob([JSON.stringify({ version: "3.0", exportedAt: new Date().toISOString(), step, data }, null, 2)], { type: "application/json" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = `OFERTAGEN_${nombre}_${fecha}.json`;
+    a.click();
+    URL.revokeObjectURL(url);
+  }, [data, step]);
+
+  const importDraft = useCallback(() => {
+    const input = document.createElement("input");
+    input.type = "file";
+    input.accept = ".json";
+    input.onchange = async (e) => {
+      const file = e.target.files?.[0];
+      if (!file) return;
+      try {
+        const text = await file.text();
+        const parsed = JSON.parse(text);
+        if (parsed.data) {
+          setData(parsed.data);
+          if (typeof parsed.step === "number") setStep(parsed.step);
+        } else {
+          // Legacy format (data at root)
+          setData(parsed);
+        }
+      } catch (err) {
+        alert("Error al cargar el archivo. Verifica que sea un borrador válido.");
+      }
+    };
+    input.click();
+  }, []);
+
   const ctx = useMemo(() => ensamblar(data), [data]);
   const bloques = useMemo(() => renderBlks(ctx), [ctx]);
 
@@ -148,7 +185,13 @@ export default function OfertaGenPage() {
           <h1 className="text-2xl font-bold tracking-tight text-gray-900 dark:text-gray-100">OfertaGen</h1>
           <p className="text-xs text-gray-500 dark:text-gray-400 mt-0.5">Expat Advisor MX</p>
         </div>
-        <div className="flex gap-2">
+        <div className="flex gap-2 flex-wrap justify-end">
+          <button onClick={importDraft} className="px-3 py-1.5 text-xs bg-blue-50 dark:bg-blue-900/20 text-blue-700 dark:text-blue-300 border border-blue-200 dark:border-blue-800 rounded-lg hover:bg-blue-100 transition flex items-center gap-1">
+            <span>📂</span> Cargar
+          </button>
+          <button onClick={exportDraft} className="px-3 py-1.5 text-xs bg-green-50 dark:bg-green-900/20 text-green-700 dark:text-green-300 border border-green-200 dark:border-green-800 rounded-lg hover:bg-green-100 transition flex items-center gap-1">
+            <span>💾</span> Guardar
+          </button>
           <button onClick={loadDemo} className="px-3 py-1.5 text-xs bg-amber-50 dark:bg-amber-900/20 text-amber-700 dark:text-amber-300 border border-amber-200 dark:border-amber-800 rounded-lg hover:bg-amber-100 transition">Demo</button>
           <button onClick={resetAll} className="px-3 py-1.5 text-xs bg-gray-50 dark:bg-gray-800 text-gray-600 dark:text-gray-400 border border-gray-200 dark:border-gray-700 rounded-lg hover:bg-gray-100 transition">Limpiar</button>
         </div>
