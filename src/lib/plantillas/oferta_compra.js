@@ -713,6 +713,34 @@ const PLANTILLA_OFERTA_COMPRA = {
       }),
     },
 
+    // ---- SUB-BLOQUE: LITIGIOS PENDIENTES ----
+    {
+      id: 'litigios_pendientes',
+      condicional: true,
+      default: false,
+      despues_de: 'zona_federal',
+      etiqueta: 'Litigios pendientes como condición',
+      etiqueta_en: 'Pending litigation as condition',
+      render: (ctx) => ({
+        es: `G) Que ${ctx.propietario.referencia} informe a ${ctx.ofertante.referencia}, por escrito, de cualquier litigio, procedimiento judicial, administrativo o arbitral, pendiente o inminente, que involucre o pudiere afectar a EL INMUEBLE, proporcionando copias de la documentación relevante dentro de los 3 (tres) días hábiles posteriores a la aceptación de la presente oferta.\n\n${ctx.ofertante.referencia} tendrá 5 (cinco) días naturales a partir de la recepción de dicha información para evaluar los litigios informados y notificar a ${ctx.propietario.referencia} si acepta o rechaza la situación reportada. En caso de rechazo, la presente oferta quedará sin efecto alguno y cualquier cantidad depositada le será reembolsada a ${ctx.ofertante.referencia} en su totalidad.`,
+        en: `G) That ${ctx.propietario.en.referencia} inform ${ctx.ofertante.en.referencia}, in writing, of any pending or imminent litigation, judicial, administrative or arbitration proceeding, that involves or could affect THE PROPERTY, providing copies of the relevant documentation within 3 (three) business days after acceptance of the present offer.\n\n${ctx.ofertante.en.referencia} shall have 5 (five) calendar days from receipt of such information to evaluate the reported litigation and notify ${ctx.propietario.en.referencia} whether the reported situation is accepted or rejected. In case of rejection, the present offer shall be null and void and any amounts deposited shall be refunded to ${ctx.ofertante.en.referencia} in full.`,
+      }),
+    },
+
+    // ---- SUB-BLOQUE: EMPLEADOS COMO CONDICIÓN ----
+    {
+      id: 'empleados_condicion',
+      condicional: true,
+      default: false,
+      despues_de: 'litigios_pendientes',
+      etiqueta: 'Litigios laborales como condición',
+      etiqueta_en: 'Labor litigation as condition',
+      render: (ctx) => ({
+        es: `H) Que ${ctx.propietario.referencia} informe a ${ctx.ofertante.referencia}, por escrito, de cualquier relación laboral vigente, así como de cualquier litigio, demanda o procedimiento de naturaleza laboral, actual o anterior, que se relacione con EL INMUEBLE o con empleados que presten o hayan prestado servicios en el mismo, proporcionando la documentación relevante dentro de los 3 (tres) días hábiles posteriores a la aceptación de la presente oferta.\n\n${ctx.ofertante.referencia} tendrá 5 (cinco) días naturales a partir de la recepción de dicha información para evaluar la situación laboral reportada y notificar a ${ctx.propietario.referencia} si la acepta o rechaza. En caso de rechazo, la presente oferta quedará sin efecto alguno y cualquier cantidad depositada le será reembolsada a ${ctx.ofertante.referencia} en su totalidad.`,
+        en: `H) That ${ctx.propietario.en.referencia} inform ${ctx.ofertante.en.referencia}, in writing, of any current labor relationship, as well as any current or previous labor litigation, claim or proceeding related to THE PROPERTY or to employees who render or have rendered services therein, providing the relevant documentation within 3 (three) business days after acceptance of the present offer.\n\n${ctx.ofertante.en.referencia} shall have 5 (five) calendar days from receipt of such information to evaluate the reported labor situation and notify ${ctx.propietario.en.referencia} whether it is accepted or rejected. In case of rejection, the present offer shall be null and void and any amounts deposited shall be refunded to ${ctx.ofertante.en.referencia} in full.`,
+      }),
+    },
+
     // ---- CLÁUSULA 16: COMISIÓN ----
     {
       id: 'comision',
