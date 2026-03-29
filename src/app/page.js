@@ -316,6 +316,33 @@ export default function OfertaGenPage() {
           <Section title="Penalidad / Jurisdicción">
             <Input label="% penalidad" value={data.campos.penalidad?.porcentaje_penalidad} onChange={v=>upCampo("penalidad","porcentaje_penalidad",v)} />
             <Input label="Jurisdicción" value={data.campos.jurisdiccion?.ciudad_jurisdiccion} onChange={v=>upCampo("jurisdiccion","ciudad_jurisdiccion",v)} />
+            <div className="col-span-2 flex items-center gap-3 p-3 bg-gray-50 dark:bg-gray-800/50 rounded-lg">
+              <input type="checkbox" checked={!!data.campos.penalidad?.distribuir_agencia} onChange={e=>upCampo("penalidad","distribuir_agencia",e.target.checked)} className="rounded" />
+              <div>
+                <label className="text-sm font-medium">Distribuir penalidad con agencia</label>
+                <p className="text-xs text-gray-400">Parte afectada + agencia de RE</p>
+              </div>
+            </div>
+            {data.campos.penalidad?.distribuir_agencia && <>
+              <Input label="% parte afectada" value={data.campos.penalidad?.pct_parte_afectada||"60%"} onChange={v=>upCampo("penalidad","pct_parte_afectada",v)} />
+              <Input label="% agencia" value={data.campos.penalidad?.pct_agencia||"40%"} onChange={v=>upCampo("penalidad","pct_agencia",v)} />
+            </>}
+          </Section>
+          <Section title="Testigos y aceptación">
+            <div className="col-span-2 flex items-center gap-3 p-3 bg-gray-50 dark:bg-gray-800/50 rounded-lg">
+              <input type="checkbox" checked={!!data.campos.testigos?.incluir_testigos} onChange={e=>upCampo("testigos","incluir_testigos",e.target.checked)} className="rounded" />
+              <div>
+                <label className="text-sm font-medium">Incluir líneas de testigos</label>
+                <p className="text-xs text-gray-400">Testigo 1 y Testigo 2 en la página de firma</p>
+              </div>
+            </div>
+            <div className="col-span-2 flex items-center gap-3 p-3 bg-gray-50 dark:bg-gray-800/50 rounded-lg">
+              <input type="checkbox" checked={data.campos.testigos?.incluir_aceptacion!==false} onChange={e=>upCampo("testigos","incluir_aceptacion",e.target.checked)} className="rounded" />
+              <div>
+                <label className="text-sm font-medium">Lugar, fecha y hora de aceptación</label>
+                <p className="text-xs text-gray-400">Línea para que el vendedor anote cuándo aceptó</p>
+              </div>
+            </div>
           </Section>
           <Section title="Coordinador de cierre / Closing coordinator">
             <Input label="Nombre" value={data.campos.coordinador?.nombre_coordinador} onChange={v=>upCampo("coordinador","nombre_coordinador",v)} placeholder="Lic. Rolando Romero García" />

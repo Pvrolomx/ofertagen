@@ -226,6 +226,18 @@ const PLANTILLA_OFERTA_COMPRA = {
       campos: [
         { id: 'porcentaje_penalidad', tipo: 'texto', requerido: true, etiqueta: 'Porcentaje de pena convencional', default: '10%' },
         { id: 'monto_penalidad', tipo: 'moneda', requerido: false, etiqueta: 'Monto penalidad', calculado: 'precio_total * 0.10' },
+        { id: 'distribuir_agencia', tipo: 'boolean', requerido: false, etiqueta: 'Distribuir penalidad con agencia', default: false },
+        { id: 'pct_parte_afectada', tipo: 'texto', requerido: false, etiqueta: '% parte afectada', default: '60%' },
+        { id: 'pct_agencia', tipo: 'texto', requerido: false, etiqueta: '% agencia', default: '40%' },
+      ],
+    },
+
+    testigos: {
+      etiqueta: 'Testigos y aceptación',
+      etiqueta_en: 'Witnesses and acceptance',
+      campos: [
+        { id: 'incluir_testigos', tipo: 'boolean', requerido: false, etiqueta: 'Incluir líneas de testigos', default: false },
+        { id: 'incluir_aceptacion', tipo: 'boolean', requerido: false, etiqueta: 'Incluir línea de lugar/fecha/hora de aceptación', default: true },
       ],
     },
 
@@ -642,10 +654,18 @@ const PLANTILLA_OFERTA_COMPRA = {
       numero: 18,
       siempre: true,
       titulo: { es: 'PENALIDAD', en: 'PENALTY CLAUSE' },
-      render: (ctx) => ({
-        es: `Si la presente oferta es aceptada por ${ctx.propietario.referenciaConComillas}, la condición indispensable a la cuál se supedita su validez fuera satisfecha; y no obstante, una de las partes incumpliera las condiciones o términos de la presente oferta o bien decidiera o se viera impedida de formalizar el contrato definitivo, la parte responsable abonará a la otra la cantidad equivalente al ${ctx.penalidad.porcentaje_penalidad} de la oferta ${ctx.penalidad.completo} por concepto de pena convencional.\n\nEn caso de que ${ctx.ofertante.referencia_negrita} hubiera depositado a la cuenta escrow e incumpliere, ambas partes firmarán la instrucción al escrow para liberar los fondos y de ahí pagarse a ${ctx.propietario.referencia_negrita} dicha pena convencional.\n\nAsí mismo, de ser ${ctx.propietario.referencia_negrita} quien incumpla, y de haberse depositado a la cuenta escrow fondos, estos deberán ser liberados por ambas partes a ${ctx.ofertante.referencia_negrita} y añadírseles por parte de ${ctx.propietario.referencia_negrita}, por concepto de pena convencional la cantidad aquí pactada.\n\nEl pago de dicha pena convencional liberará automáticamente a las partes de cualquier otra obligación o responsabilidad derivada de la presente oferta.`,
-        en: `If the present Offer is accepted by ${ctx.propietario.en.referenciaConComillas}; the indispensable condition for its validity set forth is satisfied; and, notwithstanding, one of the parties fails to comply with the terms and conditions herein established, or shall decide, or shall be impeded to formalize the definitive contract, the responsible party will be obligated to pay the other the total amount of ${ctx.penalidad.completo}.\n\nIn case ${ctx.ofertante.en.referencia_negrita} had deposited into the escrow account and failed to comply, both parties will sign the instruction to release the funds to pay ${ctx.propietario.en.referencia_negrita} the agreed penalty.\n\nLikewise, if ${ctx.propietario.en.referencia_negrita} fail to comply and funds have been deposited into the escrow account, both parties must release the funds to ${ctx.ofertante.en.referencia_negrita} and add, by ${ctx.propietario.en.referencia_negrita}, to them the amount agreed upon as a penalty.\n\nThe payment of said penalty will liberate the parties of any further obligation or responsibility, and the present offer will be automatically canceled and null in all its effects.`,
-      }),
+      render: (ctx) => {
+        const distrib = ctx.penalidad.distribuir_agencia
+          ? `\n\nEn caso de que se causara, dicha penalidad se distribuirá entre la parte afectada (${ctx.penalidad.pct_parte_afectada}) y LA AGENCIA de Bienes Raíces (${ctx.penalidad.pct_agencia}) por concepto de honorarios y gastos, por lo cual, en caso aplicable, se instruirá a la compañía escrow de hacer los desembolsos desde el importe depositado.`
+          : '';
+        const distribEn = ctx.penalidad.distribuir_agencia
+          ? `\n\nIn the event that said penalty applies, it will be distributed between the affected party (${ctx.penalidad.pct_parte_afectada}) and the Real Estate Agency (${ctx.penalidad.pct_agencia}) towards their fees, expenses and services rendered, for which the parties, if applicable, will instruct the escrow company to disburse from the amount deposited.`
+          : '';
+        return {
+          es: `Si la presente oferta es aceptada por ${ctx.propietario.referenciaConComillas}, la condición indispensable a la cuál se supedita su validez fuera satisfecha; y no obstante, una de las partes incumpliera las condiciones o términos de la presente oferta o bien decidiera o se viera impedida de formalizar el contrato definitivo, la parte responsable abonará a la otra la cantidad equivalente al ${ctx.penalidad.porcentaje_penalidad} de la oferta ${ctx.penalidad.completo} por concepto de pena convencional.${distrib}\n\nEn caso de que ${ctx.ofertante.referencia_negrita} hubiera depositado a la cuenta escrow e incumpliere, ambas partes firmarán la instrucción al escrow para liberar los fondos y de ahí pagarse a ${ctx.propietario.referencia_negrita} dicha pena convencional.\n\nAsí mismo, de ser ${ctx.propietario.referencia_negrita} quien incumpla, y de haberse depositado a la cuenta escrow fondos, estos deberán ser liberados por ambas partes a ${ctx.ofertante.referencia_negrita} y añadírseles por parte de ${ctx.propietario.referencia_negrita}, por concepto de pena convencional la cantidad aquí pactada.\n\nEl pago de dicha pena convencional liberará automáticamente a las partes de cualquier otra obligación o responsabilidad derivada de la presente oferta.`,
+          en: `If the present Offer is accepted by ${ctx.propietario.en.referenciaConComillas}; the indispensable condition for its validity set forth is satisfied; and, notwithstanding, one of the parties fails to comply with the terms and conditions herein established, or shall decide, or shall be impeded to formalize the definitive contract, the responsible party will be obligated to pay the other the total amount of ${ctx.penalidad.completo}.${distribEn}\n\nIn case ${ctx.ofertante.en.referencia_negrita} had deposited into the escrow account and failed to comply, both parties will sign the instruction to release the funds to pay ${ctx.propietario.en.referencia_negrita} the agreed penalty.\n\nLikewise, if ${ctx.propietario.en.referencia_negrita} fail to comply and funds have been deposited into the escrow account, both parties must release the funds to ${ctx.ofertante.en.referencia_negrita} and add, by ${ctx.propietario.en.referencia_negrita}, to them the amount agreed upon as a penalty.\n\nThe payment of said penalty will liberate the parties of any further obligation or responsibility, and the present offer will be automatically canceled and null in all its effects.`,
+        };
+      },
     },
 
     // ---- CLÁUSULA: FACTURA COMPLEMENTARIA (solo persona moral mexicana) ----
@@ -736,6 +756,8 @@ const PLANTILLA_OFERTA_COMPRA = {
             rol_es: `${ctx.propietario.referencia} / ${ctx.propietario.en.referencia}`,
           },
         ],
+        testigos: ctx.testigos?.incluir_testigos,
+        aceptacion: ctx.testigos?.incluir_aceptacion !== false,
       }),
     },
   ],

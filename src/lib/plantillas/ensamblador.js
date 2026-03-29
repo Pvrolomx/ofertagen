@@ -133,8 +133,14 @@ export function ensamblarContexto(plantilla, datos) {
 
   ctx.penalidad = {
     porcentaje_penalidad: porcentajePenalidad,
+    distribuir_agencia: datos.campos?.penalidad?.distribuir_agencia || false,
+    pct_parte_afectada: datos.campos?.penalidad?.pct_parte_afectada || '60%',
+    pct_agencia: datos.campos?.penalidad?.pct_agencia || '40%',
     ...bloquePrecio(montoPenalidad, moneda),
   };
+
+  // Testigos y aceptación
+  ctx.testigos = datos.campos?.testigos || { incluir_testigos: false, incluir_aceptacion: true };
 
   // ============================================================
   // 5. RESOLVER FECHAS

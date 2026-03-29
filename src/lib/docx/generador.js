@@ -26,6 +26,13 @@ import {
   ShadingType,
   HeadingLevel,
   PageBreak,
+  Header,
+  Footer,
+  PageNumber,
+  Tab,
+  TabStopType,
+  TabStopPosition,
+  SectionType,
 } from 'docx';
 
 // ============================================================
@@ -305,6 +312,70 @@ function crearEncabezado(meta) {
 }
 
 // ============================================================
+// HELPERS: INICIALES
+// ============================================================
+
+/**
+ * Extrae iniciales de un nombre. "DENNIS DREISBACH DOTY" → "DDD"
+ */
+function extraerIniciales(nombre) {
+  if (!nombre) return '';
+  return nombre.split(/\s+/).map(p => p.charAt(0)).join('');
+}
+
+/**
+ * Genera las iniciales de todas las partes para el footer.
+ * Ej: "DDD _____ KMP _____"
+ */
+function generarInicialesFooter(bloqueFirmas) {
+  const firmas = bloqueFirmas?.firmas || [];
+  return firmas.map(f => {
+    const ini = extraerIniciales(f.nombre);
+    return `${ini} _____`;
+  }).join('          ');
+}
+
+// ============================================================
+// HELPERS: TESTIGOS Y ACEPTACIÓN
+// ============================================================
+
+function crearTestigos() {
+  return [
+    new Paragraph({ spacing: { before: 400 }, children: [] }),
+    new Paragraph({
+      children: [new TextRun({ text: 'TESTIGO 1 / WITNESS 1:', font: FONT, size: FONT_SIZE_FIRMA })],
+    }),
+    new Paragraph({
+      spacing: { before: 300 },
+      children: [new TextRun({ text: '___________________________________', font: FONT, size: FONT_SIZE_FIRMA })],
+    }),
+    new Paragraph({ spacing: { before: 200 }, children: [] }),
+    new Paragraph({
+      children: [new TextRun({ text: 'TESTIGO 2 / WITNESS 2:', font: FONT, size: FONT_SIZE_FIRMA })],
+    }),
+    new Paragraph({
+      spacing: { before: 300 },
+      children: [new TextRun({ text: '___________________________________', font: FONT, size: FONT_SIZE_FIRMA })],
+    }),
+  ];
+}
+
+function crearAceptacion() {
+  return [
+    new Paragraph({ spacing: { before: 400 }, children: [] }),
+    new Paragraph({
+      children: [
+        new TextRun({ text: 'LUGAR, FECHA Y HORA DE ACEPTACIÓN / ACCEPTANCE PLACE, DATE AND TIME:', font: FONT, size: FONT_SIZE_FIRMA, bold: true }),
+      ],
+    }),
+    new Paragraph({
+      spacing: { before: 200 },
+      children: [new TextRun({ text: '_____________________________________________________________', font: FONT, size: FONT_SIZE_FIRMA })],
+    }),
+  ];
+}
+
+// ============================================================
 // API PÚBLICA
 // ============================================================
 
@@ -313,20 +384,16 @@ function crearEncabezado(meta) {
  * 
  * @param {Array} bloques - Bloques renderizados por renderizarBloques()
  * @param {Object} meta - Metadata de la plantilla
+ * @param {Object} opciones - { iniciales: true/false } — datos extra para formato
  * @returns {Promise<Buffer>} Buffer del archivo .docx
  */
-export async function generarDocx(bloques, meta = {}) {
+export async function generarDocx(bloques, meta = {}, opciones = {}) {
   // Separar bloques normales de firmas
   const bloquesNormales = bloques.filter(b => (b.tipo || b.tipo) !== 'firmas');
   const bloqueFirmas = bloques.find(b => b.tipo === 'firmas');
 
-  // Filas de la tabla principal
+  // Filas de la tabla principal (sin firmas)
   const filas = bloquesNormales.map(b => crearFilaClausula(b));
-
-  // Agregar firmas como última fila
-  if (bloqueFirmas) {
-    filas.push(crearFilaFirmas(bloqueFirmas));
-  }
 
   // Tabla principal
   const tablaContrato = new Table({
@@ -335,41 +402,128 @@ export async function generarDocx(bloques, meta = {}) {
     rows: filas,
   });
 
-  // Documento
+  // Contenido de la sección principal (con footer de iniciales)
+  const contenidoPrincipal = [
+    ...crearEncabezado(meta),
+    tablaContrato,
+  ];
+
+  // Sección de firmas (página final, SIN footer de iniciales)
+  const contenidoFirmas = [];
+  if (bloqueFirmas) {
+    const firmas = bloqueFirmas.firmas || [];
+
+    // Firmas de las partes
+    for (const firma of firmas) {
+      contenidoFirmas.push(
+        new Paragraph({ spacing: { before: 600 }, children: [] }),
+        new Paragraph({
+          alignment: AlignmentType.CENTER,
+          children: [new TextRun({ text: '___________________________', font: FONT, size: FONT_SIZE_FIRMA })],
+        }),
+        new Paragraph({
+          alignment: AlignmentType.CENTER,
+          spacing: { before: 80 },
+          children: [new TextRun({ text: firma.nombre, font: FONT, size: FONT_SIZE_FIRMA, bold: true })],
+        }),
+        new Paragraph({
+          alignment: AlignmentType.CENTER,
+          children: [new TextRun({ text: firma.rol_es || '', font: FONT, size: FONT_SIZE_FIRMA })],
+        }),
+      );
+    }
+
+    // Testigos opcionales
+    if (bloqueFirmas.testigos) {
+      contenidoFirmas.push(...crearTestigos());
+    }
+
+    // Aceptación
+    if (bloqueFirmas.aceptacion !== false) {
+      contenidoFirmas.push(...crearAceptacion());
+    }
+  }
+
+  // Footer con iniciales
+  const inicialesText = generarInicialesFooter(bloqueFirmas);
+
+  // Header bilingüe con número de página
+  const headerDefault = new Header({
+    children: [
+      new Paragraph({
+        children: [
+          new TextRun({ text: 'Página ', font: FONT, size: 14, color: '888888' }),
+          new TextRun({ children: [PageNumber.CURRENT], font: FONT, size: 14, color: '888888' }),
+          new TextRun({ text: ' de ', font: FONT, size: 14, color: '888888' }),
+          new TextRun({ children: [PageNumber.TOTAL_PAGES], font: FONT, size: 14, color: '888888' }),
+          new TextRun({ text: '          Page ', font: FONT, size: 14, color: '888888' }),
+          new TextRun({ children: [PageNumber.CURRENT], font: FONT, size: 14, color: '888888' }),
+          new TextRun({ text: ' of ', font: FONT, size: 14, color: '888888' }),
+          new TextRun({ children: [PageNumber.TOTAL_PAGES], font: FONT, size: 14, color: '888888' }),
+        ],
+        alignment: AlignmentType.RIGHT,
+      }),
+    ],
+  });
+
+  // Footer con iniciales (sección principal)
+  const footerIniciales = new Footer({
+    children: [
+      new Paragraph({
+        children: [new TextRun({ text: inicialesText, font: FONT, size: 14, color: '888888' })],
+        alignment: AlignmentType.CENTER,
+      }),
+    ],
+  });
+
+  // Footer vacío (sección de firmas)
+  const footerVacio = new Footer({
+    children: [new Paragraph({ children: [] })],
+  });
+
+  const pageProps = {
+    page: {
+      size: { width: PAGE_WIDTH, height: PAGE_HEIGHT },
+      margin: { top: MARGIN, right: MARGIN, bottom: MARGIN, left: MARGIN },
+    },
+  };
+
+  // Documento con 2 secciones: contenido (con iniciales) + firmas (sin iniciales)
+  const sections = [
+    {
+      properties: {
+        ...pageProps,
+      },
+      headers: { default: headerDefault },
+      footers: { default: footerIniciales },
+      children: contenidoPrincipal,
+    },
+  ];
+
+  // Solo agregar sección de firmas si hay contenido
+  if (contenidoFirmas.length > 0) {
+    sections.push({
+      properties: {
+        ...pageProps,
+        type: SectionType.NEXT_PAGE,
+      },
+      headers: { default: headerDefault },
+      footers: { default: footerVacio },
+      children: contenidoFirmas,
+    });
+  }
+
   const doc = new Document({
     styles: {
       default: {
         document: {
-          run: {
-            font: FONT,
-            size: FONT_SIZE_BODY,
-          },
+          run: { font: FONT, size: FONT_SIZE_BODY },
         },
       },
     },
-    sections: [{
-      properties: {
-        page: {
-          size: {
-            width: PAGE_WIDTH,
-            height: PAGE_HEIGHT,
-          },
-          margin: {
-            top: MARGIN,
-            right: MARGIN,
-            bottom: MARGIN,
-            left: MARGIN,
-          },
-        },
-      },
-      children: [
-        ...crearEncabezado(meta),
-        tablaContrato,
-      ],
-    }],
+    sections,
   });
 
-  // Generar buffer
   const buffer = await Packer.toBuffer(doc);
   return buffer;
 }
