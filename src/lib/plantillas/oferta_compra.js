@@ -659,6 +659,34 @@ const PLANTILLA_OFERTA_COMPRA = {
       },
     },
 
+    // ---- SUB-BLOQUE: ARRENDAMIENTOS VIGENTES ----
+    {
+      id: 'arrendamientos',
+      condicional: true,
+      default: false,
+      despues_de: 'inventario',
+      etiqueta: 'Arrendamientos vigentes (rentas)',
+      etiqueta_en: 'Existing rental agreements',
+      render: (ctx) => ({
+        es: `E) En caso de existir contratos de arrendamiento vigentes con posterioridad a la FECHA DE FORMALIZACIÓN, ${ctx.propietario.referencia} deberá informar a ${ctx.ofertante.referencia} de dichos contratos para que éste determine si los mismos se mantendrán en vigor. En caso afirmativo, ${ctx.propietario.referencia} abonará a ${ctx.ofertante.referencia} todas las rentas y depósitos programados con posterioridad a la FECHA DE FORMALIZACIÓN, y ${ctx.ofertante.referencia} estará obligado a respetar los contratos de arrendamiento vigentes. ${ctx.propietario.referencia} no será responsable de las cancelaciones de renta por parte de los arrendatarios. La decisión de ${ctx.ofertante.referencia} sobre la continuidad de los contratos de arrendamiento deberá comunicarse al momento de constituir el depósito en garantía.`,
+        en: `E) In the event of existing rental agreements in force after THE FORMALIZING DATE, ${ctx.propietario.en.referencia} shall inform ${ctx.ofertante.en.referencia} of such agreements in order for ${ctx.ofertante.en.referencia} to determine if the rentals will remain in force. If so, ${ctx.propietario.en.referencia} shall credit ${ctx.ofertante.en.referencia} all the rentals and deposits scheduled after THE FORMALIZING DATE, and ${ctx.ofertante.en.referencia} shall be bound to honor the rental agreements. ${ctx.propietario.en.referencia} will not be responsible for any rental cancellations by the renters. ${ctx.ofertante.en.referencia}'s decision regarding the continuity of the rental agreements must be communicated at the time of constituting the guarantee deposit.`,
+      }),
+    },
+
+    // ---- SUB-BLOQUE: ZONA FEDERAL ----
+    {
+      id: 'zona_federal',
+      condicional: true,
+      default: false,
+      despues_de: 'arrendamientos',
+      etiqueta: 'Zona Federal (propiedades frente al mar)',
+      etiqueta_en: 'Federal Zone (beachfront properties)',
+      render: (ctx) => ({
+        es: `F) Que ${ctx.propietario.referencia} proporcione a ${ctx.ofertante.referencia} copia de toda la documentación correspondiente a cualquier Zona Federal marítima, terrestre, vial y/o fluvial adyacente al inmueble, incluyendo, entre otros, concesiones, pagos y estudios, según corresponda. ${ctx.propietario.referencia} se compromete a ceder a ${ctx.ofertante.referencia} todos los derechos de la Zona Federal correspondiente en la FECHA DE FORMALIZACIÓN, debiendo encontrarse al corriente en el pago de los derechos de concesión.`,
+        en: `F) That ${ctx.propietario.en.referencia} provide ${ctx.ofertante.en.referencia} a copy of all documentation corresponding to any maritime, ground, highway and/or river adjacent Federal Zone, including without limitation, concessions, payments and surveys, as applicable. ${ctx.propietario.en.referencia} agrees to assign ${ctx.ofertante.en.referencia} all the rights of the corresponding Federal Zone on THE FORMALIZING DATE, and must be current in the payment of concession fees.`,
+      }),
+    },
+
     // ---- CLÁUSULA 16: COMISIÓN ----
     {
       id: 'comision',
