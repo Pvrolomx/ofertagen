@@ -268,6 +268,7 @@ export default function OfertaGenPage() {
                 <option value="STEWART TITLE LATIN AMERICA">Stewart Title Latin America (STLA)</option>
                 <option value="ARMOUR SETTLEMENT SERVICES">Armour Settlement Services</option>
                 <option value="TITLE LATIN AMERICA (TLA)">Title Latin America (TLA)</option>
+                <option value="P&A ESCROW">P&A Escrow</option>
               </select>
             </div>
             <Input label="Honorarios escrow (USD)" value={data.campos.escrow?.honorarios_escrow||750} onChange={v=>upCampo("escrow","honorarios_escrow",v)} type="number" />
