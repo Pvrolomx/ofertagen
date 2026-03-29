@@ -831,6 +831,32 @@ const PLANTILLA_OFERTA_COMPRA = {
       }),
     },
 
+    // ---- CLÁUSULA: DOCUMENTOS QUE FORMAN PARTE INTEGRAL ----
+    {
+      id: 'documentos_integrales',
+      condicional: true,
+      default: true,
+      etiqueta: 'Documentos que forman parte integral de la oferta',
+      etiqueta_en: 'Documents that form integral part of the offer',
+      render: (ctx) => ({
+        es: `Los siguientes documentos forman parte integral de la presente oferta:\n\n1. Documentos que contengan el cumplimiento y remoción de las Condiciones Indispensables;\n2. Contrato de Depósito en Garantía (Escrow Agreement), en su caso;\n3. Convenios modificatorios, documentos y anexos firmados por las Partes;\n4. Inventario detallado del inmueble, en su caso.`,
+        en: `The following documents form an integral part of the present offer:\n\n1. Documents containing the compliance and removal of the Indispensable Conditions;\n2. Guarantee Deposit Contract (Escrow Agreement), if applicable;\n3. Amendments, documents and annexes signed by the Parties;\n4. Detailed inventory of the property, if applicable.`,
+      }),
+    },
+
+    // ---- CLÁUSULA: DUPLICADOS / COUNTERPARTS ----
+    {
+      id: 'duplicados',
+      condicional: true,
+      default: true,
+      etiqueta: 'Duplicados / Counterparts',
+      etiqueta_en: 'Counterparts and electronic communications',
+      render: (ctx) => ({
+        es: `La presente oferta podrá ser firmada en más de una copia, y bastará con que esté firmada y rubricada en todas sus páginas por cualquiera de las partes para su validez. Las partes acuerdan reconocer las comunicaciones electrónicas entre ellas, así como el consentimiento otorgado por dichos medios.`,
+        en: `This offer may be signed in more than one copy, and it will be valid once signed and initialed in all of its pages by any Party. The Parties agree to recognize electronic communications between them, as well as their consent given through such means.`,
+      }),
+    },
+
     // ---- CIERRE: LUGAR Y FECHA ----
     {
       id: 'cl_cierre',
