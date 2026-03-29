@@ -522,6 +522,19 @@ const PLANTILLA_OFERTA_COMPRA = {
       }),
     },
 
+    // ---- CLÁUSULA: CONDICIÓN GENERAL Y ESTADO DE USO ----
+    {
+      id: 'condicion_uso',
+      condicional: true,
+      default: true,
+      etiqueta: 'Condición general y estado de uso del inmueble',
+      etiqueta_en: 'Property condition and state of use',
+      render: (ctx) => ({
+        es: `La posesión material de EL INMUEBLE se entregará en LA FECHA DE FORMALIZACIÓN en el mismo estado y condición general en que se encuentre en la fecha de la inspección realizada por ${ctx.ofertante.referencia}. ${ctx.ofertante.referencia} entiende que, debido a la edad de EL INMUEBLE y sus equipos, las garantías anteriormente aplicables han caducado y que tienen evidencia de un uso y desgaste normal; sin embargo, deberán entregarse en buen funcionamiento.`,
+        en: `The physical possession of THE PROPERTY will be delivered on THE FORMALIZING DATE, in the same state and general maintenance condition as of the date of inspection conveyed by ${ctx.ofertante.en.referencia}. ${ctx.ofertante.en.referencia} understand that, due to the age of THE PROPERTY and appliances, the installations carry no warranties and that have evidence of normal wear and use; however, everything must be in good working conditions.`,
+      }),
+    },
+
     // ---- CLÁUSULA 14: CONTRATO BILATERAL ----
     {
       id: 'cl_bilateral',
@@ -632,6 +645,46 @@ const PLANTILLA_OFERTA_COMPRA = {
       render: (ctx) => ({
         es: `Si la presente oferta es aceptada por ${ctx.propietario.referenciaConComillas}, la condición indispensable a la cuál se supedita su validez fuera satisfecha; y no obstante, una de las partes incumpliera las condiciones o términos de la presente oferta o bien decidiera o se viera impedida de formalizar el contrato definitivo, la parte responsable abonará a la otra la cantidad equivalente al ${ctx.penalidad.porcentaje_penalidad} de la oferta ${ctx.penalidad.completo} por concepto de pena convencional.\n\nEn caso de que ${ctx.ofertante.referencia_negrita} hubiera depositado a la cuenta escrow e incumpliere, ambas partes firmarán la instrucción al escrow para liberar los fondos y de ahí pagarse a ${ctx.propietario.referencia_negrita} dicha pena convencional.\n\nAsí mismo, de ser ${ctx.propietario.referencia_negrita} quien incumpla, y de haberse depositado a la cuenta escrow fondos, estos deberán ser liberados por ambas partes a ${ctx.ofertante.referencia_negrita} y añadírseles por parte de ${ctx.propietario.referencia_negrita}, por concepto de pena convencional la cantidad aquí pactada.\n\nEl pago de dicha pena convencional liberará automáticamente a las partes de cualquier otra obligación o responsabilidad derivada de la presente oferta.`,
         en: `If the present Offer is accepted by ${ctx.propietario.en.referenciaConComillas}; the indispensable condition for its validity set forth is satisfied; and, notwithstanding, one of the parties fails to comply with the terms and conditions herein established, or shall decide, or shall be impeded to formalize the definitive contract, the responsible party will be obligated to pay the other the total amount of ${ctx.penalidad.completo}.\n\nIn case ${ctx.ofertante.en.referencia_negrita} had deposited into the escrow account and failed to comply, both parties will sign the instruction to release the funds to pay ${ctx.propietario.en.referencia_negrita} the agreed penalty.\n\nLikewise, if ${ctx.propietario.en.referencia_negrita} fail to comply and funds have been deposited into the escrow account, both parties must release the funds to ${ctx.ofertante.en.referencia_negrita} and add, by ${ctx.propietario.en.referencia_negrita}, to them the amount agreed upon as a penalty.\n\nThe payment of said penalty will liberate the parties of any further obligation or responsibility, and the present offer will be automatically canceled and null in all its effects.`,
+      }),
+    },
+
+    // ---- CLÁUSULA: FACTURA COMPLEMENTARIA (solo persona moral mexicana) ----
+    {
+      id: 'factura_complementaria',
+      condicional: true,
+      default: false,
+      despues_de: 'cl_penalidad',
+      etiqueta: 'Factura complementaria (vendedor persona moral mexicana)',
+      etiqueta_en: 'Complementary invoice (Mexican corporate seller)',
+      render: (ctx) => ({
+        es: `${ctx.propietario.referencia_negrita}, en su carácter de persona moral mexicana, se obliga a emitir y entregar a ${ctx.ofertante.referencia} la Factura Complementaria correspondiente (archivos PDF y XML) dentro de los 30 (treinta) días naturales posteriores a LA FECHA DE FORMALIZACIÓN, en la cual se describa EL INMUEBLE y el precio de venta del mismo. Dicha Factura Complementaria es actualmente un requerimiento como prueba del costo de adquisición para la deducción en Impuesto Sobre la Renta (ISR) en caso de que ${ctx.ofertante.referencia} quisiere vender la propiedad en el futuro. Si ${ctx.ofertante.referencia} no recibiera dicha Factura Complementaria dentro del plazo señalado, será responsabilidad de ${ctx.propietario.referencia} proporcionarla a la brevedad posible.`,
+        en: `${ctx.propietario.en.referencia_negrita}, as a Mexican legal entity, is obligated to issue and deliver to ${ctx.ofertante.en.referencia} the corresponding Complementary Invoice (PDF and XML files) within 30 (thirty) calendar days after THE FORMALIZING DATE, describing THE PROPERTY and its sale price. Said Complementary Invoice is currently required as proof of acquisition cost for Capital Gains Tax deduction in the event ${ctx.ofertante.en.referencia} wishes to sell the property in the future. If ${ctx.ofertante.en.referencia} does not receive said Complementary Invoice within the specified period, it shall be ${ctx.propietario.en.referencia}'s responsibility to provide it as soon as possible.`,
+      }),
+    },
+
+    // ---- CLÁUSULA: CASO FORTUITO Y FUERZA MAYOR ----
+    {
+      id: 'fuerza_mayor',
+      condicional: true,
+      default: true,
+      etiqueta: 'Caso fortuito y fuerza mayor',
+      etiqueta_en: 'Acts of God and force majeure',
+      render: (ctx) => ({
+        es: `En caso de fallecimiento de alguna de las partes, la presente oferta prevalecerá en todos sus términos, continuándose con el(los) beneficiario(s) sustituto(s) de las partes: para el caso de ${ctx.propietario.referencia} se continuará con los beneficiarios designados en su escritura de fideicomiso y para el caso de ${ctx.ofertante.referencia} la que éste en su momento designe.\n\nNo obstante, en caso de desastres naturales, la presente oferta se cancelará sin aplicar penalidad alguna a cargo de las partes, las cuales quedarán liberadas de cualquier obligación contractual derivada de la presente oferta. En dicho caso, cualquier cantidad que haya sido pagada antes de la FECHA DE FORMALIZACIÓN le será reembolsada a los beneficiarios de ${ctx.ofertante.referencia}.`,
+        en: `In the event of death of any of the parties herein, the present offer shall prevail in all its terms, continuing with their substitute beneficiary(ies): for ${ctx.propietario.en.referencia}, with the substitute beneficiaries designated in their bank trust deed, and for ${ctx.ofertante.en.referencia}, with the beneficiary designated for this purpose.\n\nNotwithstanding, in the event of a natural disaster, the present offer will be cancelled without applying any penalty to any of the parties, which will be released from any contractual obligation derived from the present offer. In this event, any funds paid prior to THE FORMALIZING DATE will be refunded to the beneficiaries of ${ctx.ofertante.en.referencia}.`,
+      }),
+    },
+
+    // ---- CLÁUSULA: DECLARACIÓN / DISCLOSURE ----
+    {
+      id: 'disclosure',
+      condicional: true,
+      default: false,
+      etiqueta: 'Declaración / Disclosure (deslinde de agencia y notario)',
+      etiqueta_en: 'Disclosure statement (agency and notary hold harmless)',
+      render: (ctx) => ({
+        es: `${ctx.ofertante.referencia} y ${ctx.propietario.referencia} reconocen que el Notario Público Designado es neutro y no actuará como representante legal de las partes. Así mismo, la(s) Agencia(s) de Bienes Raíces que participa(n) en esta operación dará(n) asesoría en materia de bienes raíces e inmobiliaria y no pretende(n) dar asesoría ni representación de naturaleza jurídica, fiscal o de contaduría. La(s) Agencia(s) de Bienes Raíces recomienda(n) que ambas partes contraten profesionales independientes, tales como abogados, fiscalistas y/o contadores, para revisar esta operación, y ambas partes liberan a la(s) Agencia(s) de Bienes Raíces de cualquier responsabilidad en el caso de daños o perjuicios sufridos como resultado de no haber consultado dichos profesionales independientes.`,
+        en: `${ctx.ofertante.en.referencia} and ${ctx.propietario.en.referencia} recognize that the Designated Public Notary is a neutral third party and shall not act as legal representative of either party. At the same time, the Real Estate Agency(ies) participating in this transaction shall provide real estate brokerage and consultation services and shall not purport to give advice or representation of a legal, fiscal or accounting nature. The Real Estate Agency(ies) recommend that both parties contract independent professionals such as attorneys, tax planners and/or accountants in connection with the present transaction, and both parties shall hold the Real Estate Agency(ies) harmless in the event of damages that may be caused by the failure to seek such independent professional service.`,
       }),
     },
 
