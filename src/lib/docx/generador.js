@@ -491,36 +491,54 @@ export async function generarDocx(bloques, meta = {}, opciones = {}) {
   // Footer con iniciales
   const inicialesText = generarInicialesFooter(bloqueFirmas);
 
-  // Preparar logo para header (usa placeholder si no hay logo)
-  const logoData = logoBase64 || LOGO_PLACEHOLDER;
-  const logoBuffer = Buffer.from(logoData, 'base64');
+  // Preparar logo para header (solo si hay logo real)
+  const tieneLogoReal = logoBase64 && logoBase64 !== LOGO_PLACEHOLDER;
+  
+  // Detectar tipo de imagen por magic bytes
+  const detectImageType = (base64) => {
+    if (!base64) return 'png';
+    // JPG empieza con /9j/ en base64
+    if (base64.startsWith('/9j/')) return 'jpg';
+    // PNG empieza con iVBOR en base64
+    if (base64.startsWith('iVBOR')) return 'png';
+    return 'png'; // default
+  };
+
+  // Crear children del header
+  const headerChildren = [];
+  
+  if (tieneLogoReal) {
+    const logoBuffer = Buffer.from(logoBase64, 'base64');
+    const logoType = detectImageType(logoBase64);
+    headerChildren.push(
+      new ImageRun({
+        data: logoBuffer,
+        transformation: { width: LOGO_WIDTH, height: LOGO_HEIGHT },
+        type: logoType,
+      })
+    );
+    headerChildren.push(new TextRun({ children: [new Tab()] }));
+  }
+  
+  // Paginación (siempre presente, a la derecha si hay logo, centrada si no)
+  headerChildren.push(
+    new TextRun({ text: 'Página ', font: FONT, size: 14, color: '888888' }),
+    new TextRun({ children: [PageNumber.CURRENT], font: FONT, size: 14, color: '888888' }),
+    new TextRun({ text: ' de ', font: FONT, size: 14, color: '888888' }),
+    new TextRun({ children: [PageNumber.TOTAL_PAGES], font: FONT, size: 14, color: '888888' }),
+    new TextRun({ text: '  |  Page ', font: FONT, size: 14, color: '888888' }),
+    new TextRun({ children: [PageNumber.CURRENT], font: FONT, size: 14, color: '888888' }),
+    new TextRun({ text: ' of ', font: FONT, size: 14, color: '888888' }),
+    new TextRun({ children: [PageNumber.TOTAL_PAGES], font: FONT, size: 14, color: '888888' })
+  );
 
   // Header: Logo izquierda + Paginación derecha (usando TabStops)
   const headerDefault = new Header({
     children: [
       new Paragraph({
-        tabStops: [
-          { type: TabStopType.RIGHT, position: CONTENT_WIDTH },
-        ],
-        children: [
-          // Logo a la izquierda (discreto)
-          new ImageRun({
-            data: logoBuffer,
-            transformation: { width: LOGO_WIDTH, height: LOGO_HEIGHT },
-            type: 'png',
-          }),
-          // Tab para empujar paginación a la derecha
-          new TextRun({ children: [new Tab()] }),
-          // Paginación bilingüe
-          new TextRun({ text: 'Página ', font: FONT, size: 14, color: '888888' }),
-          new TextRun({ children: [PageNumber.CURRENT], font: FONT, size: 14, color: '888888' }),
-          new TextRun({ text: ' de ', font: FONT, size: 14, color: '888888' }),
-          new TextRun({ children: [PageNumber.TOTAL_PAGES], font: FONT, size: 14, color: '888888' }),
-          new TextRun({ text: '  |  Page ', font: FONT, size: 14, color: '888888' }),
-          new TextRun({ children: [PageNumber.CURRENT], font: FONT, size: 14, color: '888888' }),
-          new TextRun({ text: ' of ', font: FONT, size: 14, color: '888888' }),
-          new TextRun({ children: [PageNumber.TOTAL_PAGES], font: FONT, size: 14, color: '888888' }),
-        ],
+        tabStops: tieneLogoReal ? [{ type: TabStopType.RIGHT, position: CONTENT_WIDTH }] : [],
+        alignment: tieneLogoReal ? undefined : AlignmentType.RIGHT,
+        children: headerChildren,
       }),
     ],
   });
@@ -590,7 +608,7 @@ export async function generarDocx(bloques, meta = {}, opciones = {}) {
 /**
  * Genera un Blob para descarga en browser.
  */
-export async function generarDocxBlob(bloques, meta = {}) {
-  const buffer = await generarDocx(bloques, meta);
+export async function generarDocxBlob(bloques, meta = {}, opciones = {}) {
+  const buffer = await generarDocx(bloques, meta, opciones);
   return new Blob([buffer], { type: 'application/vnd.openxmlformats-officedocument.wordprocessingml.document' });
 }
