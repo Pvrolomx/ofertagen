@@ -199,6 +199,34 @@ function crearFilaClausula(bloque) {
     }
   }
 
+  // Subtítulo (para sub-secciones como a).- MANTENIMIENTO, b).- LIMPIEZA)
+  if (bloque.subtitulo) {
+    const subEs = bloque.subtitulo?.es || '';
+    const subEn = bloque.subtitulo?.en || '';
+    if (subEs) {
+      paragrafosEs.push(new Paragraph({
+        children: [new TextRun({
+          text: subEs,
+          font: FONT,
+          size: FONT_SIZE_BODY,
+          bold: true,
+        })],
+        spacing: { after: 60 },
+      }));
+    }
+    if (subEn) {
+      paragrafosEn.push(new Paragraph({
+        children: [new TextRun({
+          text: subEn,
+          font: FONT,
+          size: FONT_SIZE_BODY,
+          bold: true,
+        })],
+        spacing: { after: 60 },
+      }));
+    }
+  }
+
   // Contenido
   paragrafosEs.push(...textoAParagrafos(bloque.es));
   paragrafosEn.push(...textoAParagrafos(bloque.en));
@@ -286,13 +314,15 @@ function crearFilaFirmas(bloque) {
  * Genera el encabezado del documento.
  */
 function crearEncabezado(meta) {
+  const tituloEs = (meta.nombre || 'OFERTA DE INTENCIÓN DE COMPRA').toUpperCase();
+  const tituloEn = (meta.nombre_en || 'OFFER INTENT TO PURCHASE').toUpperCase();
   return [
     new Paragraph({
       alignment: AlignmentType.CENTER,
       spacing: { after: 200 },
       children: [
         new TextRun({
-          text: 'OFERTA DE INTENCIÓN DE COMPRA',
+          text: tituloEs,
           font: FONT,
           size: FONT_SIZE_HEADER,
           bold: true,
@@ -304,7 +334,7 @@ function crearEncabezado(meta) {
       spacing: { after: 300 },
       children: [
         new TextRun({
-          text: 'OFFER INTENT TO PURCHASE',
+          text: tituloEn,
           font: FONT,
           size: FONT_SIZE_HEADER,
           bold: true,

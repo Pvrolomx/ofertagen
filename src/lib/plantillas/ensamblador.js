@@ -281,6 +281,95 @@ export function ensamblarContexto(plantilla, datos) {
     ctx.comision.porcentaje_total_letras_en = `${diasALetrasEn(pctNum) || pctNum} percent`;
   }
 
+  // ============================================================
+  // 8. RESOLVER CAMPOS ESPECÍFICOS DE ADMINISTRACIÓN (Castle Solutions)
+  // ============================================================
+
+  if (plantilla.meta?.id === 'contrato_administracion') {
+    // Propiedad
+    ctx.propiedad = datos.campos?.propiedad || {};
+
+    // Reportes con letras
+    const repData = datos.campos?.reportes || {};
+    ctx.reportes = {
+      ...repData,
+      dias_reporte: repData.dias_reporte || 30,
+      dias_inconformidad: repData.dias_inconformidad || 30,
+      dias_reporte_letras: diasALetras(repData.dias_reporte || 30),
+      dias_inconformidad_letras: diasALetras(repData.dias_inconformidad || 30),
+      dias_reporte_letras_en: diasALetrasEn(repData.dias_reporte || 30),
+      dias_inconformidad_letras_en: diasALetrasEn(repData.dias_inconformidad || 30),
+    };
+
+    // Honorarios con formatos
+    const honData = datos.campos?.honorarios || {};
+    const cuota = honData.cuota_mensual || 125;
+    const umbral = honData.umbral_reparacion || 100;
+    const tarifaEsp = honData.tarifa_servicios_especiales || 20;
+    const costoAsamblea = honData.costo_asamblea || 100;
+    const costoHoraAd = honData.costo_hora_adicional_asamblea || 30;
+    const pctSup = honData.porcentaje_supervision || '10%';
+    const pctSupNum = parseInt(pctSup);
+
+    const cuotaPrecio = bloquePrecio(cuota, 'USD');
+    const umbralPrecio = bloquePrecio(umbral, 'USD');
+
+    ctx.honorarios = {
+      ...honData,
+      cuota_mensual: cuota,
+      cuota_formateada: cuotaPrecio.formateado?.replace(' USD', '') || `${cuota}.00`,
+      cuota_letras: cuotaPrecio.letras_cortas || montoALetras(cuota, 'USD'),
+      cuota_letras_en: `${diasALetrasEn(cuota) || cuota} 00/100`,
+      cuota_no_negociable: honData.cuota_no_negociable !== false,
+      incluye_iva: honData.incluye_iva !== false,
+      umbral_reparacion: umbral,
+      umbral_reparacion_letras: `${diasALetras(umbral) || umbral}`,
+      umbral_reparacion_letras_en: `${diasALetrasEn(umbral) || umbral}`.toUpperCase(),
+      tarifa_servicios_especiales: tarifaEsp,
+      tarifa_especiales_letras: (diasALetras(tarifaEsp) || tarifaEsp).toUpperCase(),
+      tarifa_especiales_letras_en: (diasALetrasEn(tarifaEsp) || tarifaEsp).toUpperCase(),
+      porcentaje_supervision: pctSup,
+      porcentaje_supervision_letras: `${diasALetras(pctSupNum) || pctSupNum} por ciento`,
+      porcentaje_supervision_letras_en: `${diasALetrasEn(pctSupNum) || pctSupNum} percent`,
+      costo_asamblea: costoAsamblea,
+      costo_asamblea_letras: `${diasALetras(costoAsamblea) || costoAsamblea}`,
+      costo_asamblea_letras_en: `${diasALetrasEn(costoAsamblea) || costoAsamblea}`.toLowerCase(),
+      costo_hora_adicional_asamblea: costoHoraAd,
+      costo_hora_adicional_letras: `${diasALetras(costoHoraAd) || costoHoraAd}`,
+      costo_hora_adicional_letras_en: `${diasALetrasEn(costoHoraAd) || costoHoraAd}`,
+    };
+
+    // Vigencia con fechas formateadas
+    const vigData = datos.campos?.vigencia || {};
+    const fechaInicio = vigData.fecha_inicio;
+    const duracion = vigData.duracion || 'indefinida';
+    const diasAviso = vigData.dias_aviso_cancelacion || 30;
+
+    ctx.vigencia = {
+      ...vigData,
+      fecha_inicio_es: fechaInicio ? fechaEs(fechaInicio) : '[FECHA]',
+      fecha_inicio_en: fechaInicio ? fechaEn(fechaInicio) : '[DATE]',
+      duracion_texto_es: duracion === 'indefinida' ? 'indefinida' : `de ${duracion} meses`,
+      duracion_texto_en: duracion === 'indefinida' ? 'indeterminate' : `for ${duracion} months`,
+      dias_aviso_cancelacion: diasAviso,
+      dias_aviso_letras: diasALetras(diasAviso),
+      dias_aviso_letras_en: diasALetrasEn(diasAviso),
+      num_llaves: vigData.num_llaves || 3,
+      incluir_codigo_acceso: vigData.incluir_codigo_acceso !== false,
+      ciudad_firma: vigData.ciudad_firma || 'Puerto Vallarta, Jalisco',
+    };
+
+    // Email del propietario (para cláusula de notificaciones)
+    const parteProp = datos.partes?.propietario;
+    if (parteProp) {
+      ctx.propietario.email = parteProp.personas?.[0]?.email || parteProp.email || '';
+      ctx.propietario.email2 = parteProp.personas?.[0]?.email2 || parteProp.email2 || '';
+    }
+
+    // Testigos
+    ctx.testigos = datos.campos?.testigos || { incluir_testigos: true };
+  }
+
   return ctx;
 }
 
@@ -310,10 +399,12 @@ export function renderizarBloques(plantilla, ctx) {
         titulo: bloque.tituloFn
           ? { es: contenido.titulo_es || '', en: contenido.titulo_en || '' }
           : (bloque.titulo || null),
+        subtitulo: bloque.subtitulo || null,
         tipo: bloque.tipo || 'clausula',
         es: contenido.es || '',
         en: contenido.en || '',
         firmas: contenido.firmas || null,
+        testigos: contenido.testigos,
       });
     } catch (err) {
       console.error(`Error renderizando bloque "${bloque.id}":`, err.message);

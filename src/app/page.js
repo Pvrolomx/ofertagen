@@ -509,9 +509,12 @@ export default function OfertaGenPage() {
       {/* Footer — RDE regla 10 */}
       <footer className="mt-8 pt-4 border-t border-gray-200 dark:border-gray-700 flex items-center justify-between text-xs text-gray-400">
         <span>Hecho por duendes.app 2026</span>
-        <button id="install-btn" onClick={() => window.installApp?.()} className="hidden px-3 py-1.5 bg-blue-50 dark:bg-blue-900/20 text-blue-600 dark:text-blue-300 border border-blue-200 dark:border-blue-800 rounded-lg hover:bg-blue-100 transition">
-          Instalar App
-        </button>
+        <div className="flex items-center gap-3">
+          <a href="/admin" className="text-teal-500 hover:text-teal-700 transition">Castle Admin →</a>
+          <button id="install-btn" onClick={() => window.installApp?.()} className="hidden px-3 py-1.5 bg-blue-50 dark:bg-blue-900/20 text-blue-600 dark:text-blue-300 border border-blue-200 dark:border-blue-800 rounded-lg hover:bg-blue-100 transition">
+            Instalar App
+          </button>
+        </div>
       </footer>
     </div>
   );

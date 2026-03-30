@@ -50,6 +50,10 @@ const ROLES = {
     sustantivo: { ms: 'FIDEICOMISARIO', fs: 'FIDEICOMISARIA', mp: 'FIDEICOMISARIOS', fp: 'FIDEICOMISARIAS' },
     sustantivo_en: { ms: 'BENEFICIARY', fs: 'BENEFICIARY', mp: 'BENEFICIARIES', fp: 'BENEFICIARIES' },
   },
+  administrador: {
+    sustantivo: { ms: 'ADMINISTRADOR', fs: 'ADMINISTRADORA', mp: 'ADMINISTRADORES', fp: 'ADMINISTRADORAS' },
+    sustantivo_en: { ms: 'ADMINISTRATOR', fs: 'ADMINISTRATOR', mp: 'ADMINISTRATORS', fp: 'ADMINISTRATORS' },
+  },
 };
 
 // ============================================================
