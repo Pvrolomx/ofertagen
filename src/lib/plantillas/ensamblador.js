@@ -363,7 +363,7 @@ export function ensamblarContexto(plantilla, datos) {
     const parteProp = datos.partes?.propietario;
     if (parteProp) {
       ctx.propietario.email = parteProp.personas?.[0]?.email || parteProp.email || '';
-      ctx.propietario.email2 = parteProp.personas?.[0]?.email2 || parteProp.email2 || '';
+      ctx.propietario.celular = parteProp.personas?.[0]?.celular || parteProp.celular || '';
     }
 
     // Testigos

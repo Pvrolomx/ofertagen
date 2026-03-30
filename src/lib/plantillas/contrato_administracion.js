@@ -45,8 +45,8 @@ const PLANTILLA_ADMINISTRACION = {
       campos: [
         { id: 'nombre', tipo: 'texto', requerido: true, etiqueta: 'Nombre completo', etiqueta_en: 'Full name' },
         { id: 'genero', tipo: 'select', requerido: true, etiqueta: 'Género', opciones: [{ valor: 'M', texto: 'Masculino' }, { valor: 'F', texto: 'Femenino' }] },
-        { id: 'email', tipo: 'email', requerido: true, etiqueta: 'Correo electrónico principal', etiqueta_en: 'Primary email' },
-        { id: 'email2', tipo: 'email', requerido: false, etiqueta: 'Correo electrónico secundario', etiqueta_en: 'Secondary email' },
+        { id: 'email', tipo: 'email', requerido: true, etiqueta: 'Correo electrónico', etiqueta_en: 'Email' },
+        { id: 'celular', tipo: 'tel', requerido: true, etiqueta: 'Celular / WhatsApp', etiqueta_en: 'Cell / WhatsApp' },
       ],
     },
     {
@@ -62,8 +62,9 @@ const PLANTILLA_ADMINISTRACION = {
       defaults: {
         razonSocial: 'CASTLEBAY PV, SRL DE CV',
         representante: { nombre: 'Claudia Rebeca Castillo Soto', genero: 'F' },
-        domicilio: 'Ave Valle de México, Circuito de la Serenidad #36, Rincón del Cielo, Nayarit CP 63735',
+        domicilio: 'Paseo del Arque 59, Las Ceibas, Bahía de Banderas, Nayarit, 63735',
         email: 'claudia@castlesolutions.biz',
+        celular: '+52 322 306 8482',
       },
     },
   ],
@@ -181,8 +182,8 @@ const PLANTILLA_ADMINISTRACION = {
       id: 'declaracion_administrador',
       siempre: true,
       render: (ctx) => ({
-        es: `II.- Declara EL ADMINISTRADOR que:\n\nA) Tener su domicilio en, Ave Valle de México, Circuito de la Serenidad #36, Rincón del Cielo, Nayarit CP 63735 quien manifiesta su voluntad de proveer Servicios de Administración y Mantenimiento a la propiedad y PROPIETARIO descritos con anterioridad en el presente contrato.\n\nB) Tiene la capacidad legal, económica y administrativa para cumplir con el objeto materia de este contrato.\n\nC) Comprende el contenido y alcance legal de las obligaciones y derechos contenidos y pactados en este contrato, manifestando expresamente su voluntad para celebrarlo con EL PROPIETARIO.`,
-        en: `II.- THE ADMINISTRATOR declares that;\n\nA) His office is located on, Ave Valle de México, Circuito de la Serenidad #36, Rincón del Cielo, Nayarit CP 63735 who expresses his willingness to provide Property Management and Maintenance Services to THE OWNER and property described above in this contract.\n\nB) Has the legal, economic and administrative capacity to comply with the terms of this contract.\n\nC) Understands the content and legal scope of the obligations and rights agreed in this contract, expressly stating his willingness to sign it with THE OWNER.`,
+        es: `II.- Declara EL ADMINISTRADOR que:\n\nA) Tener su domicilio en, Paseo del Arque 59, Las Ceibas, Bahía de Banderas, Nayarit, 63735 quien manifiesta su voluntad de proveer Servicios de Administración y Mantenimiento a la propiedad y PROPIETARIO descritos con anterioridad en el presente contrato.\n\nB) Tiene la capacidad legal, económica y administrativa para cumplir con el objeto materia de este contrato.\n\nC) Comprende el contenido y alcance legal de las obligaciones y derechos contenidos y pactados en este contrato, manifestando expresamente su voluntad para celebrarlo con EL PROPIETARIO.`,
+        en: `II.- THE ADMINISTRATOR declares that;\n\nA) His office is located on, Paseo del Arque 59, Las Ceibas, Bahía de Banderas, Nayarit, 63735 who expresses his willingness to provide Property Management and Maintenance Services to THE OWNER and property described above in this contract.\n\nB) Has the legal, economic and administrative capacity to comply with the terms of this contract.\n\nC) Understands the content and legal scope of the obligations and rights agreed in this contract, expressly stating his willingness to sign it with THE OWNER.`,
       }),
     },
 
@@ -447,8 +448,8 @@ const PLANTILLA_ADMINISTRACION = {
       siempre: true,
       titulo: { es: 'NOTIFICACIONES', en: 'NOTIFICATIONS' },
       render: (ctx) => ({
-        es: `Cualquier comunicación sobre cuestiones relacionadas con la administración y mantenimiento de la PROPIEDAD administrada y de este contrato, las partes acuerdan en realizarse vía correo electrónico a las siguientes direcciones:\n\nEL ADMINISTRADOR: claudia@castlesolutions.biz\n\nEL PROPIETARIO: ${ctx.propietario.email}${ctx.propietario.email2 ? ' y/o ' + ctx.propietario.email2 : ''}\n\nSiendo la única forma legal de hacerlo.`,
-        en: `Any communication on matters related to the administration and maintenance of the managed PROPERTY and this contract, the parties agree to be made by e-mail to the following addresses:\n\nTHE ADMINISTRATOR: claudia@castlesolutions.biz\n\nTHE OWNER: ${ctx.propietario.email}${ctx.propietario.email2 ? ' and/or ' + ctx.propietario.email2 : ''}\n\nWhich will be the only legal way to do it.`,
+        es: `Cualquier comunicación sobre cuestiones relacionadas con la administración y mantenimiento de la PROPIEDAD administrada y de este contrato, las partes acuerdan en realizarse vía correo electrónico a las siguientes direcciones:\n\nEL ADMINISTRADOR: claudia@castlesolutions.biz\nTeléfono: +52 322 306 8482\n\nEL PROPIETARIO: ${ctx.propietario.email}\nTeléfono: ${ctx.propietario.celular}\n\nSiendo la única forma legal de hacerlo.`,
+        en: `Any communication on matters related to the administration and maintenance of the managed PROPERTY and this contract, the parties agree to be made by e-mail to the following addresses:\n\nTHE ADMINISTRATOR: claudia@castlesolutions.biz\nPhone: +52 322 306 8482\n\nTHE OWNER: ${ctx.propietario.email}\nPhone: ${ctx.propietario.celular}\n\nWhich will be the only legal way to do it.`,
       }),
     },
 
