@@ -505,7 +505,7 @@ export async function generarDocx(bloques, meta = {}, opciones = {}) {
     sections.push({
       properties: {
         ...pageProps,
-        type: SectionType.NEXT_PAGE,
+        type: SectionType.CONTINUOUS,
       },
       headers: { default: headerDefault },
       footers: { default: footerVacio },

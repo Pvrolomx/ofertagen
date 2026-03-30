@@ -20,6 +20,7 @@ import {
   fechaBilingue,
   plazo,
   vencimiento,
+  superficieALetrasEn,
 } from '../core/index';
 
 /**
@@ -201,6 +202,12 @@ export function ensamblarContexto(plantilla, datos) {
   // ============================================================
 
   ctx.inmueble = datos.campos?.inmueble || {};
+  
+  // Generar superficie en letras en inglés automáticamente
+  if (ctx.inmueble.superficie_m2) {
+    ctx.inmueble.superficie_letras_en = superficieALetrasEn(parseFloat(ctx.inmueble.superficie_m2));
+  }
+  
   ctx.antecedente = datos.campos?.antecedente || {};
 
   // Agregar fechas formateadas al antecedente

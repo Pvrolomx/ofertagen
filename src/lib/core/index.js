@@ -22,6 +22,7 @@ export {
   montoFormateado,
   bloquePrecio,
   registrarMoneda,
+  superficieALetrasEn,
 } from './num2words.js';
 
 export {

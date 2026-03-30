@@ -229,3 +229,55 @@ export function bloquePrecio(monto, moneda = 'USD') {
 export function registrarMoneda(codigo, config) {
   MONEDAS[codigo] = config;
 }
+
+// ============================================================
+// SUPERFICIE EN INGLÉS
+// ============================================================
+
+const UNITS_EN = [
+  '', 'one', 'two', 'three', 'four', 'five',
+  'six', 'seven', 'eight', 'nine', 'ten',
+  'eleven', 'twelve', 'thirteen', 'fourteen', 'fifteen',
+  'sixteen', 'seventeen', 'eighteen', 'nineteen',
+];
+
+const TENS_EN = [
+  '', 'ten', 'twenty', 'thirty', 'forty', 'fifty',
+  'sixty', 'seventy', 'eighty', 'ninety',
+];
+
+function numberToWordsEn(n) {
+  if (n === 0) return 'zero';
+  if (n < 20) return UNITS_EN[n];
+  if (n < 100) {
+    const tens = Math.floor(n / 10);
+    const units = n % 10;
+    return TENS_EN[tens] + (units ? '-' + UNITS_EN[units] : '');
+  }
+  if (n < 1000) {
+    const hundreds = Math.floor(n / 100);
+    const rest = n % 100;
+    return UNITS_EN[hundreds] + ' hundred' + (rest ? ' ' + numberToWordsEn(rest) : '');
+  }
+  return String(n); // Para números muy grandes, usar dígitos
+}
+
+/**
+ * Convierte metros cuadrados a texto en inglés.
+ * Ej: 129.85 → "one hundred twenty-nine point eighty-five"
+ * 
+ * @param {number} m2 - Metros cuadrados
+ * @returns {string}
+ */
+export function superficieALetrasEn(m2) {
+  const parteEntera = Math.floor(m2);
+  const decimal = Math.round((m2 - parteEntera) * 100);
+  
+  let resultado = numberToWordsEn(parteEntera);
+  
+  if (decimal > 0) {
+    resultado += ' point ' + numberToWordsEn(decimal);
+  }
+  
+  return resultado;
+}
