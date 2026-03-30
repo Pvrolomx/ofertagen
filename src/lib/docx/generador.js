@@ -33,6 +33,7 @@ import {
   TabStopType,
   TabStopPosition,
   SectionType,
+  VerticalAlign,
 } from 'docx';
 
 // ============================================================
@@ -212,12 +213,14 @@ function crearFilaClausula(bloque) {
         borders: BORDERS_VISIBLE,
         width: { size: COL_ES, type: WidthType.DXA },
         margins: CELL_MARGINS,
+        verticalAlign: VerticalAlign.TOP,
         children: paragrafosEs,
       }),
       new TableCell({
         borders: BORDERS_VISIBLE,
         width: { size: COL_EN, type: WidthType.DXA },
         margins: CELL_MARGINS,
+        verticalAlign: VerticalAlign.TOP,
         children: paragrafosEn,
       }),
     ],
