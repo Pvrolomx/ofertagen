@@ -171,6 +171,8 @@ export default function AdminGenPage() {
   const [data, setData] = useState(INIT);
   const [step, setStep] = useState(0);
   const [generating, setGenerating] = useState(false);
+  const [logoBase64, setLogoBase64] = useState(null);
+  const [logoPreview, setLogoPreview] = useState(null);
   const steps = ["Propietario", "Propiedad", "Honorarios", "Cláusulas", "Preview"];
 
   // Auto-save draft
@@ -190,6 +192,18 @@ export default function AdminGenPage() {
   const togBloque = (id) => setData(d => ({ ...d, bloques: { ...d.bloques, [id]: !d.bloques[id] } }));
   const loadDemo = () => setData(JSON.parse(JSON.stringify(DEMO)));
   const resetAll = () => { setData(JSON.parse(JSON.stringify(INIT))); setStep(0); localStorage.removeItem("admingen_draft"); };
+
+  const handleLogoUpload = useCallback(() => {
+    const input = document.createElement("input"); input.type = "file"; input.accept = "image/png,image/jpeg,image/jpg";
+    input.onchange = async (e) => {
+      const file = e.target.files?.[0]; if (!file) return;
+      const reader = new FileReader();
+      reader.onload = (ev) => { const u = ev.target?.result; if (typeof u === "string") { setLogoPreview(u); setLogoBase64(u.split(",")[1]); } };
+      reader.readAsDataURL(file);
+    };
+    input.click();
+  }, []);
+  const clearLogo = useCallback(() => { setLogoBase64(null); setLogoPreview(null); }, []);
 
   const exportDraft = useCallback(() => {
     const nombre = data.partes?.propietario?.personas?.[0]?.nombre?.split(" ")[0] || "BORRADOR";
@@ -220,7 +234,7 @@ export default function AdminGenPage() {
     if (!bloques.length) return;
     setGenerating(true);
     try {
-      const blob = await generarDocxBlob(bloques, PLANTILLA.meta);
+      const blob = await generarDocxBlob(bloques, PLANTILLA.meta, { logoBase64 });
       const nombre = data.partes.propietario.personas[0]?.nombre?.replace(/\s+/g, "_") || "CONTRATO";
       const url = URL.createObjectURL(blob);
       const a = document.createElement("a"); a.href = url; a.download = `CONTRATO_ADMIN_${nombre}.docx`;
@@ -249,6 +263,14 @@ export default function AdminGenPage() {
             <span>💾</span> Guardar
           </button>
           <button onClick={loadDemo} className="px-3 py-1.5 text-xs bg-amber-50 dark:bg-amber-900/20 text-amber-700 dark:text-amber-300 border border-amber-200 dark:border-amber-800 rounded-lg hover:bg-amber-100 transition">Demo</button>
+          {logoPreview ? (
+            <div className="flex items-center gap-1 px-2 py-1 bg-purple-50 dark:bg-purple-900/20 border border-purple-200 dark:border-purple-800 rounded-lg">
+              <img src={logoPreview} alt="Logo" className="h-6 max-w-16 object-contain" />
+              <button onClick={clearLogo} className="text-purple-500 hover:text-purple-700 text-xs ml-1">✕</button>
+            </div>
+          ) : (
+            <button onClick={handleLogoUpload} className="px-3 py-1.5 text-xs bg-purple-50 dark:bg-purple-900/20 text-purple-700 dark:text-purple-300 border border-purple-200 dark:border-purple-800 rounded-lg hover:bg-purple-100 transition">🖼️ Logo</button>
+          )}
           <button onClick={resetAll} className="px-3 py-1.5 text-xs bg-gray-50 dark:bg-gray-800 text-gray-600 dark:text-gray-400 border border-gray-200 dark:border-gray-700 rounded-lg hover:bg-gray-100 transition">Limpiar</button>
         </div>
       </div>
