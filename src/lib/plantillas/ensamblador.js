@@ -189,6 +189,7 @@ export function ensamblarContexto(plantilla, datos) {
   }
 
   // Honorarios escrow
+  ctx.escrow = datos.campos?.escrow || {};
   const honEscrow = datos.campos?.escrow?.honorarios_escrow || 750;
   ctx.escrow.honorarios_escrow = honEscrow;
   if (honEscrow > 0) {
@@ -233,7 +234,7 @@ export function ensamblarContexto(plantilla, datos) {
     };
   }
 
-  ctx.escrow = datos.campos?.escrow || {};
+  ctx.escrow = { ...ctx.escrow, ...(datos.campos?.escrow || {}) };
   ctx.comision = datos.campos?.comision || {};
   ctx.jurisdiccion = datos.campos?.jurisdiccion || {};
   ctx.coordinador = datos.campos?.coordinador || {};
