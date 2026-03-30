@@ -382,6 +382,10 @@ export function ensamblarContexto(plantilla, datos) {
  */
 export function renderizarBloques(plantilla, ctx) {
   const resultado = [];
+  
+  // Contador de incisos para sub-cláusulas (A, B, C, D...)
+  let incisoCounter = 0;
+  const incisos = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
 
   for (const bloque of plantilla.bloques) {
     // Verificar si el bloque está activo
@@ -390,6 +394,19 @@ export function renderizarBloques(plantilla, ctx) {
     }
 
     try {
+      // Si el bloque tiene sub_clausula, calcular el inciso dinámico
+      if (bloque.sub_clausula || bloque.despues_de === 'cl_condiciones' || 
+          (bloque.despues_de && ['inspeccion', 'doc_fideicomiso', 'financiamiento', 'inventario', 'arrendamientos', 'zona_federal', 'litigios_pendientes'].includes(bloque.despues_de))) {
+        ctx._inciso = incisos[incisoCounter];
+        incisoCounter++;
+      } else if (bloque.id === 'cl_condiciones') {
+        // Reset del contador al entrar a cláusula 15
+        incisoCounter = 0;
+        ctx._inciso = null;
+      } else {
+        ctx._inciso = null;
+      }
+      
       const contenido = bloque.render(ctx);
 
       resultado.push({
