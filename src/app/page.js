@@ -103,6 +103,8 @@ export default function OfertaGenPage() {
   const [data, setData] = useState(INIT);
   const [step, setStep] = useState(0);
   const [generating, setGenerating] = useState(false);
+  const [logoBase64, setLogoBase64] = useState(null);
+  const [logoPreview, setLogoPreview] = useState(null);
   const steps = ["Partes", "Inmueble", "Operación", "Cláusulas", "Preview"];
 
   // Auto-save draft
@@ -122,6 +124,34 @@ export default function OfertaGenPage() {
   const togBloque = (id) => setData(d => ({...d, bloques:{...d.bloques, [id]:!d.bloques[id]}}));
   const loadDemo = () => setData(JSON.parse(JSON.stringify(DEMO)));
   const resetAll = () => { setData(JSON.parse(JSON.stringify(INIT))); setStep(0); localStorage.removeItem("ofertagen_draft"); };
+
+  // Logo upload handler
+  const handleLogoUpload = useCallback(() => {
+    const input = document.createElement("input");
+    input.type = "file";
+    input.accept = "image/png,image/jpeg,image/jpg";
+    input.onchange = async (e) => {
+      const file = e.target.files?.[0];
+      if (!file) return;
+      const reader = new FileReader();
+      reader.onload = (ev) => {
+        const dataUrl = ev.target?.result;
+        if (typeof dataUrl === "string") {
+          // Guardar preview (data URL completa) y base64 puro (sin prefijo)
+          setLogoPreview(dataUrl);
+          const base64 = dataUrl.split(",")[1];
+          setLogoBase64(base64);
+        }
+      };
+      reader.readAsDataURL(file);
+    };
+    input.click();
+  }, []);
+
+  const clearLogo = useCallback(() => {
+    setLogoBase64(null);
+    setLogoPreview(null);
+  }, []);
 
   // Export/Import borradores
   const exportDraft = useCallback(() => {
@@ -167,7 +197,7 @@ export default function OfertaGenPage() {
     if (!bloques.length) return;
     setGenerating(true);
     try {
-      const blob = await generarDocxBlob(bloques, PLANTILLA.meta);
+      const blob = await generarDocxBlob(bloques, PLANTILLA.meta, { logoBase64 });
       const nombre = data.partes.ofertante.personas[0]?.nombre?.replace(/\s+/g, "_") || "OFERTA";
       const url = URL.createObjectURL(blob);
       const a = document.createElement("a");
@@ -182,7 +212,7 @@ export default function OfertaGenPage() {
       alert("Error al generar el documento. Revisa la consola.");
     }
     setGenerating(false);
-  }, [bloques, data.partes.ofertante.personas]);
+  }, [bloques, data.partes.ofertante.personas, logoBase64]);
 
   return (
     <div className="max-w-4xl mx-auto px-4 py-6">
@@ -192,7 +222,18 @@ export default function OfertaGenPage() {
           <h1 className="text-2xl font-bold tracking-tight text-gray-900 dark:text-gray-100">OfertaGen</h1>
           <p className="text-xs text-gray-500 dark:text-gray-400 mt-0.5">Expat Advisor MX</p>
         </div>
-        <div className="flex gap-2 flex-wrap justify-end">
+        <div className="flex gap-2 flex-wrap justify-end items-center">
+          {/* Logo upload */}
+          {logoPreview ? (
+            <div className="flex items-center gap-1 px-2 py-1 bg-purple-50 dark:bg-purple-900/20 border border-purple-200 dark:border-purple-800 rounded-lg">
+              <img src={logoPreview} alt="Logo" className="h-6 max-w-16 object-contain" />
+              <button onClick={clearLogo} className="text-purple-500 hover:text-purple-700 text-xs ml-1" title="Quitar logo">✕</button>
+            </div>
+          ) : (
+            <button onClick={handleLogoUpload} className="px-3 py-1.5 text-xs bg-purple-50 dark:bg-purple-900/20 text-purple-700 dark:text-purple-300 border border-purple-200 dark:border-purple-800 rounded-lg hover:bg-purple-100 transition flex items-center gap-1">
+              <span>🖼️</span> Logo
+            </button>
+          )}
           <button onClick={importDraft} className="px-3 py-1.5 text-xs bg-blue-50 dark:bg-blue-900/20 text-blue-700 dark:text-blue-300 border border-blue-200 dark:border-blue-800 rounded-lg hover:bg-blue-100 transition flex items-center gap-1">
             <span>📂</span> Cargar
           </button>
