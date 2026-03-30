@@ -203,6 +203,32 @@ const PLANTILLA_ADMINISTRACION = {
       }),
     },
 
+    // EXCLUSIVIDAD DE PROMOCIÓN PARA RENTA — condicional
+    {
+      id: 'cl_exclusividad_renta',
+      condicional: true,
+      default: false,
+      etiqueta: 'Exclusividad de promoción para renta vacacional',
+      etiqueta_en: 'Exclusive vacation rental listing rights',
+      render: (ctx) => ({
+        es: `EL PROPIETARIO otorga a EL ADMINISTRADOR el derecho exclusivo de promocionar y publicar la PROPIEDAD para renta vacacional y/o de corto y mediano plazo en plataformas digitales tales como Airbnb, VRBO, Booking.com, y cualquier otro medio digital o tradicional que EL ADMINISTRADOR considere conveniente para la comercialización de la PROPIEDAD. EL PROPIETARIO se obliga a no publicar ni permitir que terceros publiquen la PROPIEDAD en las plataformas y medios antes mencionados sin la autorización expresa y por escrito de EL ADMINISTRADOR. En caso de que EL PROPIETARIO reciba directamente solicitudes de renta por cualquier medio, deberá canalizarlas a EL ADMINISTRADOR para su gestión. La comisión por concepto de renta vacacional será pactada por separado en el anexo de servicios correspondiente.`,
+        en: `THE OWNER grants THE ADMINISTRATOR the exclusive right to promote and list the PROPERTY for vacation rental and/or short and medium-term rental on digital platforms such as Airbnb, VRBO, Booking.com, and any other digital or traditional media that THE ADMINISTRATOR deems convenient for the marketing of the PROPERTY. THE OWNER agrees not to publish or allow third parties to publish the PROPERTY on the aforementioned platforms and media without the express written authorization of THE ADMINISTRATOR. In the event that THE OWNER directly receives rental inquiries through any means, they shall be forwarded to THE ADMINISTRATOR for management. The commission for vacation rental services shall be agreed upon separately in the corresponding services annex.`,
+      }),
+    },
+
+    // EXCLUSIVIDAD DE LISTING PARA VENTA — condicional
+    {
+      id: 'cl_exclusividad_venta',
+      condicional: true,
+      default: false,
+      etiqueta: 'Exclusividad de listing si decide vender',
+      etiqueta_en: 'Exclusive listing agreement if owner decides to sell',
+      render: (ctx) => ({
+        es: `En el caso de que EL PROPIETARIO decida poner en venta la PROPIEDAD durante la vigencia del presente contrato, EL PROPIETARIO otorga a EL ADMINISTRADOR el derecho de primera opción para listar la PROPIEDAD en exclusiva por un período de 90 (noventa) días naturales a partir de la notificación por escrito de la intención de venta. Durante dicho período, EL ADMINISTRADOR tendrá el derecho exclusivo de promocionar la PROPIEDAD en el mercado inmobiliario local e internacional, incluyendo pero no limitado a portales inmobiliarios, redes MLS, medios digitales y su red de contactos profesionales. La comisión por intermediación inmobiliaria, los términos de la exclusiva y el precio de lista serán acordados por escrito entre las partes al momento de la notificación de venta. Si al término de los 90 días naturales la PROPIEDAD no se ha vendido, EL PROPIETARIO quedará en libertad de contratar los servicios de cualquier otro agente inmobiliario.`,
+        en: `In the event that THE OWNER decides to sell the PROPERTY during the term of this contract, THE OWNER grants THE ADMINISTRATOR the right of first option to exclusively list the PROPERTY for a period of 90 (ninety) calendar days from the written notification of the intent to sell. During said period, THE ADMINISTRATOR shall have the exclusive right to market the PROPERTY in the local and international real estate market, including but not limited to real estate portals, MLS networks, digital media and their professional network of contacts. The real estate brokerage commission, the terms of the exclusive listing and the listing price shall be agreed upon in writing between the parties at the time of the sale notification. If at the end of the 90 calendar days the PROPERTY has not been sold, THE OWNER shall be free to hire the services of any other real estate agent.`,
+      }),
+    },
+
     // CLÁUSULA 2 — REPORTES
     {
       id: 'cl_reportes',

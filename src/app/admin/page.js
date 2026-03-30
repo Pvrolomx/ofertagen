@@ -19,6 +19,8 @@ const DEMO = {
   },
   bloques: {
     cl_reportes_ocupantes: true,
+    cl_exclusividad_renta: true,
+    cl_exclusividad_venta: false,
     cl_condominio_areas: true,
     cl_limpieza: true,
     cl_venta_propiedad: true,
@@ -72,6 +74,8 @@ const INIT = {
   },
   bloques: {
     cl_reportes_ocupantes: true,
+    cl_exclusividad_renta: false,
+    cl_exclusividad_venta: false,
     cl_condominio_areas: true,
     cl_limpieza: true,
     cl_venta_propiedad: true,
@@ -366,7 +370,11 @@ export default function AdminGenPage() {
         {step === 3 && <div className="flex flex-col gap-3">
           <p className="text-xs text-gray-500 mb-2">Activa o desactiva cláusulas opcionales. Las cláusulas core (exclusividad, reportes, mantenimiento, pagos, cuota, llaves, duración, precios, notificaciones, jurisdicción) siempre se incluyen.</p>
 
-          <div className="mb-2"><p className="text-xs font-semibold text-gray-400 uppercase tracking-wider">Servicios</p></div>
+          <div className="mb-2"><p className="text-xs font-semibold text-gray-400 uppercase tracking-wider">Exclusividad</p></div>
+          <Toggle label="Exclusividad de renta vacacional" sub="Derecho exclusivo de publicar en Airbnb, VRBO, Booking y medios digitales" checked={data.bloques.cl_exclusividad_renta} onChange={() => togBloque("cl_exclusividad_renta")} />
+          <Toggle label="Exclusividad de listing si decide vender" sub="Derecho de primera opción para listar en exclusiva por 90 días si el owner vende" checked={data.bloques.cl_exclusividad_venta} onChange={() => togBloque("cl_exclusividad_venta")} />
+
+          <div className="mt-3 mb-2"><p className="text-xs font-semibold text-gray-400 uppercase tracking-wider">Servicios</p></div>
           <Toggle label="Autorización info de ocupantes" sub="Admin puede recibir info/consejo de ocupantes vía email" checked={data.bloques.cl_reportes_ocupantes} onChange={() => togBloque("cl_reportes_ocupantes")} />
           <Toggle label="Servicios de limpieza" sub="Limpieza ordinaria y extraordinaria, productos, personal" checked={data.bloques.cl_limpieza} onChange={() => togBloque("cl_limpieza")} />
 
