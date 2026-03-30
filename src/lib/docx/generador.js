@@ -34,6 +34,7 @@ import {
   TabStopPosition,
   SectionType,
   VerticalAlign,
+  ImageRun,
 } from 'docx';
 
 // ============================================================
@@ -65,6 +66,14 @@ const BORDERS_NONE = { top: BORDER_NONE, bottom: BORDER_NONE, left: BORDER_NONE,
 
 // Márgenes de celda
 const CELL_MARGINS = { top: 60, bottom: 60, left: 100, right: 100 };
+
+// Placeholder de logo (1x1 pixel PNG transparente, se reemplaza en UI)
+// El usuario puede subir su propio logo que se pasará como base64
+const LOGO_PLACEHOLDER = 'iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNkYAAAAAYAAjCB0C8AAAAASUVORK5CYII=';
+
+// Dimensiones del logo en el header (discreto)
+const LOGO_WIDTH = 80;  // pixels
+const LOGO_HEIGHT = 33; // pixels (ratio ~2.4:1 típico de logos)
 
 // ============================================================
 // HELPERS DE TEXTO
@@ -417,10 +426,12 @@ function crearAceptacion() {
  * 
  * @param {Array} bloques - Bloques renderizados por renderizarBloques()
  * @param {Object} meta - Metadata de la plantilla
- * @param {Object} opciones - { iniciales: true/false } — datos extra para formato
+ * @param {Object} opciones - { iniciales: true/false, logoBase64: string } — datos extra para formato
  * @returns {Promise<Buffer>} Buffer del archivo .docx
  */
 export async function generarDocx(bloques, meta = {}, opciones = {}) {
+  const { logoBase64 } = opciones;
+  
   // Separar bloques normales de firmas
   const bloquesNormales = bloques.filter(b => (b.tipo || b.tipo) !== 'firmas');
   const bloqueFirmas = bloques.find(b => b.tipo === 'firmas');
@@ -480,21 +491,36 @@ export async function generarDocx(bloques, meta = {}, opciones = {}) {
   // Footer con iniciales
   const inicialesText = generarInicialesFooter(bloqueFirmas);
 
-  // Header bilingüe con número de página
+  // Preparar logo para header (usa placeholder si no hay logo)
+  const logoData = logoBase64 || LOGO_PLACEHOLDER;
+  const logoBuffer = Buffer.from(logoData, 'base64');
+
+  // Header: Logo izquierda + Paginación derecha (usando TabStops)
   const headerDefault = new Header({
     children: [
       new Paragraph({
+        tabStops: [
+          { type: TabStopType.RIGHT, position: CONTENT_WIDTH },
+        ],
         children: [
+          // Logo a la izquierda (discreto)
+          new ImageRun({
+            data: logoBuffer,
+            transformation: { width: LOGO_WIDTH, height: LOGO_HEIGHT },
+            type: 'png',
+          }),
+          // Tab para empujar paginación a la derecha
+          new TextRun({ children: [new Tab()] }),
+          // Paginación bilingüe
           new TextRun({ text: 'Página ', font: FONT, size: 14, color: '888888' }),
           new TextRun({ children: [PageNumber.CURRENT], font: FONT, size: 14, color: '888888' }),
           new TextRun({ text: ' de ', font: FONT, size: 14, color: '888888' }),
           new TextRun({ children: [PageNumber.TOTAL_PAGES], font: FONT, size: 14, color: '888888' }),
-          new TextRun({ text: '          Page ', font: FONT, size: 14, color: '888888' }),
+          new TextRun({ text: '  |  Page ', font: FONT, size: 14, color: '888888' }),
           new TextRun({ children: [PageNumber.CURRENT], font: FONT, size: 14, color: '888888' }),
           new TextRun({ text: ' of ', font: FONT, size: 14, color: '888888' }),
           new TextRun({ children: [PageNumber.TOTAL_PAGES], font: FONT, size: 14, color: '888888' }),
         ],
-        alignment: AlignmentType.RIGHT,
       }),
     ],
   });
