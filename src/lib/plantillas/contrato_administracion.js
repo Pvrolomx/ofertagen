@@ -1,6 +1,6 @@
 /**
  * OfertaGen — Plantilla: Contrato de Administración y Mantenimiento
- * Castle Solutions / PVCASTLEMX SAS DE C.V
+ * Castle Solutions / CASTLEBAY PV, SRL DE CV
  * 
  * Basado en contratos reales de Claudia Castillo:
  *   - Contract_Castle_Solutions_New.docx (Bay, 2018)
@@ -60,7 +60,7 @@ const PLANTILLA_ADMINISTRACION = {
       fijo: true, // No editable — siempre es PVCASTLEMX
       campos: [],
       defaults: {
-        razonSocial: 'PVCASTLEMX SAS DE C.V',
+        razonSocial: 'CASTLEBAY PV, SRL DE CV',
         representante: { nombre: 'Claudia Rebeca Castillo Soto', genero: 'F' },
         domicilio: 'Ave Valle de México, Circuito de la Serenidad #36, Rincón del Cielo, Nayarit CP 63735',
         email: 'claudia@castlesolutions.biz',
@@ -156,8 +156,8 @@ const PLANTILLA_ADMINISTRACION = {
       tipo: 'encabezado',
       siempre: true,
       render: (ctx) => ({
-        es: `Contrato de Administración y Mantenimiento de Propiedades que celebran por un lado ${ctx.propietario.nombres_negrita} a ${ctx.propietario.quien} para los efectos de este contrato se ${ctx.propietario.denominara} EL PROPIETARIO y por otra parte Claudia Rebeca Castillo Soto en su carácter de representante legal de PVCASTLEMX SAS DE C.V en lo sucesivo denominado EL ADMINISTRADOR, sujeto a las siguientes declaraciones y cláusulas.`,
-        en: `Property Management and Maintenance contract entered between ${ctx.propietario.nombres_negrita} ${ctx.propietario.quien_en} for the purposes of this contract shall be identified as THE OWNER and Claudia Rebeca Castillo Soto in her character of legal representative of PVCASTLEMX SAS DE C.V, hereinafter identified as THE ADMINISTRATOR, subject to the following declarations and clauses.`,
+        es: `Contrato de Administración y Mantenimiento de Propiedades que celebran por un lado ${ctx.propietario.nombres_negrita} a ${ctx.propietario.quien} para los efectos de este contrato se ${ctx.propietario.denominara} EL PROPIETARIO y por otra parte Claudia Rebeca Castillo Soto en su carácter de representante legal de CASTLEBAY PV, SRL DE CV en lo sucesivo denominado EL ADMINISTRADOR, sujeto a las siguientes declaraciones y cláusulas.`,
+        en: `Property Management and Maintenance contract entered between ${ctx.propietario.nombres_negrita} ${ctx.propietario.quien_en} for the purposes of this contract shall be identified as THE OWNER and Claudia Rebeca Castillo Soto in her character of legal representative of CASTLEBAY PV, SRL DE CV, hereinafter identified as THE ADMINISTRATOR, subject to the following declarations and clauses.`,
       }),
     },
 
@@ -492,7 +492,7 @@ const PLANTILLA_ADMINISTRACION = {
       render: (ctx) => ({
         firmas: [
           { nombre: ctx.propietario.nombres, rol_es: ctx.propietario.clave === 'mp' || ctx.propietario.clave === 'fp' ? 'PROPIETARIOS' : 'PROPIETARIO', rol_en: ctx.propietario.clave === 'mp' || ctx.propietario.clave === 'fp' ? 'OWNERS' : 'OWNER' },
-          { nombre: 'Claudia Rebeca Castillo Soto', rol_es: 'Representante legal\nPVCASTLEMX SAS DE C.V\nADMINISTRADORA', rol_en: 'Legal representative\nPVCASTLEMX SAS DE C.V\nADMINISTRATOR' },
+          { nombre: 'Claudia Rebeca Castillo Soto', rol_es: 'Representante legal\nCASTLEBAY PV, SRL DE CV\nADMINISTRADORA', rol_en: 'Legal representative\nCASTLEBAY PV, SRL DE CV\nADMINISTRATOR' },
         ],
         testigos: ctx.testigos?.incluir_testigos !== false,
       }),

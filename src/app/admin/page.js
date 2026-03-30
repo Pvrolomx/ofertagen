@@ -287,7 +287,7 @@ export default function AdminGenPage() {
           </Section>
           <div className="p-4 bg-teal-50 dark:bg-teal-900/10 rounded-xl border border-teal-200 dark:border-teal-800">
             <h4 className="text-xs font-semibold text-teal-700 dark:text-teal-300 mb-1">Administrador (fijo)</h4>
-            <p className="text-xs text-teal-600 dark:text-teal-400">Claudia Rebeca Castillo Soto — PVCASTLEMX SAS DE C.V</p>
+            <p className="text-xs text-teal-600 dark:text-teal-400">Claudia Rebeca Castillo Soto — CASTLEBAY PV, SRL DE CV</p>
             <p className="text-xs text-teal-600 dark:text-teal-400">claudia@castlesolutions.biz</p>
           </div>
         </>}
