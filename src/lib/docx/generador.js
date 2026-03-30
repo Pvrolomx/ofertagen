@@ -71,9 +71,9 @@ const CELL_MARGINS = { top: 60, bottom: 60, left: 100, right: 100 };
 // El usuario puede subir su propio logo que se pasará como base64
 const LOGO_PLACEHOLDER = 'iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNkYAAAAAYAAjCB0C8AAAAASUVORK5CYII=';
 
-// Dimensiones del logo en el header (discreto)
-const LOGO_WIDTH = 80;  // pixels
-const LOGO_HEIGHT = 33; // pixels (ratio ~2.4:1 típico de logos)
+// Dimensiones del logo en el header
+const LOGO_WIDTH = 120;  // pixels
+const LOGO_HEIGHT = 50;  // pixels (ratio ~2.4:1 típico de logos)
 
 // ============================================================
 // HELPERS DE TEXTO
