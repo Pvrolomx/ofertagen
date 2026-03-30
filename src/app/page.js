@@ -16,21 +16,13 @@ const INIT = {partes:{ofertante:{personas:[{nombre:"",genero:"M"}],tipoPersona:"
 // HELPERS
 // ============================================================
 function ensamblar(data) { 
-  try { 
-    return ensamblarContexto(PLANTILLA, data); 
-  } catch(e) { 
-    console.error('❌ ensamblar error:', e.message, e.stack); 
-    return null; 
-  } 
+  try { return ensamblarContexto(PLANTILLA, data); } 
+  catch(e) { console.error('ensamblar:', e.message); return null; } 
 }
 function renderBlks(ctx) { 
-  if (!ctx) { console.warn('⚠️ renderBlks: ctx is null'); return []; }
-  try { 
-    return renderizarBloques(PLANTILLA, ctx); 
-  } catch(e) { 
-    console.error('❌ renderBlks error:', e.message, e.stack); 
-    return []; 
-  } 
+  if (!ctx) return [];
+  try { return renderizarBloques(PLANTILLA, ctx); } 
+  catch(e) { console.error('renderBlks:', e.message); return []; } 
 }
 
 // ============================================================
