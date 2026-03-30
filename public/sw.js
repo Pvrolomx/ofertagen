@@ -4,7 +4,8 @@ self.addEventListener('fetch', event => {
   if (event.request.url.includes('/api/') || event.request.url.endsWith('/')) {
     event.respondWith(
       fetch(event.request).then(resp => {
-        caches.open(CACHE_NAME).then(c => c.put(event.request, resp.clone()));
+        const clone = resp.clone();
+        caches.open(CACHE_NAME).then(c => c.put(event.request, clone));
         return resp;
       }).catch(() => caches.match(event.request))
     );
