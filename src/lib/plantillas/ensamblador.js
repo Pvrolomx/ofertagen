@@ -23,6 +23,8 @@ import {
   superficieALetrasEn,
 } from '../core/index';
 
+import { obtenerTraduccionFr, obtenerTituloFr } from './traducciones_fr';
+
 /**
  * Números pequeños a letras (para días de plazos).
  */
@@ -40,6 +42,15 @@ function diasALetrasEn(n) {
     1: 'one', 2: 'two', 3: 'three', 4: 'four', 5: 'five',
     6: 'six', 7: 'seven', 8: 'eight', 9: 'nine', 10: 'ten',
     15: 'fifteen', 20: 'twenty', 30: 'thirty',
+  };
+  return tabla[n] || String(n);
+}
+
+function diasALetrasFr(n) {
+  const tabla = {
+    1: 'un', 2: 'deux', 3: 'trois', 4: 'quatre', 5: 'cinq',
+    6: 'six', 7: 'sept', 8: 'huit', 9: 'neuf', 10: 'dix',
+    15: 'quinze', 20: 'vingt', 30: 'trente',
   };
   return tabla[n] || String(n);
 }
@@ -289,7 +300,7 @@ export function ensamblarContexto(plantilla, datos) {
  * 
  * @param {Object} plantilla
  * @param {Object} ctx - Contexto ensamblado
- * @returns {Array} Bloques renderizados [{ id, numero, titulo, es, en, tipo }]
+ * @returns {Array} Bloques renderizados [{ id, numero, titulo, es, en, fr, tipo }]
  */
 export function renderizarBloques(plantilla, ctx) {
   const resultado = [];
@@ -319,18 +330,33 @@ export function renderizarBloques(plantilla, ctx) {
       }
       
       const contenido = bloque.render(ctx);
+      
+      // Obtener traducción francesa (si existe)
+      const textoFr = obtenerTraduccionFr(bloque.id, ctx) || contenido.en || '';
+      const tituloFr = obtenerTituloFr(bloque.id, ctx);
 
       resultado.push({
         id: bloque.id,
         numero: bloque.numero || null,
         sub_clausula: bloque.sub_clausula || null,
         titulo: bloque.tituloFn
-          ? { es: contenido.titulo_es || '', en: contenido.titulo_en || '' }
-          : (bloque.titulo || null),
+          ? { 
+              es: contenido.titulo_es || '', 
+              en: contenido.titulo_en || '',
+              fr: tituloFr || contenido.titulo_en || '',
+            }
+          : (bloque.titulo 
+              ? { 
+                  es: bloque.titulo.es || '', 
+                  en: bloque.titulo.en || '',
+                  fr: tituloFr || bloque.titulo.en || '',
+                }
+              : null),
         subtitulo: bloque.subtitulo || null,
         tipo: bloque.tipo || 'clausula',
         es: contenido.es || '',
         en: contenido.en || '',
+        fr: textoFr,
         firmas: contenido.firmas || null,
         testigos: contenido.testigos,
       });
@@ -343,6 +369,7 @@ export function renderizarBloques(plantilla, ctx) {
         tipo: 'error',
         es: `[ERROR: ${err.message}]`,
         en: `[ERROR: ${err.message}]`,
+        fr: `[ERREUR: ${err.message}]`,
       });
     }
   }

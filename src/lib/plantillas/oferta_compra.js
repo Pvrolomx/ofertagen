@@ -21,11 +21,13 @@ const PLANTILLA_OFERTA_COMPRA = {
     version: '1.0.0',
     nombre: 'Oferta de Intención de Compra',
     nombre_en: 'Purchase Intent Offer',
-    idiomas: ['es', 'en'],
-    formato: 'bilingue_tabla', // tabla lado a lado ES | EN
+    nombre_fr: 'Offre d\'Intention d\'Achat',
+    idiomas: ['es', 'en', 'fr'],
+    formato: 'bilingue_tabla', // tabla lado a lado ES | EN o ES | FR
     nota_idioma: {
       es: 'La versión en idioma inglés es solamente una traducción de cortesía. Para todos los efectos legales prevalecerá la versión en idioma español.',
       en: 'The English version is only a courtesy translation. For all legal effects the Spanish version will prevail.',
+      fr: 'La version en français est uniquement une traduction de courtoisie. Pour tous les effets juridiques, la version en espagnol prévaudra.',
     },
   },
 

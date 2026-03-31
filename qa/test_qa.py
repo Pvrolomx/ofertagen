@@ -314,6 +314,68 @@ log("Sprint N: proteccion_datos render EN — competent authority",
 
 
 # ═══════════════════════════════════════════════════════════════
+# 7d. SPRINT R — SOPORTE FRANCÉS
+# ═══════════════════════════════════════════════════════════════
+print("\n══ 7d. SPRINT R — SOPORTE FRANCÉS ══")
+
+# Verificar traducciones_fr.js existe
+traducciones_fr = fetch(f"{RAW}/src/lib/plantillas/traducciones_fr.js")
+log("Sprint R: traducciones_fr.js existe", traducciones_fr is not None and len(traducciones_fr) > 100)
+
+# Verificar roles FR en concordancia.js
+log("Sprint R: concordancia — sustantivo_fr en ofertante", 
+    concordancia and "sustantivo_fr" in concordancia and "OFFRANT" in concordancia)
+log("Sprint R: concordancia — sustantivo_fr en propietario",
+    concordancia and "PROPRIÉTAIRE" in concordancia)
+log("Sprint R: concordancia — sustantivo_fr en vendedor",
+    concordancia and "VENDEUR" in concordancia and "VENDEUSE" in concordancia)
+log("Sprint R: concordancia — articulo_fr",
+    concordancia and "articulo_fr" in concordancia)
+log("Sprint R: concordancia — contexto fr en generarContextoParte",
+    concordancia and "referenciaFr" in concordancia)
+
+# Verificar traducciones FR existen
+log("Sprint R: traducciones FR — BLOQUES_FR exportado",
+    traducciones_fr and "BLOQUES_FR" in traducciones_fr)
+log("Sprint R: traducciones FR — ad_corpus en francés",
+    traducciones_fr and "AD CORPUS" in traducciones_fr and "par corps certain" in traducciones_fr)
+log("Sprint R: traducciones FR — proteccion_datos en francés",
+    traducciones_fr and "données personnelles" in traducciones_fr)
+log("Sprint R: traducciones FR — escrow en francés",
+    traducciones_fr and "DÉPÔT EN GARANTIE" in traducciones_fr or traducciones_fr and "dépôt" in traducciones_fr.lower())
+log("Sprint R: traducciones FR — fuerza_mayor en francés",
+    traducciones_fr and "force majeure" in traducciones_fr.lower())
+
+# Verificar generador acepta idiomaSecundario
+log("Sprint R: generador — idiomaSecundario param",
+    generador and "idiomaSecundario" in generador)
+log("Sprint R: generador — lang2 dinámico",
+    generador and "lang2" in generador and "[lang2]" in generador)
+
+# Verificar ensamblador genera fr
+log("Sprint R: ensamblador — import traducciones_fr",
+    ensamblador and "traducciones_fr" in ensamblador)
+log("Sprint R: ensamblador — genera fr en bloques",
+    ensamblador and "textoFr" in ensamblador or ensamblador and "obtenerTraduccionFr" in ensamblador)
+
+# Verificar page.js tiene dropdown idioma
+log("Sprint R: page.js — estado idiomaSecundario",
+    pagejs and "idiomaSecundario" in pagejs)
+log("Sprint R: page.js — dropdown ES | English",
+    pagejs and "ES | English" in pagejs)
+log("Sprint R: page.js — dropdown ES | Français",
+    pagejs and "ES | Français" in pagejs)
+log("Sprint R: page.js — header FRANÇAIS dinámico",
+    pagejs and "FRANÇAIS" in pagejs)
+
+# Verificar meta tiene francés
+log("Sprint R: meta — nombre_fr en plantilla",
+    plantilla and "nombre_fr" in plantilla)
+log("Sprint R: meta — nota_idioma.fr",
+    plantilla and "La version en français" in plantilla or plantilla and "traduction de courtoisie" in plantilla)
+
+
+# ═══════════════════════════════════════════════════════════════
 # 8. PAGE.JS — UI INTEGRITY
 # ═══════════════════════════════════════════════════════════════
 print("\n══ 8. PAGE.JS — UI INTEGRITY ══")

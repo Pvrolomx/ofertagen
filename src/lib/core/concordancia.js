@@ -17,38 +17,52 @@ const ROLES = {
   ofertante: {
     sustantivo: { ms: 'OFERTANTE', fs: 'OFERTANTE', mp: 'OFERTANTES', fp: 'OFERTANTES' },
     sustantivo_en: { ms: 'OFFERER', fs: 'OFFERER', mp: 'OFFERERS', fp: 'OFFERERS' },
+    sustantivo_fr: { ms: 'OFFRANT', fs: 'OFFRANTE', mp: 'OFFRANTS', fp: 'OFFRANTES' },
   },
   propietario: {
     sustantivo: { ms: 'PROPIETARIO', fs: 'PROPIETARIA', mp: 'PROPIETARIOS', fp: 'PROPIETARIAS' },
     sustantivo_en: { ms: 'OWNER', fs: 'OWNER', mp: 'OWNERS', fp: 'OWNERS' },
+    sustantivo_fr: { ms: 'PROPRIÉTAIRE', fs: 'PROPRIÉTAIRE', mp: 'PROPRIÉTAIRES', fp: 'PROPRIÉTAIRES' },
   },
   vendedor: {
     sustantivo: { ms: 'VENDEDOR', fs: 'VENDEDORA', mp: 'VENDEDORES', fp: 'VENDEDORAS' },
     sustantivo_en: { ms: 'SELLER', fs: 'SELLER', mp: 'SELLERS', fp: 'SELLERS' },
+    sustantivo_fr: { ms: 'VENDEUR', fs: 'VENDEUSE', mp: 'VENDEURS', fp: 'VENDEUSES' },
   },
   comprador: {
     sustantivo: { ms: 'COMPRADOR', fs: 'COMPRADORA', mp: 'COMPRADORES', fp: 'COMPRADORAS' },
     sustantivo_en: { ms: 'BUYER', fs: 'BUYER', mp: 'BUYERS', fp: 'BUYERS' },
+    sustantivo_fr: { ms: 'ACHETEUR', fs: 'ACHETEUSE', mp: 'ACHETEURS', fp: 'ACHETEUSES' },
   },
   arrendador: {
     sustantivo: { ms: 'ARRENDADOR', fs: 'ARRENDADORA', mp: 'ARRENDADORES', fp: 'ARRENDADORAS' },
     sustantivo_en: { ms: 'LANDLORD', fs: 'LANDLORD', mp: 'LANDLORDS', fp: 'LANDLORDS' },
+    sustantivo_fr: { ms: 'BAILLEUR', fs: 'BAILLERESSE', mp: 'BAILLEURS', fp: 'BAILLERESSES' },
   },
   arrendatario: {
     sustantivo: { ms: 'ARRENDATARIO', fs: 'ARRENDATARIA', mp: 'ARRENDATARIOS', fp: 'ARRENDATARIAS' },
     sustantivo_en: { ms: 'TENANT', fs: 'TENANT', mp: 'TENANTS', fp: 'TENANTS' },
+    sustantivo_fr: { ms: 'LOCATAIRE', fs: 'LOCATAIRE', mp: 'LOCATAIRES', fp: 'LOCATAIRES' },
   },
   promitente_vendedor: {
     sustantivo: { ms: 'PROMITENTE VENDEDOR', fs: 'PROMITENTE VENDEDORA', mp: 'PROMITENTES VENDEDORES', fp: 'PROMITENTES VENDEDORAS' },
     sustantivo_en: { ms: 'PROMISING SELLER', fs: 'PROMISING SELLER', mp: 'PROMISING SELLERS', fp: 'PROMISING SELLERS' },
+    sustantivo_fr: { ms: 'PROMETTANT VENDEUR', fs: 'PROMETTANTE VENDEUSE', mp: 'PROMETTANTS VENDEURS', fp: 'PROMETTANTES VENDEUSES' },
   },
   promitente_comprador: {
     sustantivo: { ms: 'PROMITENTE COMPRADOR', fs: 'PROMITENTE COMPRADORA', mp: 'PROMITENTES COMPRADORES', fp: 'PROMITENTES COMPRADORAS' },
     sustantivo_en: { ms: 'PROMISING BUYER', fs: 'PROMISING BUYER', mp: 'PROMISING BUYERS', fp: 'PROMISING BUYERS' },
+    sustantivo_fr: { ms: 'PROMETTANT ACHETEUR', fs: 'PROMETTANTE ACHETEUSE', mp: 'PROMETTANTS ACHETEURS', fp: 'PROMETTANTES ACHETEUSES' },
   },
   fideicomisario: {
     sustantivo: { ms: 'FIDEICOMISARIO', fs: 'FIDEICOMISARIA', mp: 'FIDEICOMISARIOS', fp: 'FIDEICOMISARIAS' },
     sustantivo_en: { ms: 'BENEFICIARY', fs: 'BENEFICIARY', mp: 'BENEFICIARIES', fp: 'BENEFICIARIES' },
+    sustantivo_fr: { ms: 'BÉNÉFICIAIRE', fs: 'BÉNÉFICIAIRE', mp: 'BÉNÉFICIAIRES', fp: 'BÉNÉFICIAIRES' },
+  },
+  administrador: {
+    sustantivo: { ms: 'ADMINISTRADOR', fs: 'ADMINISTRADORA', mp: 'ADMINISTRADORES', fp: 'ADMINISTRADORAS' },
+    sustantivo_en: { ms: 'ADMINISTRATOR', fs: 'ADMINISTRATOR', mp: 'ADMINISTRATORS', fp: 'ADMINISTRATORS' },
+    sustantivo_fr: { ms: 'ADMINISTRATEUR', fs: 'ADMINISTRATRICE', mp: 'ADMINISTRATEURS', fp: 'ADMINISTRATRICES' },
   },
 };
 
@@ -61,10 +75,12 @@ const GRAMATICA = {
   articulo: { ms: 'EL', fs: 'LA', mp: 'LOS', fp: 'LAS' },
   articulo_min: { ms: 'el', fs: 'la', mp: 'los', fp: 'las' },
   articulo_en: { ms: 'THE', fs: 'THE', mp: 'THE', fp: 'THE' },
+  articulo_fr: { ms: 'LE', fs: 'LA', mp: 'LES', fp: 'LES' },
 
   // Pronombres relativos
   quien: { ms: 'quien', fs: 'quien', mp: 'quienes', fp: 'quienes' },
   quien_en: { ms: 'who', fs: 'who', mp: 'who', fp: 'who' },
+  quien_fr: { ms: 'qui', fs: 'qui', mp: 'qui', fp: 'qui' },
 
   // Pronombre objeto indirecto
   le: { ms: 'le', fs: 'le', mp: 'les', fp: 'les' },
@@ -239,6 +255,12 @@ export function generarContextoParte(config) {
   const sustEn = rolData.sustantivo_en[claveSingularColectivo];
   const referenciaEn = `${artEn} ${sustEn}`;
 
+  // ---- Contexto para FRANCÉS ----
+
+  const artFr = GRAMATICA.articulo_fr[claveSingularColectivo];
+  const sustFr = rolData.sustantivo_fr[claveSingularColectivo];
+  const referenciaFr = `${artFr} ${sustFr}`;
+
   // ---- Objeto de contexto completo ----
 
   return {
@@ -284,6 +306,14 @@ export function generarContextoParte(config) {
       sustantivo: sustEn,
       referencia: referenciaEn,
       referenciaConComillas: `"${referenciaEn}"`,
+    },
+
+    // Francés
+    fr: {
+      articulo: artFr,
+      sustantivo: sustFr,
+      referencia: referenciaFr,
+      referenciaConComillas: `"${referenciaFr}"`,
     },
   };
 }

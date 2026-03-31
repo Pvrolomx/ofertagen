@@ -178,17 +178,21 @@ function textoAParagrafos(texto, fontSize = FONT_SIZE_BODY, alignment = Alignmen
  * Crea filas de la tabla bilingüe (una cláusula).
  * IMPORTANTE: Devuelve ARRAY de filas, no una sola fila.
  * Cada párrafo ES/EN se alinea en su propia fila para evitar descuadre.
+ * 
+ * @param {Object} bloque - Bloque renderizado con es, en, fr
+ * @param {string} idiomaSecundario - 'en' o 'fr' (default: 'en')
  */
-function crearFilasClausula(bloque) {
+function crearFilasClausula(bloque, idiomaSecundario = 'en') {
   const filas = [];
+  const lang2 = idiomaSecundario; // 'en' o 'fr'
   
   // 1. FILA DE TÍTULO (si tiene)
   if (bloque.titulo || bloque.t) {
     const tituloEs = bloque.titulo?.es || bloque.t?.es || '';
-    const tituloEn = bloque.titulo?.en || bloque.t?.en || '';
+    const tituloLang2 = bloque.titulo?.[lang2] || bloque.t?.[lang2] || bloque.titulo?.en || bloque.t?.en || '';
     const numPrefix = bloque.numero || bloque.n ? `${bloque.numero || bloque.n}.- ` : '';
 
-    if (tituloEs || tituloEn) {
+    if (tituloEs || tituloLang2) {
       filas.push(new TableRow({
         children: [
           new TableCell({
@@ -214,7 +218,7 @@ function crearFilasClausula(bloque) {
             verticalAlign: VerticalAlign.TOP,
             children: [new Paragraph({
               children: [new TextRun({
-                text: `${numPrefix}${tituloEn}`,
+                text: `${numPrefix}${tituloLang2}`,
                 font: FONT,
                 size: FONT_SIZE_TITLE,
                 bold: true,
@@ -231,8 +235,8 @@ function crearFilasClausula(bloque) {
   // 2. FILA DE SUBTÍTULO (si tiene)
   if (bloque.subtitulo) {
     const subEs = bloque.subtitulo?.es || '';
-    const subEn = bloque.subtitulo?.en || '';
-    if (subEs || subEn) {
+    const subLang2 = bloque.subtitulo?.[lang2] || bloque.subtitulo?.en || '';
+    if (subEs || subLang2) {
       filas.push(new TableRow({
         children: [
           new TableCell({
@@ -257,7 +261,7 @@ function crearFilasClausula(bloque) {
             verticalAlign: VerticalAlign.TOP,
             children: [new Paragraph({
               children: [new TextRun({
-                text: subEn,
+                text: subLang2,
                 font: FONT,
                 size: FONT_SIZE_BODY,
                 bold: true,
@@ -272,18 +276,18 @@ function crearFilasClausula(bloque) {
 
   // 3. FILAS DE CONTENIDO (una fila por párrafo)
   const textoEs = bloque.es || '';
-  const textoEn = bloque.en || '';
+  const textoLang2 = bloque[lang2] || bloque.en || '';
   
   // Dividir por doble salto de línea (párrafos)
   const parrafosEs = textoEs.split('\n\n').filter(p => p.trim());
-  const parrafosEn = textoEn.split('\n\n').filter(p => p.trim());
+  const parrafosLang2 = textoLang2.split('\n\n').filter(p => p.trim());
   
   // Tomar el máximo de párrafos entre ambos idiomas
-  const maxParrafos = Math.max(parrafosEs.length, parrafosEn.length);
+  const maxParrafos = Math.max(parrafosEs.length, parrafosLang2.length);
   
   for (let i = 0; i < maxParrafos; i++) {
     const pEs = parrafosEs[i] || '';
-    const pEn = parrafosEn[i] || '';
+    const pLang2 = parrafosLang2[i] || '';
     
     // Convertir \n simples a line breaks dentro del párrafo
     const crearContenidoCelda = (texto) => {
@@ -320,7 +324,7 @@ function crearFilasClausula(bloque) {
           width: { size: COL_EN, type: WidthType.DXA },
           margins: CELL_MARGINS,
           verticalAlign: VerticalAlign.TOP,
-          children: crearContenidoCelda(pEn),
+          children: crearContenidoCelda(pLang2),
         }),
       ],
     }));
@@ -513,11 +517,11 @@ function crearAceptacion() {
  * 
  * @param {Array} bloques - Bloques renderizados por renderizarBloques()
  * @param {Object} meta - Metadata de la plantilla
- * @param {Object} opciones - { iniciales: true/false, logoBase64: string } — datos extra para formato
+ * @param {Object} opciones - { iniciales: true/false, logoBase64: string, idiomaSecundario: 'en'|'fr' } — datos extra para formato
  * @returns {Promise<Buffer>} Buffer del archivo .docx
  */
 export async function generarDocx(bloques, meta = {}, opciones = {}) {
-  const { logoBase64 } = opciones;
+  const { logoBase64, idiomaSecundario = 'en' } = opciones;
   
   // Separar bloques normales de firmas
   const bloquesNormales = bloques.filter(b => (b.tipo || b.tipo) !== 'firmas');
@@ -525,7 +529,7 @@ export async function generarDocx(bloques, meta = {}, opciones = {}) {
 
   // Filas de la tabla principal (sin firmas)
   // crearFilasClausula devuelve ARRAY de filas, hay que aplanar
-  const filas = bloquesNormales.flatMap(b => crearFilasClausula(b));
+  const filas = bloquesNormales.flatMap(b => crearFilasClausula(b, idiomaSecundario));
 
   // Tabla principal
   const tablaContrato = new Table({

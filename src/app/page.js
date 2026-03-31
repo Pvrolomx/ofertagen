@@ -105,6 +105,7 @@ export default function OfertaGenPage() {
   const [generating, setGenerating] = useState(false);
   const [logoBase64, setLogoBase64] = useState(null);
   const [logoPreview, setLogoPreview] = useState(null);
+  const [idiomaSecundario, setIdiomaSecundario] = useState('en'); // 'en' o 'fr'
   const steps = ["Partes", "Inmueble", "Operación", "Cláusulas", "Preview"];
 
   // Auto-save draft
@@ -197,12 +198,13 @@ export default function OfertaGenPage() {
     if (!bloques.length) return;
     setGenerating(true);
     try {
-      const blob = await generarDocxBlob(bloques, PLANTILLA.meta, { logoBase64 });
+      const blob = await generarDocxBlob(bloques, PLANTILLA.meta, { logoBase64, idiomaSecundario });
       const nombre = data.partes.ofertante.personas[0]?.nombre?.replace(/\s+/g, "_") || "OFERTA";
+      const idiomaSufijo = idiomaSecundario === 'fr' ? '_FR' : '';
       const url = URL.createObjectURL(blob);
       const a = document.createElement("a");
       a.href = url;
-      a.download = `OFERTA_${nombre}.docx`;
+      a.download = `OFERTA_${nombre}${idiomaSufijo}.docx`;
       document.body.appendChild(a);
       a.click();
       document.body.removeChild(a);
@@ -212,7 +214,7 @@ export default function OfertaGenPage() {
       alert("Error al generar el documento. Revisa la consola.");
     }
     setGenerating(false);
-  }, [bloques, data.partes.ofertante.personas, logoBase64]);
+  }, [bloques, data.partes.ofertante.personas, logoBase64, idiomaSecundario]);
 
   return (
     <div className="max-w-4xl mx-auto px-4 py-6">
@@ -497,16 +499,23 @@ export default function OfertaGenPage() {
         {step === 4 && <div>
           <div className="flex items-center justify-between mb-4">
             <h2 className="text-lg font-semibold">Vista previa bilingüe</h2>
-            <button onClick={handleGenerate} disabled={generating || !bloques.length}
-              className="px-5 py-2 bg-green-600 hover:bg-green-700 disabled:bg-gray-300 text-white text-sm font-medium rounded-xl transition shadow-sm disabled:shadow-none">
-              {generating ? "Generando..." : "Descargar .docx"}
-            </button>
+            <div className="flex items-center gap-3">
+              <select value={idiomaSecundario} onChange={(e) => setIdiomaSecundario(e.target.value)}
+                className="px-3 py-2 text-sm border border-gray-200 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                <option value="en">ES | English</option>
+                <option value="fr">ES | Français</option>
+              </select>
+              <button onClick={handleGenerate} disabled={generating || !bloques.length}
+                className="px-5 py-2 bg-green-600 hover:bg-green-700 disabled:bg-gray-300 text-white text-sm font-medium rounded-xl transition shadow-sm disabled:shadow-none">
+                {generating ? "Generando..." : "Descargar .docx"}
+              </button>
+            </div>
           </div>
           {bloques.length === 0 ? <p className="text-gray-400 text-sm">Completa los datos de las partes para ver la vista previa.</p> :
           <div className="border border-gray-200 dark:border-gray-700 rounded-xl overflow-hidden text-xs leading-relaxed">
             <div className="grid grid-cols-2 bg-gray-100 dark:bg-gray-700/50 border-b border-gray-200 dark:border-gray-600">
               <div className="px-3 py-2 font-semibold text-gray-500 text-[10px] tracking-wider border-r border-gray-200 dark:border-gray-600">ESPAÑOL</div>
-              <div className="px-3 py-2 font-semibold text-gray-500 text-[10px] tracking-wider">ENGLISH</div>
+              <div className="px-3 py-2 font-semibold text-gray-500 text-[10px] tracking-wider">{idiomaSecundario === 'fr' ? 'FRANÇAIS' : 'ENGLISH'}</div>
             </div>
             {bloques.map((b, i) => {
               if (b.tipo === "firmas") return (
@@ -520,7 +529,9 @@ export default function OfertaGenPage() {
                   ))}
                 </div>
               );
-              const tEs = b.titulo?.es || b.t?.es; const tEn = b.titulo?.en || b.t?.en;
+              const tEs = b.titulo?.es || b.t?.es;
+              const tLang2 = b.titulo?.[idiomaSecundario] || b.titulo?.en || b.t?.[idiomaSecundario] || b.t?.en;
+              const textoLang2 = b[idiomaSecundario] || b.en || '';
               const num = b.numero || b.n;
               return (
                 <div key={i} className={`grid grid-cols-2 ${i ? "border-t border-gray-100 dark:border-gray-700" : ""}`}>
@@ -529,8 +540,8 @@ export default function OfertaGenPage() {
                     {b.es?.split("\n\n").map((p, j) => <p key={j} className="mb-1.5">{p.split("\n").map((l, k) => <span key={k}>{k > 0 && <br />}{l}</span>)}</p>)}
                   </div>
                   <div className="px-3 py-2.5 text-gray-500 dark:text-gray-400">
-                    {tEn && <p className="font-bold mb-1 text-gray-600 dark:text-gray-300">{num ? `${num}.- ` : ""}{tEn}</p>}
-                    {b.en?.split("\n\n").map((p, j) => <p key={j} className="mb-1.5">{p.split("\n").map((l, k) => <span key={k}>{k > 0 && <br />}{l}</span>)}</p>)}
+                    {tLang2 && <p className="font-bold mb-1 text-gray-600 dark:text-gray-300">{num ? `${num}.- ` : ""}{tLang2}</p>}
+                    {textoLang2?.split("\n\n").map((p, j) => <p key={j} className="mb-1.5">{p.split("\n").map((l, k) => <span key={k}>{k > 0 && <br />}{l}</span>)}</p>)}
                   </div>
                 </div>
               );
