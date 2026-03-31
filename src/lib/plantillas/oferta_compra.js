@@ -925,6 +925,19 @@ const PLANTILLA_OFERTA_COMPRA = {
       }),
     },
 
+    // ---- CLÁUSULA: PROTECCIÓN DE DATOS PERSONALES ----
+    {
+      id: 'proteccion_datos',
+      condicional: true,
+      default: false,
+      etiqueta: 'Protección de datos personales',
+      etiqueta_en: 'Personal data protection',
+      render: (ctx) => ({
+        es: `Las partes reconocen que los datos personales intercambiados en la presente oferta se recaban únicamente para los fines de esta transacción inmobiliaria y serán compartidos exclusivamente con el Notario Público designado, la empresa de escrow y los agentes inmobiliarios directamente involucrados. Los datos no serán utilizados para fines distintos a los aquí establecidos, ni divulgados a terceros sin consentimiento expreso, salvo requerimiento de autoridad competente. Cada parte conservará los datos únicamente durante el tiempo necesario para cumplir con las obligaciones derivadas de esta operación y con las disposiciones legales aplicables.`,
+        en: `The parties acknowledge that personal data exchanged in this offer is collected solely for the purposes of this real estate transaction and will be shared exclusively with the designated Public Notary, the escrow company, and the real estate agents directly involved. The data will not be used for purposes other than those established herein, nor disclosed to third parties without express consent, except when required by competent authority. Each party shall retain the data only for the time necessary to fulfill the obligations derived from this transaction and to comply with applicable legal provisions.`,
+      }),
+    },
+
     // ---- CLÁUSULA: DUPLICADOS / COUNTERPARTS ----
     {
       id: 'duplicados',

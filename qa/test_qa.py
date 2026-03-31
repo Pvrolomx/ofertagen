@@ -132,6 +132,7 @@ BLOQUES_EXPECTED = [
     ("factura_complementaria", False, "Factura complementaria"),
     ("disclosure", False, "Disclosure"),
     ("documentos_integrales", True, "Documentos integrales"),
+    ("proteccion_datos", False, "Protección datos personales (Sprint N)"),
     ("duplicados", True, "Duplicados"),
 ]
 
@@ -140,8 +141,8 @@ for bloque_id, default, label in BLOQUES_EXPECTED:
     found = bool(re.search(pattern, plantilla))
     log(f"Plantilla: bloque '{bloque_id}' existe", found, label)
 
-log(f"Plantilla: total bloques condicionales = 22 (+ 1 sub-toggle agua)",
-    len([b for b in BLOQUES_EXPECTED if re.search(rf"id:\s*'{b[0]}'", plantilla)]) == 22)
+log(f"Plantilla: total bloques condicionales = 23 (+ 1 sub-toggle agua)",
+    len([b for b in BLOQUES_EXPECTED if re.search(rf"id:\s*'{b[0]}'", plantilla)]) == 23)
 
 
 # ═══════════════════════════════════════════════════════════════
@@ -286,6 +287,33 @@ log("Sprint M: ad_corpus render EN — normal wear and tear",
 
 
 # ═══════════════════════════════════════════════════════════════
+# 7c. SPRINT N — PROTECCIÓN DE DATOS PERSONALES
+# ═══════════════════════════════════════════════════════════════
+print("\n══ 7c. SPRINT N — PROTECCIÓN DE DATOS PERSONALES ══")
+
+log("Sprint N: proteccion_datos render ES — datos personales intercambiados",
+    "datos personales intercambiados" in plantilla)
+log("Sprint N: proteccion_datos render ES — Notario Público designado",
+    "Notario Público designado" in plantilla)
+log("Sprint N: proteccion_datos render ES — empresa de escrow",
+    "empresa de escrow" in plantilla)
+log("Sprint N: proteccion_datos render ES — agentes inmobiliarios",
+    "agentes inmobiliarios directamente involucrados" in plantilla)
+log("Sprint N: proteccion_datos render ES — autoridad competente",
+    "autoridad competente" in plantilla)
+log("Sprint N: proteccion_datos render EN — personal data exchanged",
+    "personal data exchanged" in plantilla)
+log("Sprint N: proteccion_datos render EN — Public Notary",
+    "Public Notary" in plantilla)
+log("Sprint N: proteccion_datos render EN — escrow company",
+    "escrow company" in plantilla)
+log("Sprint N: proteccion_datos render EN — real estate agents",
+    "real estate agents directly involved" in plantilla)
+log("Sprint N: proteccion_datos render EN — competent authority",
+    "competent authority" in plantilla)
+
+
+# ═══════════════════════════════════════════════════════════════
 # 8. PAGE.JS — UI INTEGRITY
 # ═══════════════════════════════════════════════════════════════
 print("\n══ 8. PAGE.JS — UI INTEGRITY ══")
@@ -309,6 +337,10 @@ log("page.js: Toggle fuerza mayor — '90 días'", "90 días" in pagejs)
 # Toggle for Sprint M
 log("page.js: Toggle 'Ad Corpus / As-Is'", "Ad Corpus / As-Is" in pagejs)
 log("page.js: Toggle ad_corpus sub — 'superficies aproximadas'", "superficies aproximadas" in pagejs)
+
+# Toggle for Sprint N
+log("page.js: Toggle 'Protección de datos personales'", "Protección de datos personales" in pagejs)
+log("page.js: Toggle proteccion_datos sub — 'compradores extranjeros'", "compradores extranjeros" in pagejs)
 
 # Arrendamientos dropdown in UI
 log("page.js: Dropdown renta_hasta presente", "renta_hasta" in pagejs)
