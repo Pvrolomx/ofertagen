@@ -376,3 +376,48 @@ Deploy: `git push origin main` → Vercel auto-deploya
 ¡Suerte, duende! 🐝
 
 *— Generado por la Colmena, Marzo 2026*
+
+---
+
+## FEATURE: Logo en Encabezado
+
+Si quieres que el contrato tenga logo en el header del DOCX:
+
+### En `generador.js`:
+
+1. Agregar `ImageRun` al import de docx
+2. Agregar constantes:
+```javascript
+const LOGO_PLACEHOLDER = 'iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNkYAAAAAYAAjCB0C8AAAAASUVORK5CYII=';
+const LOGO_WIDTH = 120;
+const LOGO_HEIGHT = 50;
+```
+3. Recibir `logoBase64` en opciones de `generarDocx()`
+4. Detectar tipo de imagen (JPG/PNG) por magic bytes
+5. Crear Header con TabStops: logo izquierda + paginación derecha
+
+### En `page.js` (UI):
+
+1. Estados: `logoBase64`, `logoPreview`
+2. Handler `handleLogoUpload()` con FileReader
+3. Botón 🖼️ Logo que muestra preview o selector
+
+### Llamada:
+```javascript
+const blob = await generarDocxBlob(bloques, PLANTILLA.meta, { logoBase64 });
+```
+
+Ver implementación completa en `src/lib/docx/generador.js` líneas 494-540.
+
+---
+
+## FEATURE: Incisos Dinámicos
+
+Si tienes sub-cláusulas condicionales (A, B, C...) que pueden activarse/desactivarse:
+
+En `ensamblador.js` → `renderizarBloques()`:
+- Contador `incisoCounter` que incrementa solo para bloques activos
+- `ctx._inciso = 'ABCDEFGH...'[incisoCounter]` antes de cada render
+- En la plantilla usar `${ctx._inciso})` en lugar de letras hardcodeadas
+
+Así no hay saltos (A, B, D) cuando se omite un bloque condicional.
