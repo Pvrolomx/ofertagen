@@ -393,6 +393,20 @@ const PLANTILLA_OFERTA_COMPRA = {
       },
     },
 
+    // ---- BLOQUE CONDICIONAL: AD CORPUS / AS-IS ----
+    {
+      id: 'ad_corpus',
+      condicional: true,
+      default: true,
+      despues_de: 'cl_antecedente',
+      etiqueta: 'Compra Ad Corpus / As-Is',
+      etiqueta_en: 'Ad Corpus / As-Is Purchase',
+      render: (ctx) => ({
+        es: `${ctx.ofertante.referencia_negrita} declara conocer y aceptar que la presente compraventa se realiza "AD CORPUS" (por cuerpo cierto), es decir, por el inmueble como unidad y no por medida, por lo que las superficies y medidas indicadas son aproximadas y de carácter enunciativo, sin que cualquier diferencia en más o en menos respecto de las superficies reales dé lugar a ajuste alguno en el precio pactado.\n\nAsí mismo, ${ctx.ofertante.referencia} declara que adquiere EL INMUEBLE en su estado actual ("AS-IS"), habiendo tenido la oportunidad de inspeccionarlo física y documentalmente, y que acepta las condiciones en que se encuentra, incluyendo su antigüedad, desgaste natural, y las características propias del inmueble.`,
+        en: `${ctx.ofertante.en.referencia_negrita} declares to know and accept that the present sale is made "AD CORPUS" (by the body certain), that is, for the property as a unit and not by measurement, therefore the surfaces and measurements indicated are approximate and for illustrative purposes only, and any difference in excess or deficit with respect to the actual surfaces shall not give rise to any adjustment in the agreed price.\n\nLikewise, ${ctx.ofertante.en.referencia} declares that THE PROPERTY is being acquired in its current condition ("AS-IS"), having had the opportunity to inspect it physically and documentarily, and accepts the conditions in which it is found, including its age, normal wear and tear, and the property's inherent characteristics.`,
+      }),
+    },
+
     // ---- CLÁUSULA 4: PRECIO Y CONDICIONES DE PAGO ----
     {
       id: 'cl_precio',

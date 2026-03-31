@@ -108,9 +108,10 @@ print("\n══ 3. SOURCE CODE — PLANTILLA ══")
 
 plantilla = read_file(f"{REPO}/src/lib/plantillas/oferta_compra.js")
 
-# All 22 bloques condicionales
+# All 23 bloques condicionales (22 standalone + 1 nuevo)
 BLOQUES_EXPECTED = [
     ("adjudicacion_conyuge", False, "Adjudicación cónyuge"),
+    ("ad_corpus", True, "Ad Corpus / As-Is (Sprint M)"),
     ("escrow", True, "Escrow"),
     ("inspeccion", True, "Inspección"),
     ("doc_fideicomiso", True, "Doc fideicomiso"),
@@ -139,8 +140,8 @@ for bloque_id, default, label in BLOQUES_EXPECTED:
     found = bool(re.search(pattern, plantilla))
     log(f"Plantilla: bloque '{bloque_id}' existe", found, label)
 
-log(f"Plantilla: total bloques condicionales = 21 (+ 1 sub-toggle agua)",
-    len([b for b in BLOQUES_EXPECTED if re.search(rf"id:\s*'{b[0]}'", plantilla)]) == 21)
+log(f"Plantilla: total bloques condicionales = 22 (+ 1 sub-toggle agua)",
+    len([b for b in BLOQUES_EXPECTED if re.search(rf"id:\s*'{b[0]}'", plantilla)]) == 22)
 
 
 # ═══════════════════════════════════════════════════════════════
@@ -258,6 +259,33 @@ log("Sprint L: fuerza mayor EN — mutual written consent",
 
 
 # ═══════════════════════════════════════════════════════════════
+# 7b. SPRINT M — AD CORPUS / AS-IS
+# ═══════════════════════════════════════════════════════════════
+print("\n══ 7b. SPRINT M — AD CORPUS / AS-IS ══")
+
+log("Sprint M: ad_corpus render ES — AD CORPUS",
+    '"AD CORPUS"' in plantilla)
+log("Sprint M: ad_corpus render ES — por cuerpo cierto",
+    "por cuerpo cierto" in plantilla)
+log("Sprint M: ad_corpus render ES — superficies aproximadas",
+    "superficies y medidas indicadas son aproximadas" in plantilla)
+log("Sprint M: ad_corpus render ES — sin ajuste precio",
+    "sin que cualquier diferencia en más o en menos" in plantilla)
+log("Sprint M: ad_corpus render ES — AS-IS",
+    '"AS-IS"' in plantilla)
+log("Sprint M: ad_corpus render ES — estado actual",
+    "estado actual" in plantilla)
+log("Sprint M: ad_corpus render EN — AD CORPUS",
+    "AD CORPUS" in plantilla and "body certain" in plantilla)
+log("Sprint M: ad_corpus render EN — approximate",
+    "surfaces and measurements indicated are approximate" in plantilla)
+log("Sprint M: ad_corpus render EN — AS-IS",
+    '"AS-IS"' in plantilla and "current condition" in plantilla)
+log("Sprint M: ad_corpus render EN — normal wear and tear",
+    "normal wear and tear" in plantilla)
+
+
+# ═══════════════════════════════════════════════════════════════
 # 8. PAGE.JS — UI INTEGRITY
 # ═══════════════════════════════════════════════════════════════
 print("\n══ 8. PAGE.JS — UI INTEGRITY ══")
@@ -277,6 +305,10 @@ log("page.js: Toggle 'Litigios laborales'", "Litigios laborales" in pagejs)
 log("page.js: Toggle 'Auditoría de Hacienda'", "Auditoría de Hacienda" in pagejs)
 log("page.js: Toggle 'Holdback escrow condominio'", "Holdback escrow condominio" in pagejs)
 log("page.js: Toggle fuerza mayor — '90 días'", "90 días" in pagejs)
+
+# Toggle for Sprint M
+log("page.js: Toggle 'Ad Corpus / As-Is'", "Ad Corpus / As-Is" in pagejs)
+log("page.js: Toggle ad_corpus sub — 'superficies aproximadas'", "superficies aproximadas" in pagejs)
 
 # Arrendamientos dropdown in UI
 log("page.js: Dropdown renta_hasta presente", "renta_hasta" in pagejs)
