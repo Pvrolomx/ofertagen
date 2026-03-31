@@ -940,6 +940,30 @@ const PLANTILLA_OFERTA_COMPRA = {
       }),
     },
 
+    // ---- CLÁUSULA: CONFIDENCIALIDAD (NDA) ----
+    {
+      id: 'confidencialidad',
+      condicional: true,
+      default: false,
+      etiqueta: 'Confidencialidad (NDA)',
+      etiqueta_en: 'Confidentiality (NDA)',
+      etiqueta_fr: 'Confidentialité (NDA)',
+      render: (ctx) => {
+        const meses = ctx.confidencialidad?.meses || 6;
+        const mesesMap = { 3: 'tres', 6: 'seis', 12: 'doce', 24: 'veinticuatro' };
+        const mesesMapEn = { 3: 'three', 6: 'six', 12: 'twelve', 24: 'twenty-four' };
+        const mesesMapFr = { 3: 'trois', 6: 'six', 12: 'douze', 24: 'vingt-quatre' };
+        const mesesLetras = mesesMap[meses] || meses;
+        const mesesLetrasEn = mesesMapEn[meses] || meses;
+        const mesesLetrasFr = mesesMapFr[meses] || meses;
+        return {
+          es: `Las partes, así como sus respectivos representantes, agentes inmobiliarios y asesores, se obligan a mantener estricta confidencialidad sobre la existencia, los términos, las condiciones, el precio y cualquier otra información relativa a la presente oferta. Dicha información no podrá ser divulgada a terceros ajenos a la operación sin el consentimiento previo y por escrito de la parte que la generó.\n\nEsta obligación de confidencialidad permanecerá vigente durante toda la negociación y por un período de ${mesesLetras} (${meses}) meses contados a partir del cierre de la operación o, en su caso, de la terminación de la presente oferta por cualquier causa.\n\nSe exceptúan de esta obligación las divulgaciones realizadas a: (i) el Notario Público designado, la empresa de escrow y los abogados de las partes, en la medida estrictamente necesaria para el cierre; y (ii) cualquier autoridad competente que así lo requiera mediante mandato legal o judicial.`,
+          en: `The parties, as well as their respective representatives, real estate agents, and advisors, are obligated to maintain strict confidentiality regarding the existence, terms, conditions, price, and any other information related to the present offer. Such information may not be disclosed to third parties not involved in the transaction without the prior written consent of the party that generated it.\n\nThis confidentiality obligation shall remain in effect throughout the negotiation and for a period of ${mesesLetrasEn} (${meses}) months from the closing of the transaction or, as the case may be, from the termination of this offer for any reason.\n\nExcepted from this obligation are disclosures made to: (i) the designated Public Notary, the escrow company, and the parties' attorneys, to the extent strictly necessary for closing; and (ii) any competent authority that requires it by legal or judicial mandate.`,
+          fr: `Les parties, ainsi que leurs représentants, agents immobiliers et conseillers respectifs, s'engagent à maintenir une stricte confidentialité concernant l'existence, les termes, les conditions, le prix et toute autre information relative à la présente offre. Ces informations ne pourront être divulguées à des tiers non impliqués dans la transaction sans le consentement préalable et écrit de la partie qui les a générées.\n\nCette obligation de confidentialité restera en vigueur pendant toute la durée de la négociation et pour une période de ${mesesLetrasFr} (${meses}) mois à compter de la clôture de la transaction ou, le cas échéant, de la résiliation de la présente offre pour quelque raison que ce soit.\n\nSont exceptées de cette obligation les divulgations faites à : (i) le Notaire Public désigné, la société d'entiercement et les avocats des parties, dans la mesure strictement nécessaire à la clôture ; et (ii) toute autorité compétente qui l'exige par mandat légal ou judiciaire.`,
+        };
+      },
+    },
+
     // ---- CLÁUSULA: DUPLICADOS / COUNTERPARTS ----
     {
       id: 'duplicados',

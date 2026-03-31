@@ -284,6 +284,9 @@ export function ensamblarContexto(plantilla, datos) {
   // Arrendamientos
   ctx.arrendamientos = datos.campos?.arrendamientos || {};
 
+  // Confidencialidad
+  ctx.confidencialidad = datos.campos?.confidencialidad || { meses: 6 };
+
   // Comisión con letras
   if (ctx.comision.porcentaje_total) {
     const pctNum = parseInt(ctx.comision.porcentaje_total);

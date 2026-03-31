@@ -133,6 +133,7 @@ BLOQUES_EXPECTED = [
     ("disclosure", False, "Disclosure"),
     ("documentos_integrales", True, "Documentos integrales"),
     ("proteccion_datos", False, "Protección datos personales (Sprint N)"),
+    ("confidencialidad", False, "Confidencialidad NDA (Sprint S)"),
     ("duplicados", True, "Duplicados"),
 ]
 
@@ -141,8 +142,8 @@ for bloque_id, default, label in BLOQUES_EXPECTED:
     found = bool(re.search(pattern, plantilla))
     log(f"Plantilla: bloque '{bloque_id}' existe", found, label)
 
-log(f"Plantilla: total bloques condicionales = 23 (+ 1 sub-toggle agua)",
-    len([b for b in BLOQUES_EXPECTED if re.search(rf"id:\s*'{b[0]}'", plantilla)]) == 23)
+log(f"Plantilla: total bloques condicionales = 24 (+ 1 sub-toggle agua)",
+    len([b for b in BLOQUES_EXPECTED if re.search(rf"id:\s*'{b[0]}'", plantilla)]) == 24)
 
 
 # ═══════════════════════════════════════════════════════════════
@@ -384,6 +385,36 @@ log("Sprint R: meta — nombre_fr en plantilla",
 log("Sprint R: meta — nota_idioma.fr",
     plantilla and "La version en français" in plantilla or plantilla and "traduction de courtoisie" in plantilla)
 
+
+# ─────────────────────────────────────────────────────────────
+# SPRINT S — CONFIDENCIALIDAD (NDA)
+# ─────────────────────────────────────────────────────────────
+print("\n── Sprint S: Confidencialidad (NDA) ──")
+log("Sprint S: bloque confidencialidad existe en plantilla",
+    plantilla and "id: 'confidencialidad'" in plantilla)
+log("Sprint S: render ES — 'confidencialidad'",
+    plantilla and "estricta confidencialidad" in plantilla)
+log("Sprint S: render ES — mención precio",
+    plantilla and "precio" in plantilla and "confidencialidad" in plantilla)
+log("Sprint S: render EN — 'confidentiality'",
+    plantilla and "strict confidentiality" in plantilla)
+log("Sprint S: render FR — 'confidentialité'",
+    plantilla and "stricte confidentialité" in plantilla)
+log("Sprint S: meses dinámicos en render",
+    plantilla and "confidencialidad?.meses" in plantilla or plantilla and "ctx.confidencialidad" in plantilla)
+log("Sprint S: default OFF",
+    plantilla and "id: 'confidencialidad'" in plantilla and
+    plantilla[plantilla.find("id: 'confidencialidad'"):plantilla.find("id: 'confidencialidad'")+200].count("default: false") >= 1)
+log("Sprint S: ensamblador resuelve ctx.confidencialidad",
+    "ctx.confidencialidad" in (open(f"{REPO}/src/lib/plantillas/ensamblador.js", encoding="utf-8").read()))
+log("Sprint S: page.js toggle Confidencialidad",
+    pagejs and "Confidencialidad (NDA)" in pagejs)
+log("Sprint S: page.js dropdown meses",
+    pagejs and "confidencialidad" in pagejs and "meses" in pagejs)
+log("Sprint S: page.js DEMO tiene confidencialidad:false",
+    pagejs and "confidencialidad:false" in pagejs)
+log("Sprint S: page.js INIT tiene confidencialidad:false",
+    pagejs and pagejs.count("confidencialidad:false") >= 2)
 
 # ═══════════════════════════════════════════════════════════════
 # 8. PAGE.JS — UI INTEGRITY
