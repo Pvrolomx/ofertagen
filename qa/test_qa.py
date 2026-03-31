@@ -372,10 +372,12 @@ log("Sprint R: ensamblador — genera fr en bloques",
 # Verificar page.js tiene dropdown idioma
 log("Sprint R: page.js — estado idiomaSecundario",
     pagejs and "idiomaSecundario" in pagejs)
-log("Sprint R: page.js — dropdown ES | English",
-    pagejs and "ES | English" in pagejs)
-log("Sprint R: page.js — dropdown ES | Français",
-    pagejs and "ES | Français" in pagejs)
+log("Sprint T: page.js — selector idioma en Paso 1",
+    pagejs and "Idioma del comprador" in pagejs)
+log("Sprint T: page.js — opción English en Paso 1",
+    pagejs and "Estadounidense" in pagejs)
+log("Sprint T: page.js — opción Français en Paso 1",
+    pagejs and "Franco-canadien" in pagejs)
 log("Sprint R: page.js — header FRANÇAIS dinámico",
     pagejs and "FRANÇAIS" in pagejs)
 

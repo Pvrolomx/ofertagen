@@ -263,6 +263,15 @@ export default function OfertaGenPage() {
         {step === 0 && <>
           <PartePanel data={data} pid="ofertante" label="Ofertante / Buyer" upParte={upParte} upPersona={upPersona} addPersona={addPersona} rmPersona={rmPersona} />
           <PartePanel data={data} pid="propietario" label="Propietario / Owner" upParte={upParte} upPersona={upPersona} addPersona={addPersona} rmPersona={rmPersona} />
+          <Section title="Idioma del comprador / Buyer&apos;s language / Langue de l&apos;acheteur">
+            <div className="col-span-2 flex flex-col gap-1">
+              <label className="text-xs font-medium text-gray-500">¿En qué idioma prefiere su copia el comprador? / Buyer&apos;s preferred language / Langue préférée</label>
+              <select value={idiomaSecundario} onChange={(e) => setIdiomaSecundario(e.target.value)} className="border border-gray-200 dark:border-gray-600 rounded-lg px-3 py-2 text-sm bg-white dark:bg-gray-800">
+                <option value="en">🇺🇸 English — Estadounidense / Canadiense anglófono</option>
+                <option value="fr">🇨🇦 Français — Franco-canadien / Français</option>
+              </select>
+            </div>
+          </Section>
         </>}
 
         {step === 1 && <>
@@ -510,11 +519,6 @@ export default function OfertaGenPage() {
           <div className="flex items-center justify-between mb-4">
             <h2 className="text-lg font-semibold">Vista previa bilingüe</h2>
             <div className="flex items-center gap-3">
-              <select value={idiomaSecundario} onChange={(e) => setIdiomaSecundario(e.target.value)}
-                className="px-3 py-2 text-sm border border-gray-200 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
-                <option value="en">ES | English</option>
-                <option value="fr">ES | Français</option>
-              </select>
               <button onClick={handleGenerate} disabled={generating || !bloques.length}
                 className="px-5 py-2 bg-green-600 hover:bg-green-700 disabled:bg-gray-300 text-white text-sm font-medium rounded-xl transition shadow-sm disabled:shadow-none">
                 {generating ? "Generando..." : "Descargar .docx"}
