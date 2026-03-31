@@ -64,6 +64,12 @@ const BORDER_NONE = { style: BorderStyle.NONE, size: 0, color: 'FFFFFF' };
 const BORDERS_VISIBLE = { top: BORDER_THIN, bottom: BORDER_THIN, left: BORDER_THIN, right: BORDER_THIN };
 const BORDERS_NONE = { top: BORDER_NONE, bottom: BORDER_NONE, left: BORDER_NONE, right: BORDER_NONE };
 
+// Bordes elegantes: solo línea vertical central visible
+// Columna ES: solo borde derecho (la línea divisoria)
+const BORDERS_COL_ES = { top: BORDER_NONE, bottom: BORDER_NONE, left: BORDER_NONE, right: BORDER_THIN };
+// Columna EN: solo borde izquierdo (la línea divisoria)
+const BORDERS_COL_EN = { top: BORDER_NONE, bottom: BORDER_NONE, left: BORDER_THIN, right: BORDER_NONE };
+
 // Márgenes de celda
 const CELL_MARGINS = { top: 60, bottom: 60, left: 100, right: 100 };
 
@@ -186,7 +192,7 @@ function crearFilasClausula(bloque) {
       filas.push(new TableRow({
         children: [
           new TableCell({
-            borders: BORDERS_VISIBLE,
+            borders: BORDERS_COL_ES,
             width: { size: COL_ES, type: WidthType.DXA },
             margins: CELL_MARGINS,
             verticalAlign: VerticalAlign.TOP,
@@ -202,7 +208,7 @@ function crearFilasClausula(bloque) {
             })],
           }),
           new TableCell({
-            borders: BORDERS_VISIBLE,
+            borders: BORDERS_COL_EN,
             width: { size: COL_EN, type: WidthType.DXA },
             margins: CELL_MARGINS,
             verticalAlign: VerticalAlign.TOP,
@@ -230,7 +236,7 @@ function crearFilasClausula(bloque) {
       filas.push(new TableRow({
         children: [
           new TableCell({
-            borders: BORDERS_VISIBLE,
+            borders: BORDERS_COL_ES,
             width: { size: COL_ES, type: WidthType.DXA },
             margins: CELL_MARGINS,
             verticalAlign: VerticalAlign.TOP,
@@ -245,7 +251,7 @@ function crearFilasClausula(bloque) {
             })],
           }),
           new TableCell({
-            borders: BORDERS_VISIBLE,
+            borders: BORDERS_COL_EN,
             width: { size: COL_EN, type: WidthType.DXA },
             margins: CELL_MARGINS,
             verticalAlign: VerticalAlign.TOP,
@@ -303,14 +309,14 @@ function crearFilasClausula(bloque) {
     filas.push(new TableRow({
       children: [
         new TableCell({
-          borders: BORDERS_VISIBLE,
+          borders: BORDERS_COL_ES,
           width: { size: COL_ES, type: WidthType.DXA },
           margins: CELL_MARGINS,
           verticalAlign: VerticalAlign.TOP,
           children: crearContenidoCelda(pEs),
         }),
         new TableCell({
-          borders: BORDERS_VISIBLE,
+          borders: BORDERS_COL_EN,
           width: { size: COL_EN, type: WidthType.DXA },
           margins: CELL_MARGINS,
           verticalAlign: VerticalAlign.TOP,
@@ -325,13 +331,13 @@ function crearFilasClausula(bloque) {
     filas.push(new TableRow({
       children: [
         new TableCell({
-          borders: BORDERS_VISIBLE,
+          borders: BORDERS_COL_ES,
           width: { size: COL_ES, type: WidthType.DXA },
           margins: CELL_MARGINS,
           children: [new Paragraph({ children: [] })],
         }),
         new TableCell({
-          borders: BORDERS_VISIBLE,
+          borders: BORDERS_COL_EN,
           width: { size: COL_EN, type: WidthType.DXA },
           margins: CELL_MARGINS,
           children: [new Paragraph({ children: [] })],
@@ -485,11 +491,13 @@ function crearAceptacion() {
   return [
     new Paragraph({ spacing: { before: 400 }, children: [] }),
     new Paragraph({
+      alignment: AlignmentType.CENTER,
       children: [
         new TextRun({ text: 'LUGAR, FECHA Y HORA DE ACEPTACIÓN / ACCEPTANCE PLACE, DATE AND TIME:', font: FONT, size: FONT_SIZE_FIRMA, bold: true }),
       ],
     }),
     new Paragraph({
+      alignment: AlignmentType.CENTER,
       spacing: { before: 200 },
       children: [new TextRun({ text: '_____________________________________________________________', font: FONT, size: FONT_SIZE_FIRMA })],
     }),
@@ -538,9 +546,13 @@ export async function generarDocx(bloques, meta = {}, opciones = {}) {
     const firmas = bloqueFirmas.firmas || [];
 
     // Firmas de las partes
-    for (const firma of firmas) {
+    for (let i = 0; i < firmas.length; i++) {
+      const firma = firmas[i];
+      // Primera firma: más espacio (600), siguientes: menos (300)
+      const spacingBefore = i === 0 ? 600 : 300;
+      
       contenidoFirmas.push(
-        new Paragraph({ spacing: { before: 600 }, children: [] }),
+        new Paragraph({ spacing: { before: spacingBefore }, children: [] }),
         new Paragraph({
           alignment: AlignmentType.CENTER,
           children: [new TextRun({ text: '___________________________', font: FONT, size: FONT_SIZE_FIRMA })],
