@@ -318,8 +318,18 @@ log("Sprint N: proteccion_datos render EN — competent authority",
 # ═══════════════════════════════════════════════════════════════
 print("\n══ 7d. SPRINT R — SOPORTE FRANCÉS ══")
 
-# Verificar traducciones_fr.js existe
-traducciones_fr = fetch(f"{RAW}/src/lib/plantillas/traducciones_fr.js")
+# Cargar archivos necesarios para Sprint R
+traducciones_fr_path = f"{REPO}/src/lib/plantillas/traducciones_fr.js"
+try:
+    traducciones_fr = read_file(traducciones_fr_path)
+except:
+    traducciones_fr = None
+
+concordancia = read_file(f"{REPO}/src/lib/core/concordancia.js")
+generador = read_file(f"{REPO}/src/lib/docx/generador.js")
+ensamblador = read_file(f"{REPO}/src/lib/plantillas/ensamblador.js")
+pagejs = read_file(f"{REPO}/src/app/page.js")
+
 log("Sprint R: traducciones_fr.js existe", traducciones_fr is not None and len(traducciones_fr) > 100)
 
 # Verificar roles FR en concordancia.js
@@ -342,7 +352,7 @@ log("Sprint R: traducciones FR — ad_corpus en francés",
 log("Sprint R: traducciones FR — proteccion_datos en francés",
     traducciones_fr and "données personnelles" in traducciones_fr)
 log("Sprint R: traducciones FR — escrow en francés",
-    traducciones_fr and "DÉPÔT EN GARANTIE" in traducciones_fr or traducciones_fr and "dépôt" in traducciones_fr.lower())
+    traducciones_fr and "DÉPÔT EN GARANTIE" in traducciones_fr or (traducciones_fr and "dépôt" in traducciones_fr.lower()))
 log("Sprint R: traducciones FR — fuerza_mayor en francés",
     traducciones_fr and "force majeure" in traducciones_fr.lower())
 
@@ -380,7 +390,7 @@ log("Sprint R: meta — nota_idioma.fr",
 # ═══════════════════════════════════════════════════════════════
 print("\n══ 8. PAGE.JS — UI INTEGRITY ══")
 
-pagejs = read_file(f"{REPO}/src/app/page.js")
+# pagejs ya se cargó en Sprint R
 
 # INIT and DEMO have all 22 bloques
 for bloque_id, _, label in BLOQUES_EXPECTED:
