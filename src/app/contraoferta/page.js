@@ -473,38 +473,89 @@ export default function ContraOfertaGenPage() {
   );
 
   // ── STEP 3: Preview ───────────────────────────────────────────
-  const renderStep3 = () => (
-    <div className="flex flex-col gap-4">
-      <div className="flex items-center gap-3 mb-2">
-        <span className="text-sm font-medium" style={{ color: "var(--og-secondary)" }}>{t.preview.idioma}:</span>
-        {["en", "fr"].map(lang => (
-          <button key={lang} onClick={() => setContractLang(lang)}
-            className={`px-3 py-1 text-xs font-medium rounded-lg transition-all ${contractLang === lang ? "og-step-active" : "og-genero-off"}`}>
-            {lang === "en" ? "🇺🇸 EN" : "🇫🇷 FR"}
-          </button>
-        ))}
-      </div>
+  const renderStep3 = () => {
+    // Función para limpiar undefined en texto
+    const limpiarTexto = (texto, lang = 'es') => {
+      if (!texto) return '';
+      const placeholder = lang === 'es' ? '[SIN DEFINIR]' : '[UNDEFINED]';
+      return texto
+        .replace(/undefined/g, placeholder)
+        .replace(/\[FECHA\]/g, placeholder)
+        .replace(/\[DATE\]/g, placeholder)
+        .replace(/\[INMUEBLE\]/g, placeholder);
+    };
 
-      <div className="og-card overflow-hidden">
-        <div className="grid grid-cols-2 gap-0 text-sm">
-          <div className="p-2 font-bold text-center" style={{ background: "var(--og-surface)", borderBottom: "1px solid var(--og-border)" }}>Español</div>
-          <div className="p-2 font-bold text-center" style={{ background: "var(--og-surface)", borderBottom: "1px solid var(--og-border)" }}>
-            {contractLang === "en" ? "English" : "Français"}
-          </div>
-          {bloques.map((b, i) => (
-            <div key={i} className="contents">
-              <div className="p-3 text-sm leading-relaxed" style={{ borderBottom: "1px solid var(--og-border)", whiteSpace: "pre-wrap" }}>
-                {b.es}
-              </div>
-              <div className="p-3 text-sm leading-relaxed" style={{ borderBottom: "1px solid var(--og-border)", whiteSpace: "pre-wrap" }}>
-                {contractLang === "en" ? b.en : b.fr}
-              </div>
-            </div>
+    return (
+      <div className="flex flex-col gap-4">
+        <div className="flex items-center gap-3 mb-2">
+          <span className="text-sm font-medium" style={{ color: "var(--og-secondary)" }}>{t.preview.idioma}:</span>
+          {["en", "fr"].map(lang => (
+            <button key={lang} onClick={() => setContractLang(lang)}
+              className={`px-3 py-1 text-xs font-medium rounded-lg transition-all ${contractLang === lang ? "og-step-active" : "og-genero-off"}`}>
+              {lang === "en" ? "🇺🇸 EN" : "🇫🇷 FR"}
+            </button>
           ))}
         </div>
+
+        {bloques.length === 0 ? (
+          <p className="text-sm" style={{ color: "var(--og-secondary)" }}>
+            {idiomaUI === 'es' ? 'Completa los datos para ver la vista previa.' : 
+             idiomaUI === 'fr' ? 'Remplissez les données pour voir l\'aperçu.' :
+             'Complete the data to see the preview.'}
+          </p>
+        ) : (
+          <div className="rounded-xl overflow-hidden text-xs leading-relaxed" style={{ border: "1px solid var(--og-border)" }}>
+            {/* Header */}
+            <div className="grid grid-cols-2" style={{ background: "var(--og-surface)", borderBottom: "1px solid var(--og-border)" }}>
+              <div className="px-3 py-2 font-semibold text-[10px] tracking-wider border-r" style={{ color: "var(--og-secondary)", borderColor: "var(--og-border)" }}>ESPAÑOL</div>
+              <div className="px-3 py-2 font-semibold text-[10px] tracking-wider" style={{ color: "var(--og-secondary)" }}>{contractLang === 'fr' ? 'FRANÇAIS' : 'ENGLISH'}</div>
+            </div>
+
+            {/* Bloques */}
+            {bloques.map((b, i) => {
+              // Firmas
+              if (b.tipo === "firmas" && b.firmas) {
+                return (
+                  <div key={i} className="flex justify-around py-10" style={{ borderTop: "1px solid var(--og-border)" }}>
+                    {b.firmas.map((f, j) => (
+                      <div key={j} className="text-center">
+                        <div className="w-48 border-b mb-2" style={{ borderColor: "var(--og-primary)" }} />
+                        <div className="font-bold text-[11px]" style={{ color: "var(--og-primary)" }}>{f.nombre || '[NOMBRE]'}</div>
+                        <div className="text-[10px]" style={{ color: "var(--og-secondary)" }}>{f.etiqueta_es || ''}</div>
+                      </div>
+                    ))}
+                  </div>
+                );
+              }
+
+              // Bloques normales
+              const textoEs = limpiarTexto(b.es, 'es');
+              const textoLang2 = limpiarTexto(contractLang === 'fr' ? b.fr : b.en, contractLang);
+
+              return (
+                <div key={i} className="grid grid-cols-2" style={{ borderTop: i ? "1px solid var(--og-border)" : "none" }}>
+                  <div className="px-3 py-2.5 border-r" style={{ borderColor: "var(--og-border)" }}>
+                    {textoEs.split("\n\n").map((p, j) => (
+                      <p key={j} className="mb-1.5" style={{ color: "var(--og-primary)" }}>
+                        {p.split("\n").map((l, k) => <span key={k}>{k > 0 && <br />}{l}</span>)}
+                      </p>
+                    ))}
+                  </div>
+                  <div className="px-3 py-2.5">
+                    {textoLang2.split("\n\n").map((p, j) => (
+                      <p key={j} className="mb-1.5" style={{ color: "var(--og-secondary)" }}>
+                        {p.split("\n").map((l, k) => <span key={k}>{k > 0 && <br />}{l}</span>)}
+                      </p>
+                    ))}
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        )}
       </div>
-    </div>
-  );
+    );
+  };
 
   // ── RENDER ────────────────────────────────────────────────────
   return (

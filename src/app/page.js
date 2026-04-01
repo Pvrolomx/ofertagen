@@ -1043,6 +1043,12 @@ export default function OfertaGenPage() {
               <div className="px-3 py-2 font-semibold text-[10px] tracking-wider" style={{color:"var(--og-secondary)"}}>{lang2 === 'fr' ? 'FRANÇAIS' : 'ENGLISH'}</div>
             </div>
             {bloques.map((b, i) => {
+              // Función para limpiar undefined
+              const limpiarTexto = (texto, lang = 'es') => {
+                if (!texto) return '';
+                const placeholder = lang === 'es' ? '[SIN DEFINIR]' : '[UNDEFINED]';
+                return texto.replace(/undefined/g, placeholder);
+              };
               if (b.tipo === "firmas") return (
                 <div key={i} className="flex justify-around py-10" style={{borderTop:"1px solid var(--og-border)"}}>
                   {b.firmas?.map((f, j) => (
@@ -1056,13 +1062,14 @@ export default function OfertaGenPage() {
               );
               const tEs = b.titulo?.es || b.t?.es;
               const tLang2 = b.titulo?.[lang2] || b.titulo?.en || b.t?.[lang2] || b.t?.en;
-              const textoLang2 = b[lang2] || b.en || '';
+              const textoEs = limpiarTexto(b.es, 'es');
+              const textoLang2 = limpiarTexto(b[lang2] || b.en || '', lang2);
               const num = b.numero || b.n;
               return (
                 <div key={i} className={`grid grid-cols-2 ${i ? "border-t border-gray-100" : ""}`}>
                   <div className="px-3 py-2.5 border-r border-gray-100">
                     {tEs && <p className="font-bold mb-1">{num ? `${num}.- ` : ""}{tEs}</p>}
-                    {b.es?.split("\n\n").map((p, j) => <p key={j} className="mb-1.5">{p.split("\n").map((l, k) => <span key={k}>{k > 0 && <br />}{l}</span>)}</p>)}
+                    {textoEs?.split("\n\n").map((p, j) => <p key={j} className="mb-1.5">{p.split("\n").map((l, k) => <span key={k}>{k > 0 && <br />}{l}</span>)}</p>)}
                   </div>
                   <div className="px-3 py-2.5 text-gray-500">
                     {tLang2 && <p className="font-bold mb-1 text-gray-600">{num ? `${num}.- ` : ""}{tLang2}</p>}
