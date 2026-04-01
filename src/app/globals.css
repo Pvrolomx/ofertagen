@@ -1,31 +1,86 @@
 @import "tailwindcss";
 
+/* ── OfertaGen Dark Blue Theme — Sprint W ─────────────────── */
 :root {
-  --og-primary: #1a365d;
-  --og-accent: #2b6cb0;
-  --og-success: #276749;
-  --og-muted: #718096;
-  --og-border: #e2e8f0;
-  --og-bg: #f7fafc;
-  --og-card: #ffffff;
-  --og-danger: #c53030;
+  --og-bg:        #0d1117;
+  --og-surface:   #161b22;
+  --og-card:      #1c2333;
+  --og-border:    #30363d;
+  --og-border-hi: #1d6bb8;
+  --og-primary:   #e6edf3;
+  --og-secondary: #8b949e;
+  --og-accent:    #1d6bb8;
+  --og-accent-hi: #388bfd;
+  --og-success:   #238636;
+  --og-success-hi:#2ea043;
+  --og-danger:    #da3633;
+  --og-warning:   #d29922;
+  --og-muted:     #484f58;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --og-primary: #bee3f8;
-    --og-accent: #63b3ed;
-    --og-success: #68d391;
-    --og-muted: #a0aec0;
-    --og-border: #2d3748;
-    --og-bg: #1a202c;
-    --og-card: #2d3748;
-    --og-danger: #fc8181;
-  }
-}
+/* Base */
+* { box-sizing: border-box; }
 
 body {
   background: var(--og-bg);
   color: var(--og-primary);
   font-family: 'Inter', system-ui, -apple-system, sans-serif;
+  min-height: 100vh;
 }
+
+/* Cards / Sections */
+.og-card {
+  background: var(--og-card);
+  border: 1px solid var(--og-border);
+  border-radius: 12px;
+  padding: 1.25rem;
+}
+
+/* Inputs */
+input, textarea, select {
+  background: var(--og-surface) !important;
+  border: 1px solid var(--og-border) !important;
+  color: var(--og-primary) !important;
+  border-radius: 8px;
+  transition: border-color 0.15s, box-shadow 0.15s;
+}
+input:focus, textarea:focus, select:focus {
+  border-color: var(--og-accent-hi) !important;
+  box-shadow: 0 0 0 3px rgba(56,139,253,0.15) !important;
+  outline: none !important;
+}
+input::placeholder, textarea::placeholder {
+  color: var(--og-secondary) !important;
+  opacity: 0.6;
+}
+select option {
+  background: var(--og-surface);
+  color: var(--og-primary);
+}
+
+/* Labels */
+label {
+  color: var(--og-secondary) !important;
+}
+
+/* Step buttons */
+.og-step-active {
+  background: var(--og-accent) !important;
+  color: #fff !important;
+  border-color: var(--og-accent) !important;
+}
+.og-step-done {
+  background: rgba(35,134,54,0.15) !important;
+  color: var(--og-success-hi) !important;
+  border-color: var(--og-success) !important;
+}
+.og-step-idle {
+  background: var(--og-surface) !important;
+  color: var(--og-secondary) !important;
+  border-color: var(--og-border) !important;
+}
+
+/* Scrollbar */
+::-webkit-scrollbar { width: 6px; }
+::-webkit-scrollbar-track { background: var(--og-bg); }
+::-webkit-scrollbar-thumb { background: var(--og-muted); border-radius: 3px; }

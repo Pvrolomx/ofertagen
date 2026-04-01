@@ -31,14 +31,14 @@ function renderBlks(ctx) {
 function Input({ label, value, onChange, type = "text", placeholder = "", required, wide, rows }) {
   return (
     <div className={`flex flex-col gap-1 ${wide ? "col-span-2" : ""}`}>
-      <label className="text-xs font-medium text-gray-500 dark:text-gray-400">{label}{required && <span className="text-red-500 ml-0.5">*</span>}</label>
+      <label className="text-xs font-medium text-gray-500">{label}{required && <span className="text-red-500 ml-0.5">*</span>}</label>
       {rows ? (
         <textarea value={value || ""} onChange={e => onChange(e.target.value)} placeholder={placeholder} rows={rows}
-          className="border border-gray-200 dark:border-gray-600 rounded-lg px-3 py-2 text-sm bg-white dark:bg-gray-800 focus:ring-2 focus:ring-blue-400 focus:border-transparent outline-none resize-y" />
+          className="border border-gray-200 rounded-lg px-3 py-2 text-sm bg-white focus:ring-2 focus:ring-blue-400 focus:border-transparent outline-none resize-y" />
       ) : (
         <input type={type} value={value || ""} onChange={e => onChange(type === "number" ? +e.target.value : e.target.value)} placeholder={placeholder}
           step={type === "number" ? "any" : undefined}
-          className="border border-gray-200 dark:border-gray-600 rounded-lg px-3 py-2 text-sm bg-white dark:bg-gray-800 focus:ring-2 focus:ring-blue-400 focus:border-transparent outline-none" />
+          className="border border-gray-200 rounded-lg px-3 py-2 text-sm bg-white focus:ring-2 focus:ring-blue-400 focus:border-transparent outline-none" />
       )}
     </div>
   );
@@ -46,13 +46,13 @@ function Input({ label, value, onChange, type = "text", placeholder = "", requir
 
 function Toggle({ label, sub, checked, onChange }) {
   return (
-    <div onClick={() => onChange(!checked)} className={`flex items-center gap-3 p-3 rounded-xl cursor-pointer transition-all border ${checked ? "bg-blue-50 dark:bg-blue-900/20 border-blue-200 dark:border-blue-800" : "bg-gray-50 dark:bg-gray-800 border-gray-200 dark:border-gray-700"}`}>
-      <div className={`w-10 h-5 rounded-full relative transition-colors ${checked ? "bg-blue-500" : "bg-gray-300 dark:bg-gray-600"}`}>
+    <div onClick={() => onChange(!checked)} className="flex items-center gap-3 p-3 rounded-xl cursor-pointer transition-all" style={{background: checked ? "rgba(29,107,184,0.15)" : "var(--og-surface)", border: checked ? "1px solid var(--og-border-hi)" : "1px solid var(--og-border)"}}>
+      <div className="w-10 h-5 rounded-full relative transition-colors" style={{background: checked ? "var(--og-accent)" : "var(--og-muted)"}}>
         <div className={`w-4 h-4 rounded-full bg-white absolute top-0.5 transition-all ${checked ? "left-5" : "left-0.5"}`} />
       </div>
       <div className="flex-1 min-w-0">
-        <div className="text-sm font-medium">{label}</div>
-        {sub && <div className="text-xs text-gray-500 dark:text-gray-400 truncate">{sub}</div>}
+        <div className="text-sm font-medium" style={{color:"var(--og-primary)"}}>{label}</div>
+        {sub && <div className="text-xs text-gray-500 truncate">{sub}</div>}
       </div>
     </div>
   );
@@ -61,7 +61,7 @@ function Toggle({ label, sub, checked, onChange }) {
 function Section({ title, children }) {
   return (
     <div className="mb-6">
-      <h3 className="text-sm font-semibold text-gray-600 dark:text-gray-300 mb-3 pb-2 border-b border-gray-200 dark:border-gray-700">{title}</h3>
+      <h3 className="text-sm font-semibold mb-3 pb-2" style={{color:"var(--og-secondary)",borderBottom:"1px solid var(--og-border)"}}>{title}</h3>
       <div className="grid grid-cols-2 gap-3">{children}</div>
     </div>
   );
@@ -72,22 +72,22 @@ function PartePanel({ data, pid, label, upParte, upPersona, addPersona, rmPerson
   return (
     <Section title={label}>
       {p.personas.map((per, i) => (
-        <div key={i} className="col-span-2 flex flex-col gap-2 p-3 bg-gray-50 dark:bg-gray-800/50 rounded-lg">
+        <div key={i} className="col-span-2 flex flex-col gap-2 p-3 rounded-lg" style={{background:"var(--og-surface)",border:"1px solid var(--og-border)"}}>
           <div className="flex items-center gap-2">
             {p.personas.length > 1 && <span className="text-xs font-medium text-gray-400">#{i+1}</span>}
             {p.personas.length > 1 && <button onClick={() => rmPersona(pid, i)} className="ml-auto text-xs text-red-500 hover:text-red-700">✕</button>}
           </div>
           <input value={per.nombre} onChange={e => upPersona(pid, i, "nombre", e.target.value.toUpperCase())} placeholder={t?.fields?.nombre_completo || "NOMBRE COMPLETO"}
-            className="border border-gray-200 dark:border-gray-600 rounded-lg px-3 py-2 text-sm bg-white dark:bg-gray-800 focus:ring-2 focus:ring-blue-400 outline-none font-medium" />
+            className="rounded-lg px-3 py-2 text-sm outline-none font-medium w-full" />
           <div className="flex gap-2">
             {[["M", t?.fields?.genero_m || "M"], ["F", t?.fields?.genero_f || "F"]].map(([g, label]) => (
               <button key={g} onClick={() => upPersona(pid, i, "genero", g)} title={label}
-                className={`px-4 py-1.5 text-xs font-medium rounded-lg transition-all ${per.genero === g ? "bg-blue-500 text-white" : "bg-white dark:bg-gray-700 border border-gray-200 dark:border-gray-600 text-gray-600 dark:text-gray-300"}`}>{g}</button>
+                className={`px-4 py-1.5 text-xs font-medium rounded-lg transition-all ${per.genero === g ? "og-step-active" : ""}`}>{g}</button>
             ))}
           </div>
         </div>
       ))}
-      <button onClick={() => addPersona(pid)} className="col-span-2 text-xs text-blue-500 hover:text-blue-700 py-1">{t?.fields?.agregar_persona || "+ Agregar persona"}</button>
+      <button onClick={() => addPersona(pid)} className="col-span-2 text-xs py-1" style={{color:"var(--og-accent-hi)"}}>{t?.fields?.agregar_persona || "+ Agregar persona"}</button>
       <Input label={t.fields.nacionalidad} value={p.nacionalidad} onChange={v => upParte(pid, "nacionalidad", v)} placeholder={t?.fields?.placeholder_nacionalidad || "canadiense, estadounidense..."} />
       <Input label={t.fields.celular} value={p.celular} onChange={v => upParte(pid, "celular", v)} type="tel" required />
       <Input label={t.fields.email} value={p.email} onChange={v => upParte(pid, "email", v)} type="email" required wide />
@@ -519,11 +519,11 @@ export default function OfertaGenPage() {
   }, [bloques, data.partes.ofertante.personas, logoBase64, idiomaSecundario]);
 
   return (
-    <div className="max-w-4xl mx-auto px-4 py-6">
+    <div className="max-w-4xl mx-auto px-4 py-6" style={{minHeight:"100vh",background:"var(--og-bg)"}}>
       {/* Modal de validación Sprint U */}
       {validationResult && (
-        <div className="fixed inset-0 bg-black/60 flex items-center justify-center z-50 p-4">
-          <div className="bg-white dark:bg-gray-900 rounded-2xl shadow-2xl max-w-md w-full p-6">
+        <div className="fixed inset-0 flex items-center justify-center z-50 p-4" style={{background:"rgba(0,0,0,0.75)"}}>
+          <div className="rounded-2xl shadow-2xl max-w-md w-full p-6" style={{background:"var(--og-card)",border:"1px solid var(--og-border)"}}>
             <h2 className="text-lg font-bold mb-4">
               {validationResult.valid ? "⚠️ Advertencias" : "❌ Errores en el documento"}
             </h2>
@@ -532,7 +532,7 @@ export default function OfertaGenPage() {
                 <p className="text-xs font-semibold text-red-500 uppercase mb-2">Errores críticos</p>
                 <ul className="space-y-1 max-h-40 overflow-y-auto">
                   {validationResult.errors.map((e, i) => (
-                    <li key={i} className="text-sm text-red-600 dark:text-red-400 flex gap-2"><span>❌</span>{e}</li>
+                    <li key={i} className="text-sm text-red-600 flex gap-2"><span>❌</span>{e}</li>
                   ))}
                 </ul>
               </div>
@@ -542,14 +542,14 @@ export default function OfertaGenPage() {
                 <p className="text-xs font-semibold text-yellow-500 uppercase mb-2">Advertencias</p>
                 <ul className="space-y-1 max-h-40 overflow-y-auto">
                   {validationResult.warnings.map((w, i) => (
-                    <li key={i} className="text-sm text-yellow-600 dark:text-yellow-400 flex gap-2"><span>⚠️</span>{w}</li>
+                    <li key={i} className="text-sm text-yellow-600 flex gap-2"><span>⚠️</span>{w}</li>
                   ))}
                 </ul>
               </div>
             )}
             <div className="flex gap-3 mt-5">
               <button onClick={() => setValidationResult(null)}
-                className="flex-1 px-4 py-2 text-sm border border-gray-300 dark:border-gray-600 rounded-xl hover:bg-gray-50 dark:hover:bg-gray-800 transition">
+                className="flex-1 px-4 py-2 text-sm border border-gray-300 rounded-xl hover:bg-gray-50:bg-gray-800 transition">
                 {t.validation.corregir}
               </button>
               {validationResult.valid && (
@@ -565,34 +565,34 @@ export default function OfertaGenPage() {
       {/* Header */}
       <div className="flex items-baseline justify-between mb-6">
         <div>
-          <h1 className="text-2xl font-bold tracking-tight text-gray-900 dark:text-gray-100">OfertaGen</h1>
-          <p className="text-xs text-gray-500 dark:text-gray-400 mt-0.5">Expat Advisor MX</p>
+          <h1 className="text-2xl font-bold tracking-tight" style={{color:"var(--og-primary)"}}>OfertaGen</h1>
+          <p className="text-xs mt-0.5" style={{color:"var(--og-secondary)"}}>Expat Advisor MX</p>
         </div>
         <div className="flex gap-2 flex-wrap justify-end items-center">
           {/* Logo upload */}
           {logoPreview ? (
-            <div className="flex items-center gap-1 px-2 py-1 bg-purple-50 dark:bg-purple-900/20 border border-purple-200 dark:border-purple-800 rounded-lg">
+            <div className="flex items-center gap-1 px-2 py-1 bg-purple-50 border border-purple-200 rounded-lg">
               <img src={logoPreview} alt="Logo" className="h-6 max-w-16 object-contain" />
               <button onClick={clearLogo} className="text-purple-500 hover:text-purple-700 text-xs ml-1" title="Quitar logo">✕</button>
             </div>
           ) : (
-            <button onClick={handleLogoUpload} className="px-3 py-1.5 text-xs bg-purple-50 dark:bg-purple-900/20 text-purple-700 dark:text-purple-300 border border-purple-200 dark:border-purple-800 rounded-lg hover:bg-purple-100 transition flex items-center gap-1">
+            <button onClick={handleLogoUpload} className="px-3 py-1.5 text-xs rounded-lg transition flex items-center gap-1" style={{background:"var(--og-surface)",border:"1px solid var(--og-border)",color:"var(--og-secondary)"}}>
               <span>🖼️</span> Logo
             </button>
           )}
-          <button onClick={importDraft} className="px-3 py-1.5 text-xs bg-blue-50 dark:bg-blue-900/20 text-blue-700 dark:text-blue-300 border border-blue-200 dark:border-blue-800 rounded-lg hover:bg-blue-100 transition flex items-center gap-1">
+          <button onClick={importDraft} className="px-3 py-1.5 text-xs rounded-lg transition flex items-center gap-1" style={{background:"var(--og-surface)",border:"1px solid var(--og-border)",color:"var(--og-secondary)"}}>
             <span>📂</span> {t.header.cargar}
           </button>
-          <button onClick={exportDraft} className="px-3 py-1.5 text-xs bg-green-50 dark:bg-green-900/20 text-green-700 dark:text-green-300 border border-green-200 dark:border-green-800 rounded-lg hover:bg-green-100 transition flex items-center gap-1">
+          <button onClick={exportDraft} className="px-3 py-1.5 text-xs rounded-lg transition flex items-center gap-1" style={{background:"var(--og-surface)",border:"1px solid var(--og-border)",color:"var(--og-secondary)"}}>
             <span>💾</span> {t.header.guardar}
           </button>
-          <button onClick={loadDemo} className="px-3 py-1.5 text-xs bg-amber-50 dark:bg-amber-900/20 text-amber-700 dark:text-amber-300 border border-amber-200 dark:border-amber-800 rounded-lg hover:bg-amber-100 transition">Demo</button>
-          <button onClick={resetAll} className="px-3 py-1.5 text-xs bg-gray-50 dark:bg-gray-800 text-gray-600 dark:text-gray-400 border border-gray-200 dark:border-gray-700 rounded-lg hover:bg-gray-100 transition">{t.header.limpiar}</button>
+          <button onClick={loadDemo} className="px-3 py-1.5 text-xs rounded-lg transition" style={{background:"rgba(210,153,34,0.15)",border:"1px solid rgba(210,153,34,0.4)",color:"#d29922"}}>Demo</button>
+          <button onClick={resetAll} className="px-3 py-1.5 text-xs rounded-lg transition" style={{background:"var(--og-surface)",border:"1px solid var(--og-border)",color:"var(--og-secondary)"}}>{t.header.limpiar}</button>
           {/* Toggle idioma UI — Sprint V-a */}
-          <div className="flex rounded-lg border border-gray-200 dark:border-gray-700 overflow-hidden text-xs font-medium">
+          <div className="flex rounded-lg border border-gray-200 overflow-hidden text-xs font-medium">
             {[['en','EN'],['fr','FR']].map(([lang, label]) => (
               <button key={lang} onClick={() => setIdiomaSecundario(lang)}
-                className={`px-2.5 py-1.5 transition ${idiomaSecundario === lang ? 'bg-blue-500 text-white' : 'bg-white dark:bg-gray-800 text-gray-500 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-700'}`}>
+                className={`px-2.5 py-1.5 transition ${idiomaSecundario === lang ? "og-step-active" : ""}`}>
                 {label}
               </button>
             ))}
@@ -604,26 +604,26 @@ export default function OfertaGenPage() {
       <div className="flex gap-1 mb-6">
         {steps.map((s, i) => (
           <button key={s} onClick={() => setStep(i)}
-            className={`flex-1 py-2.5 text-xs font-medium rounded-lg transition-all ${i === step ? "bg-blue-500 text-white shadow-sm" : i < step ? "bg-green-50 dark:bg-green-900/20 text-green-700 dark:text-green-300 border border-green-200 dark:border-green-800" : "bg-gray-100 dark:bg-gray-800 text-gray-500 dark:text-gray-400 border border-gray-200 dark:border-gray-700"}`}>
+            className={`flex-1 py-2.5 text-xs font-medium rounded-lg transition-all ${i === step ? "og-step-active" : i < step ? "og-step-done" : "og-step-idle"}`}>
             {i + 1}. {s}
           </button>
         ))}
       </div>
 
       {/* Content */}
-      <div className="bg-white dark:bg-gray-800/50 rounded-2xl border border-gray-200 dark:border-gray-700 p-6 mb-4 min-h-[400px]">
+      <div className="bg-white rounded-2xl p-6 mb-4 min-h-[400px]" style={{background:"var(--og-card)",border:"1px solid var(--og-border)"}}>
 
         {step === 0 && <>
           <PartePanel data={data} pid="ofertante" label={idiomaSecundario === "fr" ? "Ofertante / Offrant" : "Ofertante / Buyer"} upParte={upParte} upPersona={upPersona} addPersona={addPersona} rmPersona={rmPersona} t={t} />
           <PartePanel data={data} pid="propietario" label={idiomaSecundario === "fr" ? "Propietario / Propriétaire" : "Propietario / Owner"} upParte={upParte} upPersona={upPersona} addPersona={addPersona} rmPersona={rmPersona} t={t} />
           <Section title={t.sections.idioma}>
-            <div className="col-span-2 flex items-center gap-4 p-3 bg-blue-50 dark:bg-blue-900/20 border border-blue-100 dark:border-blue-800 rounded-xl">
+            <div className="col-span-2 flex items-center gap-4 p-3 rounded-xl" style={{background:"rgba(29,107,184,0.15)",border:"1px solid rgba(56,139,253,0.3)"}}>
               <span className="text-3xl">{idiomaSecundario === 'fr' ? '🇨🇦' : '🇺🇸'}</span>
               <div>
-                <p className="text-sm font-semibold text-blue-800 dark:text-blue-200">
+                <p className="text-sm font-semibold" style={{color:"var(--og-accent-hi)"}}>
                   {idiomaSecundario === 'fr' ? 'Français' : 'English'}
                 </p>
-                <p className="text-xs text-blue-600 dark:text-blue-400">{t.sections.idioma_sub}</p>
+                <p className="text-xs" style={{color:"var(--og-secondary)"}}>{t.sections.idioma_sub}</p>
               </div>
             </div>
           </Section>
@@ -639,11 +639,11 @@ export default function OfertaGenPage() {
             <Input label={t.fields.superficie_letras} value={data.campos.inmueble?.superficie_letras} onChange={v=>upCampo("inmueble","superficie_letras",v)} required />
             <Input label={t.fields.indiviso} value={data.campos.inmueble?.indiviso} onChange={v=>upCampo("inmueble","indiviso",v)} />
             <Input label={t.fields.clave_catastral} value={data.campos.inmueble?.clave_catastral} onChange={v=>upCampo("inmueble","clave_catastral",v)} placeholder="020-024-01-039-258-000" />
-            <div className="col-span-2 flex items-center gap-3 p-3 bg-gray-50 dark:bg-gray-800/50 rounded-lg">
+            <div className="col-span-2 flex items-center gap-3 p-3 rounded-lg" style={{background:"var(--og-surface)",border:"1px solid var(--og-border)"}}>
               <input type="checkbox" checked={!!data.campos.inmueble?.tiene_uso_exclusivo} onChange={e=>upCampo("inmueble","tiene_uso_exclusivo",e.target.checked)} className="rounded" />
               <div>
-                <label className="text-sm font-medium">{t.fields.uso_exclusivo_label}</label>
-                <p className="text-xs text-gray-400">{t.fields.uso_exclusivo_sub}</p>
+                <label className="text-sm font-medium" style={{color:"var(--og-primary)"}}>{t.fields.uso_exclusivo_label}</label>
+                <p className="text-xs" style={{color:"var(--og-secondary)"}}>{t.fields.uso_exclusivo_sub}</p>
               </div>
             </div>
             {data.campos.inmueble?.tiene_uso_exclusivo && <>
@@ -659,14 +659,14 @@ export default function OfertaGenPage() {
             <Input label={t.fields.ciudad} value={data.campos.antecedente?.ciudad_notaria_anterior} onChange={v=>upCampo("antecedente","ciudad_notaria_anterior",v)} required />
             <div className="flex flex-col gap-1">
               <label className="text-xs font-medium text-gray-500">Estado del RPP</label>
-              <select value={data.campos.antecedente?.estado_registro||"nayarit"} onChange={e=>upCampo("antecedente","estado_registro",e.target.value)} className="border border-gray-200 dark:border-gray-600 rounded-lg px-3 py-2 text-sm bg-white dark:bg-gray-800">
+              <select value={data.campos.antecedente?.estado_registro||"nayarit"} onChange={e=>upCampo("antecedente","estado_registro",e.target.value)} className="border border-gray-200 rounded-lg px-3 py-2 text-sm bg-white">
                 <option value="nayarit">Nayarit (Bahía de Banderas, Bucerías)</option>
                 <option value="jalisco">Jalisco (Puerto Vallarta)</option>
               </select>
             </div>
             <div className="flex flex-col gap-1">
               <label className="text-xs font-medium text-gray-500">Tipo de inscripción</label>
-              <select value={data.campos.antecedente?.tipo_registro||"folio_real"} onChange={e=>upCampo("antecedente","tipo_registro",e.target.value)} className="border border-gray-200 dark:border-gray-600 rounded-lg px-3 py-2 text-sm bg-white dark:bg-gray-800">
+              <select value={data.campos.antecedente?.tipo_registro||"folio_real"} onChange={e=>upCampo("antecedente","tipo_registro",e.target.value)} className="border border-gray-200 rounded-lg px-3 py-2 text-sm bg-white">
                 <option value="folio_real">{(data.campos.antecedente?.estado_registro||"nayarit") === "nayarit" ? "Folio Real Electrónico" : "Folio Real"}</option>
                 <option value="legacy">Inscripción tradicional (legacy)</option>
               </select>
@@ -693,7 +693,7 @@ export default function OfertaGenPage() {
             <Input label={t.fields.precio_total} value={data.campos.precio?.precio_total} onChange={v=>upCampo("precio","precio_total",v)} type="number" required />
             <div className="flex flex-col gap-1">
               <label className="text-xs font-medium text-gray-500">Moneda</label>
-              <select value={data.campos.precio?.moneda||"USD"} onChange={e=>upCampo("precio","moneda",e.target.value)} className="border border-gray-200 dark:border-gray-600 rounded-lg px-3 py-2 text-sm bg-white dark:bg-gray-800">
+              <select value={data.campos.precio?.moneda||"USD"} onChange={e=>upCampo("precio","moneda",e.target.value)} className="border border-gray-200 rounded-lg px-3 py-2 text-sm bg-white">
                 <option value="USD">USD</option><option value="MXN">MXN</option>
               </select>
             </div>
@@ -702,7 +702,7 @@ export default function OfertaGenPage() {
             <Input label={t.fields.dias_saldo} value={data.campos.precio?.dias_saldo||5} onChange={v=>upCampo("precio","dias_saldo",v)} type="number" />
             <div className="flex flex-col gap-1">
               <label className="text-xs font-medium text-gray-500">Anticipo gastos de escrituración</label>
-              <select value={data.campos.precio?.anticipo_gastos||"0"} onChange={e=>upCampo("precio","anticipo_gastos",e.target.value)} className="border border-gray-200 dark:border-gray-600 rounded-lg px-3 py-2 text-sm bg-white dark:bg-gray-800">
+              <select value={data.campos.precio?.anticipo_gastos||"0"} onChange={e=>upCampo("precio","anticipo_gastos",e.target.value)} className="border border-gray-200 rounded-lg px-3 py-2 text-sm bg-white">
                 <option value="0">Sin anticipo</option>
                 <option value="1000">$1,000 USD</option>
                 <option value="2000">$2,000 USD</option>
@@ -712,7 +712,7 @@ export default function OfertaGenPage() {
                 <option value="10000">$10,000 USD</option>
               </select>
             </div>
-            {ctx && <div className="col-span-2 p-3 bg-blue-50 dark:bg-blue-900/20 rounded-xl text-xs space-y-1 border border-blue-100 dark:border-blue-800">
+            {ctx && <div className="col-span-2 p-3 rounded-xl text-xs space-y-1" style={{background:"rgba(29,107,184,0.12)",border:"1px solid rgba(56,139,253,0.25)"}}>
               <div><span className="text-gray-500">Total:</span> <span className="font-medium">{ctx.precio?.completo}</span></div>
               <div><span className="text-gray-500">Depósito:</span> <span className="font-medium">{ctx.deposito?.completo}</span></div>
               <div><span className="text-gray-500">Saldo:</span> <span className="font-medium">{ctx.saldo?.completo}</span></div>
@@ -721,7 +721,7 @@ export default function OfertaGenPage() {
           <Section title={t.sections.escrow}>
             <div className="flex flex-col gap-1 col-span-2">
               <label className="text-xs font-medium text-gray-500">Empresa escrow</label>
-              <select value={data.campos.escrow?.empresa_escrow||"STEWART TITLE LATIN AMERICA"} onChange={e=>upCampo("escrow","empresa_escrow",e.target.value)} className="border border-gray-200 dark:border-gray-600 rounded-lg px-3 py-2 text-sm bg-white dark:bg-gray-800">
+              <select value={data.campos.escrow?.empresa_escrow||"STEWART TITLE LATIN AMERICA"} onChange={e=>upCampo("escrow","empresa_escrow",e.target.value)} className="border border-gray-200 rounded-lg px-3 py-2 text-sm bg-white">
                 <option value="STEWART TITLE LATIN AMERICA">Stewart Title Latin America (STLA)</option>
                 <option value="ARMOUR SETTLEMENT SERVICES">Armour Settlement Services</option>
                 <option value="TITLE LATIN AMERICA (TLA)">Title Latin America (TLA)</option>
@@ -743,7 +743,7 @@ export default function OfertaGenPage() {
           <Section title={t.sections.notario}>
             <div className="flex flex-col gap-1 col-span-2">
               <label className="text-xs font-medium text-gray-500">Notario <span className="text-red-500">*</span></label>
-              <select value={data.campos.notario?.notario_seleccion||""} onChange={e=>upCampo("notario","notario_seleccion",e.target.value)} className="border border-gray-200 dark:border-gray-600 rounded-lg px-3 py-2 text-sm bg-white dark:bg-gray-800">
+              <select value={data.campos.notario?.notario_seleccion||""} onChange={e=>upCampo("notario","notario_seleccion",e.target.value)} className="border border-gray-200 rounded-lg px-3 py-2 text-sm bg-white">
                 <option value="">Seleccionar notario...</option>
                 <option value="careaga_12">Notaría 12 — Lic. Jorge Careaga (PV, Jalisco)</option>
                 <option value="meza_29">Notaría 29 — Lic. Adán Meza Barajas (Bucerías, Nay.)</option>
@@ -771,7 +771,7 @@ export default function OfertaGenPage() {
           {data.bloques.arrendamientos && <Section title="Arrendamientos vigentes">
             <div className="flex flex-col gap-1 col-span-2">
               <label className="text-xs font-medium text-gray-500">Vendedor percibe rentas hasta...</label>
-              <select value={data.campos.arrendamientos?.renta_hasta||"escrow"} onChange={e=>upCampo("arrendamientos","renta_hasta",e.target.value)} className="border border-gray-200 dark:border-gray-600 rounded-lg px-3 py-2 text-sm bg-white dark:bg-gray-800">
+              <select value={data.campos.arrendamientos?.renta_hasta||"escrow"} onChange={e=>upCampo("arrendamientos","renta_hasta",e.target.value)} className="border border-gray-200 rounded-lg px-3 py-2 text-sm bg-white">
                 <option value="escrow">Hasta que el dinero se refleje en escrow</option>
                 <option value="cuenta_vendedor">Hasta que el dinero se refleje en cuenta del vendedor</option>
                 <option value="cierre">Hasta la fecha de formalización</option>
@@ -792,11 +792,11 @@ export default function OfertaGenPage() {
           <Section title={t.sections.penalidad}>
             <Input label={t.fields.pct_penalidad} value={data.campos.penalidad?.porcentaje_penalidad} onChange={v=>upCampo("penalidad","porcentaje_penalidad",v)} />
             <Input label={t.fields.jurisdiccion} value={data.campos.jurisdiccion?.ciudad_jurisdiccion} onChange={v=>upCampo("jurisdiccion","ciudad_jurisdiccion",v)} />
-            <div className="col-span-2 flex items-center gap-3 p-3 bg-gray-50 dark:bg-gray-800/50 rounded-lg">
+            <div className="col-span-2 flex items-center gap-3 p-3 rounded-lg" style={{background:"var(--og-surface)",border:"1px solid var(--og-border)"}}>
               <input type="checkbox" checked={!!data.campos.penalidad?.distribuir_agencia} onChange={e=>upCampo("penalidad","distribuir_agencia",e.target.checked)} className="rounded" />
               <div>
-                <label className="text-sm font-medium">Distribuir penalidad con agencia</label>
-                <p className="text-xs text-gray-400">Parte afectada + agencia de RE</p>
+                <label className="text-sm font-medium" style={{color:"var(--og-primary)"}}>Distribuir penalidad con agencia</label>
+                <p className="text-xs" style={{color:"var(--og-secondary)"}}>Parte afectada + agencia de RE</p>
               </div>
             </div>
             {data.campos.penalidad?.distribuir_agencia && <>
@@ -805,18 +805,18 @@ export default function OfertaGenPage() {
             </>}
           </Section>
           <Section title={t.sections.testigos}>
-            <div className="col-span-2 flex items-center gap-3 p-3 bg-gray-50 dark:bg-gray-800/50 rounded-lg">
+            <div className="col-span-2 flex items-center gap-3 p-3 rounded-lg" style={{background:"var(--og-surface)",border:"1px solid var(--og-border)"}}>
               <input type="checkbox" checked={!!data.campos.testigos?.incluir_testigos} onChange={e=>upCampo("testigos","incluir_testigos",e.target.checked)} className="rounded" />
               <div>
-                <label className="text-sm font-medium">Incluir líneas de testigos</label>
-                <p className="text-xs text-gray-400">Testigo 1 y Testigo 2 en la página de firma</p>
+                <label className="text-sm font-medium" style={{color:"var(--og-primary)"}}>Incluir líneas de testigos</label>
+                <p className="text-xs" style={{color:"var(--og-secondary)"}}>Testigo 1 y Testigo 2 en la página de firma</p>
               </div>
             </div>
-            <div className="col-span-2 flex items-center gap-3 p-3 bg-gray-50 dark:bg-gray-800/50 rounded-lg">
+            <div className="col-span-2 flex items-center gap-3 p-3 rounded-lg" style={{background:"var(--og-surface)",border:"1px solid var(--og-border)"}}>
               <input type="checkbox" checked={data.campos.testigos?.incluir_aceptacion!==false} onChange={e=>upCampo("testigos","incluir_aceptacion",e.target.checked)} className="rounded" />
               <div>
-                <label className="text-sm font-medium">Lugar, fecha y hora de aceptación</label>
-                <p className="text-xs text-gray-400">Línea para que el vendedor anote cuándo aceptó</p>
+                <label className="text-sm font-medium" style={{color:"var(--og-primary)"}}>Lugar, fecha y hora de aceptación</label>
+                <p className="text-xs" style={{color:"var(--og-secondary)"}}>Línea para que el vendedor anote cuándo aceptó</p>
               </div>
             </div>
           </Section>
@@ -829,7 +829,7 @@ export default function OfertaGenPage() {
         </>}
 
         {step === 3 && <div className="space-y-3">
-          <h2 className="text-lg font-semibold mb-1">{t.sections.clausulas}</h2>
+          <h2 className="text-lg font-semibold mb-1" style={{color:"var(--og-primary)"}}>{t.sections.clausulas}</h2>
           <p className="text-xs text-gray-500 mb-4">Activa o desactiva sin romper el contrato.</p>
           <Toggle label="Adjudicación de cónyuge" sub="50% derechos fideicomisarios del esposo fallecido" checked={data.bloques.adjudicacion_conyuge} onChange={()=>togBloque("adjudicacion_conyuge")} />
           <Toggle label="Ad Corpus / As-Is" sub="Compra por cuerpo cierto, superficies aproximadas, estado actual" checked={data.bloques.ad_corpus} onChange={()=>togBloque("ad_corpus")} />
@@ -843,7 +843,7 @@ export default function OfertaGenPage() {
           <Toggle label="Litigios pendientes" sub="Vendedor informa litigios con copias en 3 días hábiles; comprador acepta o rechaza en 5 días" checked={data.bloques.litigios_pendientes} onChange={()=>togBloque("litigios_pendientes")} />
           <Toggle label="Litigios laborales" sub="Vendedor informa relaciones y litigios laborales; comprador acepta o rechaza en 5 días" checked={data.bloques.empleados_condicion} onChange={()=>togBloque("empleados_condicion")} />
           <Toggle label="Comisión inmobiliaria" sub="Pago de comisión a agencias de RE" checked={data.bloques.comision} onChange={()=>togBloque("comision")} />
-          <div className="mt-4 mb-2"><p className="text-xs font-semibold text-gray-400 uppercase tracking-wider">{t.sections.clausulas_adicionales}</p></div>
+          <div className="mt-4 mb-2"><p className="text-xs font-semibold uppercase tracking-wider" style={{color:"var(--og-muted)"}}>{t.sections.clausulas_adicionales}</p></div>
           <Toggle label="Condición general y estado de uso" sub="Entrega en misma condición que inspección, desgaste normal" checked={data.bloques.condicion_uso} onChange={()=>togBloque("condicion_uso")} />
           <Toggle label="Obligaciones del vendedor" sub="Walk-through, carta no adeudo, prorrateo servicios, cesión CFE/cable" checked={data.bloques.obligaciones_vendedor} onChange={()=>togBloque("obligaciones_vendedor")} />
           {data.bloques.obligaciones_vendedor && <div className="ml-8">
@@ -859,8 +859,8 @@ export default function OfertaGenPage() {
           <Toggle label="Protección de datos personales" sub="Cláusula de privacidad para compradores extranjeros" checked={data.bloques.proteccion_datos} onChange={()=>togBloque("proteccion_datos")} />
           <Toggle label="Confidencialidad (NDA)" sub="Protege precio, términos e identidad del comprador durante y post-negociación" checked={data.bloques.confidencialidad} onChange={()=>togBloque("confidencialidad")} />
           {data.bloques.confidencialidad && <Section title="Confidencialidad — meses post-cierre">
-            <label className="text-sm text-gray-600 dark:text-gray-400">Vigencia post-cierre / Post-closing term / Durée post-clôture</label>
-            <select value={data.campos.confidencialidad?.meses||6} onChange={e=>upCampo("confidencialidad","meses",parseInt(e.target.value))} className="border border-gray-200 dark:border-gray-600 rounded-lg px-3 py-2 text-sm bg-white dark:bg-gray-800">
+            <label className="text-sm text-gray-600">Vigencia post-cierre / Post-closing term / Durée post-clôture</label>
+            <select value={data.campos.confidencialidad?.meses||6} onChange={e=>upCampo("confidencialidad","meses",parseInt(e.target.value))} className="border border-gray-200 rounded-lg px-3 py-2 text-sm bg-white">
               <option value={3}>3 meses / months / mois</option>
               <option value={6}>6 meses / months / mois</option>
               <option value={12}>12 meses / months / mois</option>
@@ -872,26 +872,26 @@ export default function OfertaGenPage() {
 
         {step === 4 && <div>
           <div className="flex items-center justify-between mb-4">
-            <h2 className="text-lg font-semibold">{t.preview.title}</h2>
+            <h2 className="text-lg font-semibold" style={{color:"var(--og-primary)"}}>{t.preview.title}</h2>
             <div className="flex items-center gap-3">
               <button onClick={handleGenerate} disabled={generating || !bloques.length}
-                className="px-5 py-2 bg-green-600 hover:bg-green-700 disabled:bg-gray-300 text-white text-sm font-medium rounded-xl transition shadow-sm disabled:shadow-none">
+                className="px-5 py-2 text-white text-sm font-medium rounded-xl transition" style={{background:"var(--og-success-hi)"}}>
                 {generating ? t.preview.generando : t.preview.descargar}
               </button>
             </div>
           </div>
           {bloques.length === 0 ? <p className="text-gray-400 text-sm">Completa los datos de las partes para ver la vista previa.</p> :
-          <div className="border border-gray-200 dark:border-gray-700 rounded-xl overflow-hidden text-xs leading-relaxed">
-            <div className="grid grid-cols-2 bg-gray-100 dark:bg-gray-700/50 border-b border-gray-200 dark:border-gray-600">
-              <div className="px-3 py-2 font-semibold text-gray-500 text-[10px] tracking-wider border-r border-gray-200 dark:border-gray-600">ESPAÑOL</div>
-              <div className="px-3 py-2 font-semibold text-gray-500 text-[10px] tracking-wider">{idiomaSecundario === 'fr' ? 'FRANÇAIS' : 'ENGLISH'}</div>
+          <div className="border border-gray-200 rounded-xl overflow-hidden text-xs leading-relaxed">
+            <div className="grid grid-cols-2 bg-gray-100 border-b border-gray-200">
+              <div className="px-3 py-2 font-semibold text-[10px] tracking-wider border-r" style={{color:"var(--og-secondary)",borderColor:"var(--og-border)"">ESPAÑOL</div>
+              <div className="px-3 py-2 font-semibold text-[10px] tracking-wider" style={{color:"var(--og-secondary)"}}>{idiomaSecundario === 'fr' ? 'FRANÇAIS' : 'ENGLISH'}</div>
             </div>
             {bloques.map((b, i) => {
               if (b.tipo === "firmas") return (
-                <div key={i} className="flex justify-around py-10 border-t border-gray-200 dark:border-gray-600">
+                <div key={i} className="flex justify-around py-10 border-t border-gray-200">
                   {b.firmas?.map((f, j) => (
                     <div key={j} className="text-center">
-                      <div className="w-48 border-b border-gray-900 dark:border-gray-200 mb-2" />
+                      <div className="w-48 border-b border-gray-900 mb-2" />
                       <div className="font-bold text-[11px]">{f.nombre}</div>
                       <div className="text-[10px] text-gray-500">{f.rol}</div>
                     </div>
@@ -903,13 +903,13 @@ export default function OfertaGenPage() {
               const textoLang2 = b[idiomaSecundario] || b.en || '';
               const num = b.numero || b.n;
               return (
-                <div key={i} className={`grid grid-cols-2 ${i ? "border-t border-gray-100 dark:border-gray-700" : ""}`}>
-                  <div className="px-3 py-2.5 border-r border-gray-100 dark:border-gray-700">
+                <div key={i} className={`grid grid-cols-2 ${i ? "border-t border-gray-100" : ""}`}>
+                  <div className="px-3 py-2.5 border-r border-gray-100">
                     {tEs && <p className="font-bold mb-1">{num ? `${num}.- ` : ""}{tEs}</p>}
                     {b.es?.split("\n\n").map((p, j) => <p key={j} className="mb-1.5">{p.split("\n").map((l, k) => <span key={k}>{k > 0 && <br />}{l}</span>)}</p>)}
                   </div>
-                  <div className="px-3 py-2.5 text-gray-500 dark:text-gray-400">
-                    {tLang2 && <p className="font-bold mb-1 text-gray-600 dark:text-gray-300">{num ? `${num}.- ` : ""}{tLang2}</p>}
+                  <div className="px-3 py-2.5 text-gray-500">
+                    {tLang2 && <p className="font-bold mb-1 text-gray-600">{num ? `${num}.- ` : ""}{tLang2}</p>}
                     {textoLang2?.split("\n\n").map((p, j) => <p key={j} className="mb-1.5">{p.split("\n").map((l, k) => <span key={k}>{k > 0 && <br />}{l}</span>)}</p>)}
                   </div>
                 </div>
@@ -921,8 +921,8 @@ export default function OfertaGenPage() {
 
       {/* Nav */}
       <div className="flex justify-between">
-        {step > 0 ? <button onClick={() => setStep(s => s - 1)} className="px-5 py-2 text-sm text-gray-600 dark:text-gray-400 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl hover:bg-gray-50 transition">{t.nav.anterior}</button> : <div />}
-        {step < 4 ? <button onClick={() => setStep(s => s + 1)} className="px-5 py-2 text-sm font-medium text-white bg-blue-500 hover:bg-blue-600 rounded-xl shadow-sm transition">{t.nav.siguiente}</button>
+        {step > 0 ? <button onClick={() => setStep(s => s - 1)} className="px-5 py-2 text-sm rounded-xl transition" style={{background:"var(--og-surface)",border:"1px solid var(--og-border)",color:"var(--og-secondary)"}}>{t.nav.anterior}</button> : <div />}
+        {step < 4 ? <button onClick={() => setStep(s => s + 1)} className="px-5 py-2 text-sm font-medium text-white rounded-xl transition" style={{background:"var(--og-accent)",border:"1px solid var(--og-border-hi)"}}>{t.nav.siguiente}</button>
           : <button onClick={handleGenerate} disabled={generating || !bloques.length}
               className="px-6 py-2 text-sm font-medium text-white bg-green-600 hover:bg-green-700 disabled:bg-gray-300 rounded-xl shadow-sm transition">
               {generating ? t.preview.generando : t.preview.descargar}
@@ -930,9 +930,9 @@ export default function OfertaGenPage() {
       </div>
 
       {/* Footer — RDE regla 10 */}
-      <footer className="mt-8 pt-4 border-t border-gray-200 dark:border-gray-700 flex items-center justify-between text-xs text-gray-400">
+      <footer className="mt-8 pt-4 border-t flex items-center justify-between text-xs" style={{borderTop:"1px solid var(--og-border)",color:"var(--og-muted)"}}>
         <span>Hecho por duendes.app 2026</span>
-        <button id="install-btn" onClick={() => window.installApp?.()} className="hidden px-3 py-1.5 bg-blue-50 dark:bg-blue-900/20 text-blue-600 dark:text-blue-300 border border-blue-200 dark:border-blue-800 rounded-lg hover:bg-blue-100 transition">
+        <button id="install-btn" onClick={() => window.installApp?.()} className="hidden px-3 py-1.5 bg-blue-50 text-blue-600 border border-blue-200 rounded-lg hover:bg-blue-100 transition">
           Instalar App
         </button>
       </footer>
