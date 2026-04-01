@@ -203,6 +203,69 @@ const UI = {
       corregir: "Corregir", generar_igual: "Generar de todas formas",
     },
   },
+  es: {
+    steps: ["Partes", "Inmueble", "Operación", "Cláusulas", "Preview"],
+    sections: {
+      idioma: "Idioma del comprador",
+      idioma_sub: "¿En qué idioma prefiere su copia el comprador?",
+      inmueble: "Datos del inmueble",
+      antecedente: "Antecedente registral",
+      precio: "Precio y pagos",
+      escrow: "Escrow",
+      fechas: "Fechas y plazos",
+      notario: "Notario designado",
+      comision: "Comisión inmobiliaria",
+      penalidad: "Penalidad / Jurisdicción",
+      testigos: "Testigos y aceptación",
+      coordinador: "Coordinador de cierre",
+      clausulas: "Cláusulas opcionales",
+      clausulas_adicionales: "Cláusulas adicionales",
+    },
+    header: { cargar: "Cargar", guardar: "Guardar", limpiar: "Limpiar" },
+    preview: { title: "Vista previa bilingüe", descargar: "Descargar .docx", generando: "Generando..." },
+    nav: { siguiente: "Siguiente", anterior: "Anterior", generar: "Descargar .docx" },
+    validation: { errores: "Errores críticos", advertencias: "Advertencias", corregir: "Corregir", generar_igual: "Generar de todas formas" },
+    fields: {
+      nombre_completo: "NOMBRE COMPLETO", nacionalidad: "Nacionalidad",
+      celular: "Celular/WhatsApp", email: "Email", domicilio: "Domicilio",
+      agregar_persona: "+ Agregar persona",
+      genero_m: "Masculino", genero_f: "Femenino", placeholder_nacionalidad: "canadiense, estadounidense...",
+      domicilio_inmueble: "Inmueble materia de la presente oferta", label_ofertante: "Ofertante", label_propietario: "Propietario",
+      nacionalidades: [{v:"estadounidense", l:"🇺🇸 Estadounidense"},{v:"canadiense", l:"🇨🇦 Canadiense"},{v:"francocanadiense", l:"🇨🇦 Franco-canadiense"}],
+      descripcion_corta: "Descripción corta", ubicacion_completa: "Ubicación completa",
+      nivel_torre: "Nivel/Torre", interior: "Interior",
+      superficie_m2: "Superficie m²", superficie_letras: "Superficie en letras",
+      indiviso: "Indiviso %", clave_catastral: "Clave catastral",
+      notas_uso_exclusivo_es: "Notas uso exclusivo (ES)", notas_uso_exclusivo_en: "Notas uso exclusivo (EN)",
+      uso_exclusivo_label: "Incluir notas de uso exclusivo",
+      uso_exclusivo_sub: "Estacionamiento, bodega, servidumbre, terraza privada...",
+      fecha_escritura: "Fecha escritura", no_escritura: "No. escritura",
+      notario_ant: "Notario", no_notaria: "No. notaría", ciudad: "Ciudad",
+      folio_real_electronico: "Folio Real Electrónico", folio_real: "Folio Real",
+      libro: "Libro", seccion: "Sección", serie: "Serie", partida: "Partida",
+      documento: "Documento", folios: "Folios", cuenta_predial: "Cuenta predial",
+      estado_rpp: "Estado del RPP", tipo_inscripcion: "Tipo de inscripción",
+      precio_total: "Precio total", deposito_escrow: "Depósito escrow",
+      dias_depositar: "Días hábiles para depositar",
+      dias_saldo: "Días hábiles saldo (antes del cierre)",
+      anticipo_gastos: "Anticipo gastos de escrituración",
+      honorarios_escrow: "Honorarios escrow (USD)",
+      fecha_presentacion: "Fecha presentación", ciudad_presentacion: "Ciudad",
+      fecha_vigencia: "Fecha de vencimiento", hora_vigencia: "Hora de vencimiento",
+      formalizacion_es: "Formalización (ES)", formalizacion_en: "Formalización (EN)",
+      extension_es: "Extensión (ES)", extension_en: "Extensión (EN)",
+      nombre_notario: "Nombre del notario", no_notaria_dest: "No. notaría",
+      ciudad_notaria: "Ciudad",
+      pct_total: "% total", agencia1: "Agencia 1", pct_ag1: "% Ag. 1",
+      agencia2: "Agencia 2", pct_ag2: "% Ag. 2",
+      pct_penalidad: "% penalidad", jurisdiccion: "Jurisdicción",
+      pct_parte_afectada: "% parte afectada", pct_agencia: "% agencia",
+      nombre_coord: "Nombre", empresa_coord: "Empresa",
+      nombre_lender: "Nombre del prestamista / lender",
+      dias_due_diligence: "Días due diligence del lender",
+      exclusiones_es: "Exclusiones (ES)", exclusiones_en: "Exclusiones (EN)",
+    },
+  },
   en: {
     steps: ["Parties", "Property", "Deal", "Clauses", "Preview"],
     sections: {
@@ -357,8 +420,9 @@ export default function OfertaGenPage() {
   const [validationResult, setValidationResult] = useState(null);
   const [logoBase64, setLogoBase64] = useState(null);
   const [logoPreview, setLogoPreview] = useState(null);
-  const [idiomaSecundario, setIdiomaSecundario] = useState('en'); // 'en' o 'fr'
-  const t = UI[idiomaSecundario] || UI.en; // i18n activo Sprint V-a
+  const [idiomaSecundario, setIdiomaSecundario] = useState('es'); // 'es', 'en' o 'fr'
+  const t = UI[idiomaSecundario] || UI.es; // i18n activo Sprint V-a
+  const lang2 = idiomaSecundario === 'fr' ? 'fr' : 'en'; // idioma secundario del contrato
   const steps = t.steps;
 
   // Auto-save draft
@@ -448,7 +512,7 @@ export default function OfertaGenPage() {
   const bloques = useMemo(() => renderBlks(ctx), [ctx]);
 
   // ── VALIDADOR SPRINT U ──────────────────────────────────────
-  const validarOferta = useCallback((bloquesRenderizados) => {
+  const validarOferta = useCallback((bloquesRenderizados, contratLang2 = 'en') => {
     const errors = [];
     const warnings = [];
 
@@ -470,8 +534,8 @@ export default function OfertaGenPage() {
     // Placeholders no resueltos — revisa ES + idioma secundario
     const PLACEHOLDER_RE = /\[([A-ZÁÉÍÓÚÑ_]{3,})\]/g;
     bloquesRenderizados.forEach((b) => {
-      const lang2 = idiomaSecundario === 'fr' ? b.fr : b.en;
-      [b.es, lang2].forEach((txt) => {
+      const bLang2 = lang2 === 'fr' ? b.fr : b.en;
+      [b.es, bLang2].forEach((txt) => {
         if (!txt) return;
         const matches = [...txt.matchAll(PLACEHOLDER_RE)];
         matches.forEach(([match]) => {
@@ -483,9 +547,9 @@ export default function OfertaGenPage() {
 
     // Ratio ES/idioma2 — posible traducción incompleta
     bloquesRenderizados.forEach((b) => {
-      const lang2 = idiomaSecundario === 'fr' ? b.fr : b.en;
+      const bLang2 = lang2 === 'fr' ? b.fr : b.en;
       if (!b.es || !lang2) return;
-      const ratio = b.es.length / lang2.length;
+      const ratio = b.es.length / (bLang2||b.es).length;
       if (ratio < 0.4 || ratio > 2.5) {
         const id = b.id || b.t?.es?.slice(0, 20) || '?';
         warnings.push(`Posible traducción incompleta en: "${id}"`);
@@ -493,15 +557,15 @@ export default function OfertaGenPage() {
     });
 
     return { valid: errors.length === 0, errors, warnings };
-  }, [data, idiomaSecundario]);
+  }, [data, lang2]);
 
   const handleGenerateForced = useCallback(async () => {
     setValidationResult(null);
     setGenerating(true);
     try {
-      const blob = await generarDocxBlob(bloques, PLANTILLA.meta, { logoBase64, idiomaSecundario });
+      const blob = await generarDocxBlob(bloques, PLANTILLA.meta, { logoBase64, idiomaSecundario: lang2 });
       const nombre = data.partes.ofertante.personas[0]?.nombre?.replace(/\s+/g, "_") || "OFERTA";
-      const idiomaSufijo = idiomaSecundario === 'fr' ? '_FR' : '';
+      const idiomaSufijo = lang2 === 'fr' ? '_FR' : '';
       const url = URL.createObjectURL(blob);
       const a = document.createElement("a");
       a.href = url; a.download = `OFERTA_${nombre}${idiomaSufijo}.docx`;
@@ -516,16 +580,16 @@ export default function OfertaGenPage() {
   const handleGenerate = useCallback(async () => {
     if (!bloques.length) return;
     // Validar antes de generar
-    const result = validarOferta(bloques);
+    const result = validarOferta(bloques, lang2);
     if (!result.valid || result.warnings.length > 0) {
       setValidationResult(result);
       return;
     }
     setGenerating(true);
     try {
-      const blob = await generarDocxBlob(bloques, PLANTILLA.meta, { logoBase64, idiomaSecundario });
+      const blob = await generarDocxBlob(bloques, PLANTILLA.meta, { logoBase64, idiomaSecundario: lang2 });
       const nombre = data.partes.ofertante.personas[0]?.nombre?.replace(/\s+/g, "_") || "OFERTA";
-      const idiomaSufijo = idiomaSecundario === 'fr' ? '_FR' : '';
+      const idiomaSufijo = lang2 === 'fr' ? '_FR' : '';
       const url = URL.createObjectURL(blob);
       const a = document.createElement("a");
       a.href = url;
@@ -613,7 +677,7 @@ export default function OfertaGenPage() {
           <button onClick={resetAll} className="px-3 py-1.5 text-xs rounded-lg transition" style={{background:"var(--og-surface)",border:"1px solid var(--og-border)",color:"var(--og-secondary)"}}>{t.header.limpiar}</button>
           {/* Toggle idioma UI — Sprint V-a */}
           <div className="flex rounded-lg border border-gray-200 overflow-hidden text-xs font-medium">
-            {[['en','EN'],['fr','FR']].map(([lang, label]) => (
+            {[['es','ES'],['en','EN'],['fr','FR']].map(([lang, label]) => (
               <button key={lang} onClick={() => setIdiomaSecundario(lang)}
                 className={`px-2.5 py-1.5 transition ${idiomaSecundario === lang ? "og-step-active" : ""}`}>
                 {label}
@@ -641,10 +705,10 @@ export default function OfertaGenPage() {
           <PartePanel data={data} pid="propietario" label={t.fields.label_propietario} upParte={upParte} upPersona={upPersona} addPersona={addPersona} rmPersona={rmPersona} t={t} />
           <Section title={t.sections.idioma}>
             <div className="col-span-2 flex items-center gap-4 p-3 rounded-xl" style={{background:"rgba(29,107,184,0.15)",border:"1px solid rgba(56,139,253,0.3)"}}>
-              <span className="text-3xl">{idiomaSecundario === 'fr' ? '🇨🇦' : '🇺🇸'}</span>
+              <span className="text-3xl">{lang2 === 'fr' ? '🇨🇦' : '🇺🇸'}</span>
               <div>
                 <p className="text-sm font-semibold" style={{color:"var(--og-accent-hi)"}}>
-                  {idiomaSecundario === 'fr' ? 'Français' : 'English'}
+                  {lang2 === 'fr' ? 'Français' : 'English'}
                 </p>
                 <p className="text-xs" style={{color:"var(--og-secondary)"}}>{t.sections.idioma_sub}</p>
               </div>
@@ -907,7 +971,7 @@ export default function OfertaGenPage() {
           <div className="rounded-xl overflow-hidden text-xs leading-relaxed" style={{border:"1px solid var(--og-border)"}}>
             <div className="grid grid-cols-2" style={{background:"var(--og-surface)",borderBottom:"1px solid var(--og-border)"}}>
               <div className="px-3 py-2 font-semibold text-[10px] tracking-wider border-r" style={{color:"var(--og-secondary)",borderColor:"var(--og-border)"}}>ESPAÑOL</div>
-              <div className="px-3 py-2 font-semibold text-[10px] tracking-wider" style={{color:"var(--og-secondary)"}}>{idiomaSecundario === 'fr' ? 'FRANÇAIS' : 'ENGLISH'}</div>
+              <div className="px-3 py-2 font-semibold text-[10px] tracking-wider" style={{color:"var(--og-secondary)"}}>{lang2 === 'fr' ? 'FRANÇAIS' : 'ENGLISH'}</div>
             </div>
             {bloques.map((b, i) => {
               if (b.tipo === "firmas") return (
@@ -922,8 +986,8 @@ export default function OfertaGenPage() {
                 </div>
               );
               const tEs = b.titulo?.es || b.t?.es;
-              const tLang2 = b.titulo?.[idiomaSecundario] || b.titulo?.en || b.t?.[idiomaSecundario] || b.t?.en;
-              const textoLang2 = b[idiomaSecundario] || b.en || '';
+              const tLang2 = b.titulo?.[lang2] || b.titulo?.en || b.t?.[lang2] || b.t?.en;
+              const textoLang2 = b[lang2] || b.en || '';
               const num = b.numero || b.n;
               return (
                 <div key={i} className={`grid grid-cols-2 ${i ? "border-t border-gray-100" : ""}`}>
