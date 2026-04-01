@@ -61,7 +61,7 @@ function Toggle({ label, sub, checked, onChange }) {
 function Section({ title, children }) {
   return (
     <div className="mb-6">
-      <h3 className="text-sm font-semibold mb-3 pb-2" style={{color:"var(--og-secondary)",borderBottom:"1px solid var(--og-border)"}}>{title}</h3>
+      <h3 className="text-sm font-semibold mb-3 pb-2" style={{color:"var(--og-primary)",borderBottom:"1px solid var(--og-border)"}}>{title}</h3>
       <div className="grid grid-cols-2 gap-3">{children}</div>
     </div>
   );
@@ -91,7 +91,18 @@ function PartePanel({ data, pid, label, upParte, upPersona, addPersona, rmPerson
       <Input label={t.fields.nacionalidad} value={p.nacionalidad} onChange={v => upParte(pid, "nacionalidad", v)} placeholder={t?.fields?.placeholder_nacionalidad || "canadiense, estadounidense..."} />
       <Input label={t.fields.celular} value={p.celular} onChange={v => upParte(pid, "celular", v)} type="tel" required />
       <Input label={t.fields.email} value={p.email} onChange={v => upParte(pid, "email", v)} type="email" required wide />
-      <Input label={t.fields.domicilio} value={p.domicilio} onChange={v => upParte(pid, "domicilio", v)} wide rows={2} />
+      <div className="col-span-2 flex flex-col gap-2">
+        <div className="flex items-center gap-2">
+          <input type="checkbox"
+            checked={p.domicilio === (t.fields.domicilio_inmueble || "Inmueble materia de la presente oferta")}
+            onChange={e => upParte(pid, "domicilio", e.target.checked ? (t.fields.domicilio_inmueble || "Inmueble materia de la presente oferta") : "")}
+            className="rounded" style={{width:"14px",height:"14px",accentColor:"var(--og-accent-hi)",flexShrink:0}} />
+          <label className="text-xs" style={{color:"var(--og-secondary)",opacity:1}}>
+            {t.fields.domicilio_inmueble || "Inmueble materia de la presente oferta"}
+          </label>
+        </div>
+        <Input label={t.fields.domicilio} value={p.domicilio} onChange={v => upParte(pid, "domicilio", v)} wide rows={2} />
+      </div>
     </Section>
   );
 }
