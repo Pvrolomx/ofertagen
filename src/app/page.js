@@ -61,7 +61,7 @@ function Toggle({ label, sub, checked, onChange }) {
 function Section({ title, children }) {
   return (
     <div className="mb-6">
-      <h3 className="text-sm font-semibold mb-3 pb-2" style={{color:"var(--og-primary)",borderBottom:"1px solid var(--og-border)"}}>{title}</h3>
+      <h3 className="text-base font-semibold mb-4 pb-2 tracking-wide" style={{color:"var(--og-accent-hi)",borderBottom:"2px solid var(--og-border-hi)",letterSpacing:"0.02em"}}>{title}</h3>
       <div className="grid grid-cols-2 gap-3">{children}</div>
     </div>
   );
@@ -135,7 +135,7 @@ const UI = {
       comision: "Comisión inmobiliaria",
       penalidad: "Penalidad / Jurisdicción",
       testigos: "Testigos y aceptación",
-      coordinador: "Coordinador de cierre / Closing coordinator",
+      coordinador: "Coordinador de cierre",
       clausulas: "Cláusulas opcionales",
       clausulas_adicionales: "Cláusulas adicionales",
     },
@@ -196,6 +196,14 @@ const UI = {
       dias_due_diligence: "Días due diligence del lender",
       // Inventario
       exclusiones_es: "Exclusiones (ES)", exclusiones_en: "Exclusiones (EN)",
+      "moneda": "Moneda",
+      "anticipo_gastos": "Anticipo gastos de escrituración",
+      "empresa_escrow_label": "Empresa escrow",
+      "notario_label": "Notario",
+      "iva": "+ IVA 16%",
+      "distribuir_penalidad": "Distribuir penalidad con agencia",
+      "incluir_testigos": "Incluir líneas de testigos",
+      "lugar_aceptacion": "Lugar, fecha y hora de aceptación",
     },
     nav: { siguiente: "Siguiente", anterior: "Anterior", generar: "Descargar .docx" },
     validation: {
@@ -264,6 +272,14 @@ const UI = {
       nombre_lender: "Nombre del prestamista / lender",
       dias_due_diligence: "Días due diligence del lender",
       exclusiones_es: "Exclusiones (ES)", exclusiones_en: "Exclusiones (EN)",
+      "moneda": "Moneda",
+      "anticipo_gastos": "Anticipo gastos de escrituración",
+      "empresa_escrow_label": "Empresa escrow",
+      "notario_label": "Notario",
+      "iva": "+ IVA 16%",
+      "distribuir_penalidad": "Distribuir penalidad con agencia",
+      "incluir_testigos": "Incluir líneas de testigos",
+      "lugar_aceptacion": "Lugar, fecha y hora de aceptación",
     },
   },
   en: {
@@ -330,6 +346,14 @@ const UI = {
       nombre_lender: "Lender name",
       dias_due_diligence: "Lender due diligence days",
       exclusiones_es: "Exclusions (ES)", exclusiones_en: "Exclusions (EN)",
+      "moneda": "Currency",
+      "anticipo_gastos": "Closing cost advance",
+      "empresa_escrow_label": "Escrow company",
+      "notario_label": "Notary",
+      "iva": "+ VAT 16%",
+      "distribuir_penalidad": "Distribute penalty with agency",
+      "incluir_testigos": "Include witness lines",
+      "lugar_aceptacion": "Place, date and time of acceptance",
     },
     nav: { siguiente: "Next", anterior: "Back", generar: "Download .docx" },
     validation: {
@@ -401,6 +425,14 @@ const UI = {
       nombre_lender: "Nom du prêteur",
       dias_due_diligence: "Jours due diligence prêteur",
       exclusiones_es: "Exclusions (ES)", exclusiones_en: "Exclusions (EN)",
+      "moneda": "Devise",
+      "anticipo_gastos": "Avance frais de clôture",
+      "empresa_escrow_label": "Société de séquestre",
+      "notario_label": "Notaire",
+      "iva": "+ TVA 16%",
+      "distribuir_penalidad": "Répartir la pénalité avec l'agence",
+      "incluir_testigos": "Inclure les lignes de témoins",
+      "lugar_aceptacion": "Lieu, date et heure d'acceptation",
     },
     nav: { siguiente: "Suivant", anterior: "Retour", generar: "Télécharger .docx" },
     validation: {
@@ -787,7 +819,7 @@ export default function OfertaGenPage() {
           <Section title={t.sections.precio}>
             <Input label={t.fields.precio_total} value={data.campos.precio?.precio_total} onChange={v=>upCampo("precio","precio_total",v)} type="number" required />
             <div className="flex flex-col gap-1">
-              <label className="text-xs font-medium text-gray-500">Moneda</label>
+              <label className="text-xs font-medium" style={{color:"var(--og-secondary)"}}>{t.fields.moneda}</label>
               <select value={data.campos.precio?.moneda||"USD"} onChange={e=>upCampo("precio","moneda",e.target.value)} className="border border-gray-200 rounded-lg px-3 py-2 text-sm bg-white">
                 <option value="USD">USD</option><option value="MXN">MXN</option>
               </select>
@@ -796,7 +828,7 @@ export default function OfertaGenPage() {
             <Input label={t.fields.dias_depositar} value={data.campos.precio?.dias_deposito||3} onChange={v=>upCampo("precio","dias_deposito",v)} type="number" />
             <Input label={t.fields.dias_saldo} value={data.campos.precio?.dias_saldo||5} onChange={v=>upCampo("precio","dias_saldo",v)} type="number" />
             <div className="flex flex-col gap-1">
-              <label className="text-xs font-medium text-gray-500">Anticipo gastos de escrituración</label>
+              <label className="text-xs font-medium" style={{color:"var(--og-secondary)"}}>{t.fields.anticipo_gastos}</label>
               <select value={data.campos.precio?.anticipo_gastos||"0"} onChange={e=>upCampo("precio","anticipo_gastos",e.target.value)} className="border border-gray-200 rounded-lg px-3 py-2 text-sm bg-white">
                 <option value="0">Sin anticipo</option>
                 <option value="1000">$1,000 USD</option>
@@ -815,7 +847,7 @@ export default function OfertaGenPage() {
           </Section>
           <Section title={t.sections.escrow}>
             <div className="flex flex-col gap-1 col-span-2">
-              <label className="text-xs font-medium text-gray-500">Empresa escrow</label>
+              <label className="text-xs font-medium" style={{color:"var(--og-secondary)"}}>{t.fields.empresa_escrow_label}</label>
               <select value={data.campos.escrow?.empresa_escrow||"ARMOUR SECURE ESCROW, S DE RL DE CV"} onChange={e=>{upCampo("escrow","empresa_escrow",e.target.value); if(e.target.value!=="otro_escrow") upCampo("escrow","empresa_escrow_manual","")}} className="border border-gray-200 rounded-lg px-3 py-2 text-sm bg-white">
                 <option value="ARMOUR SECURE ESCROW, S DE RL DE CV">Armour Secure Escrow, S de RL de CV</option>
                 <option value="SECURE TITLE LATIN AMERICA INC">Secure Title Latin America Inc</option>
@@ -843,7 +875,7 @@ export default function OfertaGenPage() {
           </Section>
           <Section title={t.sections.notario}>
             <div className="flex flex-col gap-1 col-span-2">
-              <label className="text-xs font-medium text-gray-500">Notario <span className="text-red-500">*</span></label>
+              <label className="text-xs font-medium" style={{color:"var(--og-secondary)"}}>{t.fields.notario_label} <span style={{color:"var(--og-danger)"}}>*</span></label>
               <select value={data.campos.notario?.notario_seleccion||""} onChange={e=>upCampo("notario","notario_seleccion",e.target.value)} className="border border-gray-200 rounded-lg px-3 py-2 text-sm bg-white">
                 <option value="">— Seleccionar notario —</option>
                 <optgroup label="Puerto Vallarta, Jalisco">
@@ -906,7 +938,7 @@ export default function OfertaGenPage() {
             <Input label={t.fields.pct_total} value={data.campos.comision?.porcentaje_total} onChange={v=>upCampo("comision","porcentaje_total",v)} />
             <div className="flex items-center gap-2 self-end pb-2">
               <input type="checkbox" checked={!!data.campos.comision?.incluye_iva} onChange={e=>upCampo("comision","incluye_iva",e.target.checked)} className="rounded" />
-              <label className="text-xs text-gray-500">+ IVA 16%</label>
+              <label className="text-xs" style={{color:"var(--og-secondary)"}}>{t.fields.iva}</label>
             </div>
             <Input label={t.fields.agencia1} value={data.campos.comision?.agencia1_nombre} onChange={v=>upCampo("comision","agencia1_nombre",v)} />
             <Input label={t.fields.pct_ag1} value={data.campos.comision?.agencia1_porcentaje} onChange={v=>upCampo("comision","agencia1_porcentaje",v)} />
@@ -919,7 +951,7 @@ export default function OfertaGenPage() {
             <div className="col-span-2 flex items-center gap-3 p-3 rounded-lg" style={{background:"var(--og-surface)",border:"1px solid var(--og-border)"}}>
               <input type="checkbox" checked={!!data.campos.penalidad?.distribuir_agencia} onChange={e=>upCampo("penalidad","distribuir_agencia",e.target.checked)} className="rounded" />
               <div>
-                <label className="text-sm font-medium" style={{color:"var(--og-primary)"}}>Distribuir penalidad con agencia</label>
+                <label className="text-sm font-medium" style={{color:"var(--og-primary)"}}>{t.fields.distribuir_penalidad}</label>
                 <p className="text-xs" style={{color:"var(--og-secondary)"}}>Parte afectada + agencia de RE</p>
               </div>
             </div>
@@ -932,14 +964,14 @@ export default function OfertaGenPage() {
             <div className="col-span-2 flex items-center gap-3 p-3 rounded-lg" style={{background:"var(--og-surface)",border:"1px solid var(--og-border)"}}>
               <input type="checkbox" checked={!!data.campos.testigos?.incluir_testigos} onChange={e=>upCampo("testigos","incluir_testigos",e.target.checked)} className="rounded" />
               <div>
-                <label className="text-sm font-medium" style={{color:"var(--og-primary)"}}>Incluir líneas de testigos</label>
+                <label className="text-sm font-medium" style={{color:"var(--og-primary)"}}>{t.fields.incluir_testigos}</label>
                 <p className="text-xs" style={{color:"var(--og-secondary)"}}>Testigo 1 y Testigo 2 en la página de firma</p>
               </div>
             </div>
             <div className="col-span-2 flex items-center gap-3 p-3 rounded-lg" style={{background:"var(--og-surface)",border:"1px solid var(--og-border)"}}>
               <input type="checkbox" checked={data.campos.testigos?.incluir_aceptacion!==false} onChange={e=>upCampo("testigos","incluir_aceptacion",e.target.checked)} className="rounded" />
               <div>
-                <label className="text-sm font-medium" style={{color:"var(--og-primary)"}}>Lugar, fecha y hora de aceptación</label>
+                <label className="text-sm font-medium" style={{color:"var(--og-primary)"}}>{t.fields.lugar_aceptacion}</label>
                 <p className="text-xs" style={{color:"var(--og-secondary)"}}>Línea para que el vendedor anote cuándo aceptó</p>
               </div>
             </div>
