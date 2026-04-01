@@ -611,12 +611,14 @@ export default function OfertaGenPage() {
           <PartePanel data={data} pid="ofertante" label={idiomaSecundario === "fr" ? "Ofertante / Offrant" : "Ofertante / Buyer"} upParte={upParte} upPersona={upPersona} addPersona={addPersona} rmPersona={rmPersona} t={t} />
           <PartePanel data={data} pid="propietario" label={idiomaSecundario === "fr" ? "Propietario / Propriétaire" : "Propietario / Owner"} upParte={upParte} upPersona={upPersona} addPersona={addPersona} rmPersona={rmPersona} t={t} />
           <Section title={t.sections.idioma}>
-            <div className="col-span-2 flex flex-col gap-1">
-              <label className="text-xs font-medium text-gray-500">¿En qué idioma prefiere su copia el comprador? / {t.sections.idioma_sub}</label>
-              <select value={idiomaSecundario} onChange={(e) => setIdiomaSecundario(e.target.value)} className="border border-gray-200 dark:border-gray-600 rounded-lg px-3 py-2 text-sm bg-white dark:bg-gray-800">
-                <option value="en">🇺🇸 English — Estadounidense / Canadiense anglófono</option>
-                <option value="fr">🇨🇦 Français — Franco-canadien / Français</option>
-              </select>
+            <div className="col-span-2 flex items-center gap-4 p-3 bg-blue-50 dark:bg-blue-900/20 border border-blue-100 dark:border-blue-800 rounded-xl">
+              <span className="text-3xl">{idiomaSecundario === 'fr' ? '🇨🇦' : '🇺🇸'}</span>
+              <div>
+                <p className="text-sm font-semibold text-blue-800 dark:text-blue-200">
+                  {idiomaSecundario === 'fr' ? 'Français' : 'English'}
+                </p>
+                <p className="text-xs text-blue-600 dark:text-blue-400">{t.sections.idioma_sub}</p>
+              </div>
             </div>
           </Section>
         </>}
