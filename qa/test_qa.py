@@ -66,8 +66,8 @@ log("Site: Campo Email", 'email' in html.lower())
 log("Site: Campo Domicilio en fuente i18n", 'Domicilio' in _pjs_early)
 
 # Sections
-log("Site: Sección 'Ofertante / Buyer'", 'Ofertante / Buyer' in html)
-log("Site: Sección 'Propietario / Owner'", 'Propietario / Owner' in html)
+log("Site: Sección Ofertante dinámico", 'label_ofertante' in _pjs_early)
+log("Site: Sección Propietario dinámico", 'label_propietario' in _pjs_early)
 
 
 # ═══════════════════════════════════════════════════════════════
