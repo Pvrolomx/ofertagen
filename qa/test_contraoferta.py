@@ -88,6 +88,10 @@ for bloque_id, descripcion in bloques_esperados:
     log(f"{bloque_id}: {descripcion}",
         f"id: '{bloque_id}'" in plantilla and "condicional: true" in plantilla)
 
+# Validar que mod_deposito incluye empresa
+log("mod_deposito: incluye empresa escrow",
+    "nueva_empresa_escrow" in plantilla)
+
 # ============================================================
 # 4. PLANTILLA — BLOQUES SIEMPRE ACTIVOS
 # ============================================================
@@ -166,6 +170,9 @@ log("Resuelve: quien_presenta",
 
 log("Calcula: fecha_limite",
     "calcularLimite" in ensamblador)
+
+log("Resuelve: empresa escrow",
+    "resolverEmpresaEscrow" in ensamblador)
 
 log("Traduce: hora de vigencia",
     "traducirHora" in ensamblador)

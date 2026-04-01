@@ -112,8 +112,16 @@ const PLANTILLA_CONTRAOFERTA = {
           { valor: '18:00 horas', texto: '18:00 hrs' },
         ], default: 'medianoche' },
         
-        // Toggle 6: Depósito escrow
+        // Toggle 6: Depósito escrow (monto y/o empresa)
         { id: 'nuevo_deposito', tipo: 'moneda', requerido: false, etiqueta: 'Nuevo depósito escrow (USD)', etiqueta_en: 'New escrow deposit (USD)', etiqueta_fr: 'Nouveau dépôt escrow (USD)' },
+        { id: 'nueva_empresa_escrow', tipo: 'select', requerido: false, etiqueta: 'Nueva empresa escrow', etiqueta_en: 'New escrow company', etiqueta_fr: 'Nouvelle société escrow', opciones: [
+          { valor: '', texto: '— Sin cambio / No change —' },
+          { valor: 'ARMOUR SECURE ESCROW, S DE RL DE CV', texto: 'ARMOUR SECURE ESCROW' },
+          { valor: 'SECURE TITLE LATIN AMERICA INC', texto: 'SECURE TITLE LATIN AMERICA' },
+          { valor: 'TLA LLC', texto: 'TLA LLC' },
+          { valor: 'otro_escrow', texto: 'Otra empresa (captura manual)' },
+        ] },
+        { id: 'nueva_empresa_escrow_manual', tipo: 'texto', requerido: false, etiqueta: 'Nombre de empresa escrow (si otra)', etiqueta_en: 'Escrow company name (if other)', etiqueta_fr: 'Nom de la société escrow (si autre)' },
         
         // Toggle 7: Cláusula libre
         { id: 'clausula_libre_es', tipo: 'textarea', requerido: false, etiqueta: 'Cláusula adicional (español)', etiqueta_en: 'Additional clause (Spanish)', etiqueta_fr: 'Clause additionnelle (espagnol)' },
@@ -226,19 +234,39 @@ const PLANTILLA_CONTRAOFERTA = {
       }),
     },
 
-    // ---- TOGGLE 6: DEPÓSITO ESCROW ----
+    // ---- TOGGLE 6: DEPÓSITO ESCROW Y/O EMPRESA ----
     {
       id: 'mod_deposito',
       condicional: true,
       default: false,
-      etiqueta: 'Modificar depósito escrow',
-      etiqueta_en: 'Modify escrow deposit',
-      etiqueta_fr: 'Modifier le dépôt escrow',
-      render: (ctx) => ({
-        es: `**SEXTA. DEPÓSITO EN ESCROW.**\nEl nuevo monto del depósito en escrow será de ${ctx.modificaciones.nuevo_deposito_completo}.`,
-        en: `**SIXTH. ESCROW DEPOSIT.**\nThe new escrow deposit amount shall be ${ctx.modificaciones.nuevo_deposito_completo}.`,
-        fr: `**SIXIÈME. DÉPÔT ESCROW.**\nLe nouveau montant du dépôt escrow sera de ${ctx.modificaciones.nuevo_deposito_completo}.`,
-      }),
+      etiqueta: 'Modificar depósito escrow o empresa',
+      etiqueta_en: 'Modify escrow deposit or company',
+      etiqueta_fr: 'Modifier le dépôt escrow ou la société',
+      render: (ctx) => {
+        // Construir texto según qué cambió
+        const cambioMonto = ctx.modificaciones.nuevo_deposito_completo;
+        const cambioEmpresa = ctx.modificaciones.nueva_empresa_escrow;
+        
+        let textoEs = '**SEXTA. DEPÓSITO EN ESCROW.**\n';
+        let textoEn = '**SIXTH. ESCROW DEPOSIT.**\n';
+        let textoFr = '**SIXIÈME. DÉPÔT ESCROW.**\n';
+        
+        if (cambioMonto && cambioEmpresa) {
+          textoEs += `El nuevo monto del depósito en escrow será de ${cambioMonto}, y se depositará con ${cambioEmpresa}.`;
+          textoEn += `The new escrow deposit amount shall be ${cambioMonto}, to be deposited with ${cambioEmpresa}.`;
+          textoFr += `Le nouveau montant du dépôt escrow sera de ${cambioMonto}, à déposer auprès de ${cambioEmpresa}.`;
+        } else if (cambioMonto) {
+          textoEs += `El nuevo monto del depósito en escrow será de ${cambioMonto}.`;
+          textoEn += `The new escrow deposit amount shall be ${cambioMonto}.`;
+          textoFr += `Le nouveau montant du dépôt escrow sera de ${cambioMonto}.`;
+        } else if (cambioEmpresa) {
+          textoEs += `El depósito en escrow se realizará con ${cambioEmpresa}.`;
+          textoEn += `The escrow deposit shall be made with ${cambioEmpresa}.`;
+          textoFr += `Le dépôt escrow sera effectué auprès de ${cambioEmpresa}.`;
+        }
+        
+        return { es: textoEs, en: textoEn, fr: textoFr };
+      },
     },
 
     // ---- TOGGLE 7: CLÁUSULA LIBRE ----

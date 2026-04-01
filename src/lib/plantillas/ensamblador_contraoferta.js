@@ -46,6 +46,18 @@ function traducirHora(horaEs) {
 }
 
 /**
+ * Resuelve empresa escrow (catálogo o manual).
+ */
+function resolverEmpresaEscrow(mods) {
+  const seleccion = mods.nueva_empresa_escrow || '';
+  if (!seleccion) return '';
+  if (seleccion === 'otro_escrow') {
+    return mods.nueva_empresa_escrow_manual || '';
+  }
+  return seleccion;
+}
+
+/**
  * Calcula fecha/hora límite sumando horas a la fecha de contraoferta.
  */
 function calcularLimite(fechaBase, horas) {
@@ -157,8 +169,9 @@ export function ensamblarContextoContraoferta(plantilla, datos) {
     nueva_hora_vigencia_en: horaVig.en,
     nueva_hora_vigencia_fr: horaVig.fr,
     
-    // Depósito
+    // Depósito (monto y/o empresa)
     nuevo_deposito_completo: nuevoDeposito > 0 ? bloquePrecio(nuevoDeposito, 'USD').completo : '',
+    nueva_empresa_escrow: resolverEmpresaEscrow(mods),
     
     // Cláusula libre
     clausula_libre_es: mods.clausula_libre_es || '',
