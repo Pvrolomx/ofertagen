@@ -56,14 +56,14 @@ log("Site: Botón 'Limpiar' en fuente i18n", "t.header.limpiar" in _pjs_early)
 log("Site: Botón 'Siguiente' en fuente i18n", "t.nav.siguiente" in _pjs_early)
 
 # Form elements
-log("Site: Input 'NOMBRE COMPLETO'", 'NOMBRE COMPLETO' in html)
+log("Site: Input 'NOMBRE COMPLETO' en fuente i18n", 'NOMBRE COMPLETO' in _pjs_early)
 log("Site: Botón género M", '>M<' in html)
 log("Site: Botón género F", '>F<' in html)
 log("Site: '+ Agregar persona'", 'Agregar persona' in html)
-log("Site: Campo Nacionalidad", 'Nacionalidad' in html)
-log("Site: Campo Celular/WhatsApp", 'Celular/WhatsApp' in html)
+log("Site: Campo Nacionalidad en fuente i18n", 'Nacionalidad' in _pjs_early)
+log("Site: Campo Celular/WhatsApp en fuente i18n", 'Celular/WhatsApp' in _pjs_early)
 log("Site: Campo Email", 'email' in html.lower())
-log("Site: Campo Domicilio", 'Domicilio' in html)
+log("Site: Campo Domicilio en fuente i18n", 'Domicilio' in _pjs_early)
 
 # Sections
 log("Site: Sección 'Ofertante / Buyer'", 'Ofertante / Buyer' in html)
@@ -496,7 +496,7 @@ log("Sprint V-b: t.fields.jurisdiccion en page.js",
 log("Sprint V-b: PartePanel recibe prop t",
     pagejs and "rmPersona, t })" in pagejs)
 log("Sprint V-b: PartePanel Ofertante label dinámico FR",
-    pagejs and "Offrant / Acheteur" in pagejs)
+    pagejs and "Ofertante / Offrant" in pagejs)
 log("Sprint V-b: fields EN en objeto UI",
     pagejs and '"Total price"' in pagejs)
 log("Sprint V-b: fields FR en objeto UI",
