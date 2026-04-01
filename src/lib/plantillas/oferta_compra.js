@@ -157,11 +157,11 @@ const PLANTILLA_OFERTA_COMPRA = {
       visible_si: 'bloques.escrow',
       campos: [
         { id: 'empresa_escrow', tipo: 'select', requerido: true, etiqueta: 'Empresa escrow', opciones: [
-          { valor: 'STEWART TITLE LATIN AMERICA', texto: 'Stewart Title Latin America (STLA)' },
-          { valor: 'ARMOUR SETTLEMENT SERVICES', texto: 'Armour Settlement Services' },
-          { valor: 'TITLE LATIN AMERICA (TLA)', texto: 'Title Latin America (TLA)' },
-          { valor: 'P&A ESCROW', texto: 'P&A Escrow' },
-        ], default: 'STEWART TITLE LATIN AMERICA' },
+          { valor: 'ARMOUR SECURE ESCROW, S DE RL DE CV', texto: 'Armour Secure Escrow, S de RL de CV' },
+          { valor: 'SECURE TITLE LATIN AMERICA INC', texto: 'Secure Title Latin America Inc' },
+          { valor: 'TLA LLC', texto: 'TLA LLC' },
+          { valor: 'otro_escrow', texto: 'Otra empresa (captura manual)' },
+        ], default: 'ARMOUR SECURE ESCROW, S DE RL DE CV' },
         { id: 'honorarios_escrow', tipo: 'moneda', requerido: false, etiqueta: 'Honorarios escrow (USD)', default: 750 },
       ],
     },

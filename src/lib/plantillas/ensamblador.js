@@ -202,6 +202,10 @@ export function ensamblarContexto(plantilla, datos) {
 
   // Honorarios escrow
   ctx.escrow = datos.campos?.escrow || {};
+  // Resolver empresa manual si aplica
+  if (ctx.escrow.empresa_escrow === 'otro_escrow') {
+    ctx.escrow.empresa_escrow = ctx.escrow.empresa_escrow_manual || 'EMPRESA ESCROW';
+  }
   const honEscrow = datos.campos?.escrow?.honorarios_escrow || 750;
   ctx.escrow.honorarios_escrow = honEscrow;
   if (honEscrow > 0) {

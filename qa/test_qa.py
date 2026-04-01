@@ -610,8 +610,8 @@ NOTARIOS = ["pv_1", "buc_29", "buc_2", "pv_3", "nv_4", "pv_5", "buc_19", "buc_31
 for n in NOTARIOS:
     log(f"Catálogo: notario '{n}' en plantilla", n in plantilla)
 
-ESCROWS = ["STEWART TITLE LATIN AMERICA", "ARMOUR SETTLEMENT SERVICES",
-           "TITLE LATIN AMERICA (TLA)", "P&A ESCROW"]
+ESCROWS = ["ARMOUR SECURE ESCROW, S DE RL DE CV", "SECURE TITLE LATIN AMERICA INC",
+           "TLA LLC", "otro_escrow"]
 for e in ESCROWS:
     log(f"Catálogo: escrow '{e}'", e in plantilla)
 
