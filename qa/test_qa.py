@@ -606,7 +606,7 @@ log("DOCX: firmas section", "firma" in generador.lower())
 # ═══════════════════════════════════════════════════════════════
 print("\n══ 12. CATÁLOGOS ══")
 
-NOTARIOS = ["careaga_12", "meza_29", "ramirez_2", "agraz_3", "navarrete_1", "leon_5"]
+NOTARIOS = ["pv_1", "buc_29", "buc_2", "pv_3", "nv_4", "pv_5", "buc_19", "buc_31", "nv_10", "nv_33", "tep_8", "tep_42", "mas_1"]
 for n in NOTARIOS:
     log(f"Catálogo: notario '{n}' en plantilla", n in plantilla)
 
