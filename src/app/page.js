@@ -96,6 +96,109 @@ function PartePanel({ data, pid, label, upParte, upPersona, addPersona, rmPerson
   );
 }
 
+
+// ============================================================
+// i18n UI — Sprint V-a
+// ============================================================
+const UI = {
+  es: {
+    steps: ["Partes", "Inmueble", "Operación", "Cláusulas", "Preview"],
+    sections: {
+      idioma: "Idioma del comprador",
+      idioma_sub: "¿En qué idioma prefiere su copia el comprador?",
+      inmueble: "Datos del inmueble",
+      antecedente: "Antecedente registral",
+      precio: "Precio y pagos",
+      escrow: "Escrow",
+      fechas: "Fechas y plazos",
+      notario: "Notario designado",
+      comision: "Comisión inmobiliaria",
+      penalidad: "Penalidad / Jurisdicción",
+      testigos: "Testigos y aceptación",
+      coordinador: "Coordinador de cierre / Closing coordinator",
+      clausulas: "Cláusulas opcionales",
+      clausulas_adicionales: "Cláusulas adicionales",
+    },
+    header: {
+      cargar: "Cargar", guardar: "Guardar", limpiar: "Limpiar",
+    },
+    preview: {
+      title: "Vista previa bilingüe",
+      descargar: "Descargar .docx",
+      generando: "Generando...",
+    },
+    nav: { siguiente: "Siguiente", anterior: "Anterior", generar: "Descargar .docx" },
+    validation: {
+      errores: {t.validation.errores}, advertencias: {t.validation.advertencias},
+      corregir: "Corregir", generar_igual: "Generar de todas formas",
+    },
+  },
+  en: {
+    steps: ["Parties", "Property", "Transaction", "Clauses", "Preview"],
+    sections: {
+      idioma: "Buyer's language",
+      idioma_sub: "Buyer's preferred language for their copy",
+      inmueble: "Property details",
+      antecedente: "Title history",
+      precio: "Price & payments",
+      escrow: "Escrow",
+      fechas: "Dates & deadlines",
+      notario: "Designated notary",
+      comision: "Real estate commission",
+      penalidad: "Penalty / Jurisdiction",
+      testigos: "Witnesses & acceptance",
+      coordinador: "Closing coordinator",
+      clausulas: "Optional clauses",
+      clausulas_adicionales: "Additional clauses",
+    },
+    header: {
+      cargar: "Load", guardar: "Save", limpiar: "Clear",
+    },
+    preview: {
+      title: "Bilingual preview",
+      descargar: "Download .docx",
+      generando: "Generating...",
+    },
+    nav: { siguiente: "Next", anterior: "Back", generar: "Download .docx" },
+    validation: {
+      errores: "Critical errors", advertencias: "Warnings",
+      corregir: "Fix errors", generar_igual: "Generate anyway",
+    },
+  },
+  fr: {
+    steps: ["Parties", "Propriété", "Transaction", "Clauses", "Aperçu"],
+    sections: {
+      idioma: "Langue de l'acheteur",
+      idioma_sub: "Langue préférée de l'acheteur pour sa copie",
+      inmueble: "Détails du bien",
+      antecedente: "Historique du titre",
+      precio: "Prix et paiements",
+      escrow: "Séquestre",
+      fechas: "Dates et délais",
+      notario: "Notaire désigné",
+      comision: "Commission immobilière",
+      penalidad: "Pénalité / Juridiction",
+      testigos: "Témoins et acceptation",
+      coordinador: "Coordinateur de clôture",
+      clausulas: "Clauses optionnelles",
+      clausulas_adicionales: "Clauses additionnelles",
+    },
+    header: {
+      cargar: "Charger", guardar: "Sauvegarder", limpiar: "Effacer",
+    },
+    preview: {
+      title: "Aperçu bilingue",
+      descargar: "Télécharger .docx",
+      generando: "Génération...",
+    },
+    nav: { siguiente: "Suivant", anterior: "Retour", generar: "Télécharger .docx" },
+    validation: {
+      errores: "Erreurs critiques", advertencias: "Avertissements",
+      corregir: "Corriger", generar_igual: "Générer quand même",
+    },
+  },
+};
+
 // ============================================================
 // MAIN APP
 // ============================================================
@@ -107,7 +210,8 @@ export default function OfertaGenPage() {
   const [logoBase64, setLogoBase64] = useState(null);
   const [logoPreview, setLogoPreview] = useState(null);
   const [idiomaSecundario, setIdiomaSecundario] = useState('en'); // 'en' o 'fr'
-  const steps = ["Partes", "Inmueble", "Operación", "Cláusulas", "Preview"];
+  const t = UI[idiomaSecundario] || UI.en; // i18n activo Sprint V-a
+  const steps = t.steps;
 
   // Auto-save draft
   useEffect(() => {
@@ -321,12 +425,12 @@ export default function OfertaGenPage() {
             <div className="flex gap-3 mt-5">
               <button onClick={() => setValidationResult(null)}
                 className="flex-1 px-4 py-2 text-sm border border-gray-300 dark:border-gray-600 rounded-xl hover:bg-gray-50 dark:hover:bg-gray-800 transition">
-                Corregir
+                {t.validation.corregir}
               </button>
               {validationResult.valid && (
                 <button onClick={handleGenerateForced}
                   className="flex-1 px-4 py-2 text-sm bg-green-600 hover:bg-green-700 text-white rounded-xl transition">
-                  Generar de todas formas
+                  {t.validation.generar_igual}
                 </button>
               )}
             </div>
@@ -352,13 +456,22 @@ export default function OfertaGenPage() {
             </button>
           )}
           <button onClick={importDraft} className="px-3 py-1.5 text-xs bg-blue-50 dark:bg-blue-900/20 text-blue-700 dark:text-blue-300 border border-blue-200 dark:border-blue-800 rounded-lg hover:bg-blue-100 transition flex items-center gap-1">
-            <span>📂</span> Cargar
+            <span>📂</span> {t.header.cargar}
           </button>
           <button onClick={exportDraft} className="px-3 py-1.5 text-xs bg-green-50 dark:bg-green-900/20 text-green-700 dark:text-green-300 border border-green-200 dark:border-green-800 rounded-lg hover:bg-green-100 transition flex items-center gap-1">
-            <span>💾</span> Guardar
+            <span>💾</span> {t.header.guardar}
           </button>
           <button onClick={loadDemo} className="px-3 py-1.5 text-xs bg-amber-50 dark:bg-amber-900/20 text-amber-700 dark:text-amber-300 border border-amber-200 dark:border-amber-800 rounded-lg hover:bg-amber-100 transition">Demo</button>
-          <button onClick={resetAll} className="px-3 py-1.5 text-xs bg-gray-50 dark:bg-gray-800 text-gray-600 dark:text-gray-400 border border-gray-200 dark:border-gray-700 rounded-lg hover:bg-gray-100 transition">Limpiar</button>
+          <button onClick={resetAll} className="px-3 py-1.5 text-xs bg-gray-50 dark:bg-gray-800 text-gray-600 dark:text-gray-400 border border-gray-200 dark:border-gray-700 rounded-lg hover:bg-gray-100 transition">{t.header.limpiar}</button>
+          {/* Toggle idioma UI — Sprint V-a */}
+          <div className="flex rounded-lg border border-gray-200 dark:border-gray-700 overflow-hidden text-xs font-medium">
+            {[['en','EN'],['fr','FR']].map(([lang, label]) => (
+              <button key={lang} onClick={() => setIdiomaSecundario(lang)}
+                className={`px-2.5 py-1.5 transition ${idiomaSecundario === lang ? 'bg-blue-500 text-white' : 'bg-white dark:bg-gray-800 text-gray-500 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-700'}`}>
+                {label}
+              </button>
+            ))}
+          </div>
         </div>
       </div>
 
@@ -378,9 +491,9 @@ export default function OfertaGenPage() {
         {step === 0 && <>
           <PartePanel data={data} pid="ofertante" label="Ofertante / Buyer" upParte={upParte} upPersona={upPersona} addPersona={addPersona} rmPersona={rmPersona} />
           <PartePanel data={data} pid="propietario" label="Propietario / Owner" upParte={upParte} upPersona={upPersona} addPersona={addPersona} rmPersona={rmPersona} />
-          <Section title="Idioma del comprador / Buyer&apos;s language / Langue de l&apos;acheteur">
+          <Section title={t.sections.idioma}>
             <div className="col-span-2 flex flex-col gap-1">
-              <label className="text-xs font-medium text-gray-500">¿En qué idioma prefiere su copia el comprador? / Buyer&apos;s preferred language / Langue préférée</label>
+              <label className="text-xs font-medium text-gray-500">¿En qué idioma prefiere su copia el comprador? / {t.sections.idioma_sub}</label>
               <select value={idiomaSecundario} onChange={(e) => setIdiomaSecundario(e.target.value)} className="border border-gray-200 dark:border-gray-600 rounded-lg px-3 py-2 text-sm bg-white dark:bg-gray-800">
                 <option value="en">🇺🇸 English — Estadounidense / Canadiense anglófono</option>
                 <option value="fr">🇨🇦 Français — Franco-canadien / Français</option>
@@ -390,7 +503,7 @@ export default function OfertaGenPage() {
         </>}
 
         {step === 1 && <>
-          <Section title="Datos del inmueble">
+          <Section title={t.sections.inmueble}>
             <Input label="Descripción corta" value={data.campos.inmueble?.descripcion_corta} onChange={v=>upCampo("inmueble","descripcion_corta",v)} placeholder="Departamento 43 del Condo Orquídeas" required wide />
             <Input label="Ubicación completa" value={data.campos.inmueble?.ubicacion_completa} onChange={v=>upCampo("inmueble","ubicacion_completa",v)} wide rows={3} required />
             <Input label="Nivel/Torre" value={data.campos.inmueble?.nivel_torre} onChange={v=>upCampo("inmueble","nivel_torre",v)} />
@@ -411,7 +524,7 @@ export default function OfertaGenPage() {
               <Input label="Notas uso exclusivo (EN)" value={data.campos.inmueble?.notas_uso_exclusivo_en} onChange={v=>upCampo("inmueble","notas_uso_exclusivo_en",v)} wide rows={2} placeholder="a parking space of 14.40 sq m and a storage room of 2.80 sq m" />
             </>}
           </Section>
-          <Section title="Antecedente registral">
+          <Section title={t.sections.antecedente}>
             <Input label="Fecha escritura" value={data.campos.antecedente?.fecha_escritura} onChange={v=>upCampo("antecedente","fecha_escritura",v)} type="date" required />
             <Input label="No. escritura" value={data.campos.antecedente?.numero_escritura} onChange={v=>upCampo("antecedente","numero_escritura",v)} required />
             <Input label="Notario" value={data.campos.antecedente?.notario_anterior} onChange={v=>upCampo("antecedente","notario_anterior",v)} required />
@@ -449,7 +562,7 @@ export default function OfertaGenPage() {
         </>}
 
         {step === 2 && <>
-          <Section title="Precio y pagos">
+          <Section title={t.sections.precio}>
             <Input label="Precio total" value={data.campos.precio?.precio_total} onChange={v=>upCampo("precio","precio_total",v)} type="number" required />
             <div className="flex flex-col gap-1">
               <label className="text-xs font-medium text-gray-500">Moneda</label>
@@ -478,7 +591,7 @@ export default function OfertaGenPage() {
               <div><span className="text-gray-500">Saldo:</span> <span className="font-medium">{ctx.saldo?.completo}</span></div>
             </div>}
           </Section>
-          <Section title="Escrow">
+          <Section title={t.sections.escrow}>
             <div className="flex flex-col gap-1 col-span-2">
               <label className="text-xs font-medium text-gray-500">Empresa escrow</label>
               <select value={data.campos.escrow?.empresa_escrow||"STEWART TITLE LATIN AMERICA"} onChange={e=>upCampo("escrow","empresa_escrow",e.target.value)} className="border border-gray-200 dark:border-gray-600 rounded-lg px-3 py-2 text-sm bg-white dark:bg-gray-800">
@@ -490,7 +603,7 @@ export default function OfertaGenPage() {
             </div>
             <Input label="Honorarios escrow (USD)" value={data.campos.escrow?.honorarios_escrow||750} onChange={v=>upCampo("escrow","honorarios_escrow",v)} type="number" />
           </Section>
-          <Section title="Fechas y plazos">
+          <Section title={t.sections.fechas}>
             <Input label="Fecha presentación" value={data.campos.fechas?.fecha_presentacion} onChange={v=>upCampo("fechas","fecha_presentacion",v)} type="date" required />
             <Input label="Ciudad" value={data.campos.fechas?.ciudad_presentacion} onChange={v=>upCampo("fechas","ciudad_presentacion",v)} required />
             <Input label="Fecha de vencimiento" value={data.campos.fechas?.fecha_vigencia} onChange={v=>upCampo("fechas","fecha_vigencia",v)} type="date" required />
@@ -500,7 +613,7 @@ export default function OfertaGenPage() {
             <Input label="Extensión (ES)" value={data.campos.fechas?.fecha_extension} onChange={v=>upCampo("fechas","fecha_extension",v)} />
             <Input label="Extensión (EN)" value={data.campos.fechas?.fecha_extension_en} onChange={v=>upCampo("fechas","fecha_extension_en",v)} />
           </Section>
-          <Section title="Notario designado">
+          <Section title={t.sections.notario}>
             <div className="flex flex-col gap-1 col-span-2">
               <label className="text-xs font-medium text-gray-500">Notario <span className="text-red-500">*</span></label>
               <select value={data.campos.notario?.notario_seleccion||""} onChange={e=>upCampo("notario","notario_seleccion",e.target.value)} className="border border-gray-200 dark:border-gray-600 rounded-lg px-3 py-2 text-sm bg-white dark:bg-gray-800">
@@ -538,7 +651,7 @@ export default function OfertaGenPage() {
               </select>
             </div>
           </Section>}
-          <Section title="Comisión inmobiliaria">
+          <Section title={t.sections.comision}>
             <Input label="% total" value={data.campos.comision?.porcentaje_total} onChange={v=>upCampo("comision","porcentaje_total",v)} />
             <div className="flex items-center gap-2 self-end pb-2">
               <input type="checkbox" checked={!!data.campos.comision?.incluye_iva} onChange={e=>upCampo("comision","incluye_iva",e.target.checked)} className="rounded" />
@@ -549,7 +662,7 @@ export default function OfertaGenPage() {
             <Input label="Agencia 2" value={data.campos.comision?.agencia2_nombre} onChange={v=>upCampo("comision","agencia2_nombre",v)} />
             <Input label="% Ag. 2" value={data.campos.comision?.agencia2_porcentaje} onChange={v=>upCampo("comision","agencia2_porcentaje",v)} />
           </Section>
-          <Section title="Penalidad / Jurisdicción">
+          <Section title={t.sections.penalidad}>
             <Input label="% penalidad" value={data.campos.penalidad?.porcentaje_penalidad} onChange={v=>upCampo("penalidad","porcentaje_penalidad",v)} />
             <Input label="Jurisdicción" value={data.campos.jurisdiccion?.ciudad_jurisdiccion} onChange={v=>upCampo("jurisdiccion","ciudad_jurisdiccion",v)} />
             <div className="col-span-2 flex items-center gap-3 p-3 bg-gray-50 dark:bg-gray-800/50 rounded-lg">
@@ -564,7 +677,7 @@ export default function OfertaGenPage() {
               <Input label="% agencia" value={data.campos.penalidad?.pct_agencia||"40%"} onChange={v=>upCampo("penalidad","pct_agencia",v)} />
             </>}
           </Section>
-          <Section title="Testigos y aceptación">
+          <Section title={t.sections.testigos}>
             <div className="col-span-2 flex items-center gap-3 p-3 bg-gray-50 dark:bg-gray-800/50 rounded-lg">
               <input type="checkbox" checked={!!data.campos.testigos?.incluir_testigos} onChange={e=>upCampo("testigos","incluir_testigos",e.target.checked)} className="rounded" />
               <div>
@@ -580,7 +693,7 @@ export default function OfertaGenPage() {
               </div>
             </div>
           </Section>
-          <Section title="Coordinador de cierre / Closing coordinator">
+          <Section title={t.sections.coordinador}>
             <Input label="Nombre" value={data.campos.coordinador?.nombre_coordinador} onChange={v=>upCampo("coordinador","nombre_coordinador",v)} placeholder="Lic. Rolando Romero García" />
             <Input label="Empresa" value={data.campos.coordinador?.empresa_coordinador} onChange={v=>upCampo("coordinador","empresa_coordinador",v)} placeholder="Expat Advisor MX" />
             <Input label="Celular/WhatsApp" value={data.campos.coordinador?.celular_coordinador} onChange={v=>upCampo("coordinador","celular_coordinador",v)} type="tel" />
@@ -589,7 +702,7 @@ export default function OfertaGenPage() {
         </>}
 
         {step === 3 && <div className="space-y-3">
-          <h2 className="text-lg font-semibold mb-1">Cláusulas opcionales</h2>
+          <h2 className="text-lg font-semibold mb-1">{t.sections.clausulas}</h2>
           <p className="text-xs text-gray-500 mb-4">Activa o desactiva sin romper el contrato.</p>
           <Toggle label="Adjudicación de cónyuge" sub="50% derechos fideicomisarios del esposo fallecido" checked={data.bloques.adjudicacion_conyuge} onChange={()=>togBloque("adjudicacion_conyuge")} />
           <Toggle label="Ad Corpus / As-Is" sub="Compra por cuerpo cierto, superficies aproximadas, estado actual" checked={data.bloques.ad_corpus} onChange={()=>togBloque("ad_corpus")} />
@@ -603,7 +716,7 @@ export default function OfertaGenPage() {
           <Toggle label="Litigios pendientes" sub="Vendedor informa litigios con copias en 3 días hábiles; comprador acepta o rechaza en 5 días" checked={data.bloques.litigios_pendientes} onChange={()=>togBloque("litigios_pendientes")} />
           <Toggle label="Litigios laborales" sub="Vendedor informa relaciones y litigios laborales; comprador acepta o rechaza en 5 días" checked={data.bloques.empleados_condicion} onChange={()=>togBloque("empleados_condicion")} />
           <Toggle label="Comisión inmobiliaria" sub="Pago de comisión a agencias de RE" checked={data.bloques.comision} onChange={()=>togBloque("comision")} />
-          <div className="mt-4 mb-2"><p className="text-xs font-semibold text-gray-400 uppercase tracking-wider">Cláusulas adicionales</p></div>
+          <div className="mt-4 mb-2"><p className="text-xs font-semibold text-gray-400 uppercase tracking-wider">{t.sections.clausulas_adicionales}</p></div>
           <Toggle label="Condición general y estado de uso" sub="Entrega en misma condición que inspección, desgaste normal" checked={data.bloques.condicion_uso} onChange={()=>togBloque("condicion_uso")} />
           <Toggle label="Obligaciones del vendedor" sub="Walk-through, carta no adeudo, prorrateo servicios, cesión CFE/cable" checked={data.bloques.obligaciones_vendedor} onChange={()=>togBloque("obligaciones_vendedor")} />
           {data.bloques.obligaciones_vendedor && <div className="ml-8">
@@ -632,11 +745,11 @@ export default function OfertaGenPage() {
 
         {step === 4 && <div>
           <div className="flex items-center justify-between mb-4">
-            <h2 className="text-lg font-semibold">Vista previa bilingüe</h2>
+            <h2 className="text-lg font-semibold">{t.preview.title}</h2>
             <div className="flex items-center gap-3">
               <button onClick={handleGenerate} disabled={generating || !bloques.length}
                 className="px-5 py-2 bg-green-600 hover:bg-green-700 disabled:bg-gray-300 text-white text-sm font-medium rounded-xl transition shadow-sm disabled:shadow-none">
-                {generating ? "Generando..." : "Descargar .docx"}
+                {generating ? t.preview.generando : t.preview.descargar}
               </button>
             </div>
           </div>
@@ -681,11 +794,11 @@ export default function OfertaGenPage() {
 
       {/* Nav */}
       <div className="flex justify-between">
-        {step > 0 ? <button onClick={() => setStep(s => s - 1)} className="px-5 py-2 text-sm text-gray-600 dark:text-gray-400 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl hover:bg-gray-50 transition">Anterior</button> : <div />}
-        {step < 4 ? <button onClick={() => setStep(s => s + 1)} className="px-5 py-2 text-sm font-medium text-white bg-blue-500 hover:bg-blue-600 rounded-xl shadow-sm transition">Siguiente</button>
+        {step > 0 ? <button onClick={() => setStep(s => s - 1)} className="px-5 py-2 text-sm text-gray-600 dark:text-gray-400 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl hover:bg-gray-50 transition">{t.nav.anterior}</button> : <div />}
+        {step < 4 ? <button onClick={() => setStep(s => s + 1)} className="px-5 py-2 text-sm font-medium text-white bg-blue-500 hover:bg-blue-600 rounded-xl shadow-sm transition">{t.nav.siguiente}</button>
           : <button onClick={handleGenerate} disabled={generating || !bloques.length}
               className="px-6 py-2 text-sm font-medium text-white bg-green-600 hover:bg-green-700 disabled:bg-gray-300 rounded-xl shadow-sm transition">
-              {generating ? "Generando..." : "Descargar .docx"}
+              {generating ? t.preview.generando : t.preview.descargar}
             </button>}
       </div>
 

@@ -443,6 +443,37 @@ log("Sprint U: page.js — modal errores críticos",
     pagejs and "Errores críticos" in pagejs)
 log("Sprint U: page.js — modal advertencias",
     pagejs and "Advertencias" in pagejs and "validationResult" in pagejs)
+
+# ─────────────────────────────────────────────────────────────
+# SPRINT V-a — i18n UI: TOGGLE + STEPS + SECCIONES
+# ─────────────────────────────────────────────────────────────
+print("\n── Sprint V-a: i18n UI ──")
+log("Sprint V-a: objeto UI con 3 idiomas",
+    pagejs and "const UI = {" in pagejs and "'fr'" in pagejs)
+log("Sprint V-a: steps dinámicos via t.steps",
+    pagejs and "const steps = t.steps" in pagejs)
+log("Sprint V-a: t.sections.inmueble",
+    pagejs and "t.sections.inmueble" in pagejs)
+log("Sprint V-a: t.sections.precio",
+    pagejs and "t.sections.precio" in pagejs)
+log("Sprint V-a: t.sections.notario",
+    pagejs and "t.sections.notario" in pagejs)
+log("Sprint V-a: t.sections.clausulas",
+    pagejs and "t.sections.clausulas" in pagejs)
+log("Sprint V-a: t.nav.siguiente / anterior",
+    pagejs and "t.nav.siguiente" in pagejs and "t.nav.anterior" in pagejs)
+log("Sprint V-a: t.preview.title",
+    pagejs and "t.preview.title" in pagejs)
+log("Sprint V-a: t.preview.descargar",
+    pagejs and "t.preview.descargar" in pagejs)
+log("Sprint V-a: toggle EN/FR en header",
+    pagejs and "Toggle idioma UI" in pagejs)
+log("Sprint V-a: t.validation.corregir",
+    pagejs and "t.validation.corregir" in pagejs)
+log("Sprint V-a: steps EN correctos",
+    pagejs and "Parties" in pagejs and "Property" in pagejs)
+log("Sprint V-a: steps FR correctos",
+    pagejs and "Propriété" in pagejs and "Aperçu" in pagejs)
 # ═══════════════════════════════════════════════════════════════
 # 8. PAGE.JS — UI INTEGRITY
 # ═══════════════════════════════════════════════════════════════
