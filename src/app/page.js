@@ -74,14 +74,14 @@ function PartePanel({ data, pid, label, upParte, upPersona, addPersona, rmPerson
       {p.personas.map((per, i) => (
         <div key={i} className="col-span-2 flex flex-col gap-2 p-3 bg-gray-50 dark:bg-gray-800/50 rounded-lg">
           <div className="flex items-center gap-2">
-            <span className="text-xs font-medium text-gray-400">{t?.fields?.nombre_completo ? `#${i+1}` : `Persona ${i+1}`}</span>
-            {p.personas.length > 1 && <button onClick={() => rmPersona(pid, i)} className="ml-auto text-xs text-red-500 hover:text-red-700">Quitar</button>}
+            {p.personas.length > 1 && <span className="text-xs font-medium text-gray-400">#{i+1}</span>}
+            {p.personas.length > 1 && <button onClick={() => rmPersona(pid, i)} className="ml-auto text-xs text-red-500 hover:text-red-700">✕</button>}
           </div>
           <input value={per.nombre} onChange={e => upPersona(pid, i, "nombre", e.target.value.toUpperCase())} placeholder={t?.fields?.nombre_completo || "NOMBRE COMPLETO"}
             className="border border-gray-200 dark:border-gray-600 rounded-lg px-3 py-2 text-sm bg-white dark:bg-gray-800 focus:ring-2 focus:ring-blue-400 outline-none font-medium" />
           <div className="flex gap-2">
-            {["M", "F"].map(g => (
-              <button key={g} onClick={() => upPersona(pid, i, "genero", g)}
+            {[["M", t?.fields?.genero_m || "M"], ["F", t?.fields?.genero_f || "F"]].map(([g, label]) => (
+              <button key={g} onClick={() => upPersona(pid, i, "genero", g)} title={label}
                 className={`px-4 py-1.5 text-xs font-medium rounded-lg transition-all ${per.genero === g ? "bg-blue-500 text-white" : "bg-white dark:bg-gray-700 border border-gray-200 dark:border-gray-600 text-gray-600 dark:text-gray-300"}`}>{g}</button>
             ))}
           </div>
@@ -90,7 +90,7 @@ function PartePanel({ data, pid, label, upParte, upPersona, addPersona, rmPerson
       <button onClick={() => addPersona(pid)} className="col-span-2 text-xs text-blue-500 hover:text-blue-700 py-1">{t?.fields?.agregar_persona || "+ Agregar persona"}</button>
       <Input label={t.fields.nacionalidad} value={p.nacionalidad} onChange={v => upParte(pid, "nacionalidad", v)} placeholder={t?.fields?.placeholder_nacionalidad || "canadiense, estadounidense..."} />
       <Input label={t.fields.celular} value={p.celular} onChange={v => upParte(pid, "celular", v)} type="tel" required />
-      <Input label={t.fields.email} value={p.email} onChange={v => upParte(pid, "email", v)} type="email" required />
+      <Input label={t.fields.email} value={p.email} onChange={v => upParte(pid, "email", v)} type="email" required wide />
       <Input label={t.fields.domicilio} value={p.domicilio} onChange={v => upParte(pid, "domicilio", v)} wide rows={2} />
     </Section>
   );
@@ -131,7 +131,8 @@ const UI = {
       // Partes
       nombre_completo: "NOMBRE COMPLETO", nacionalidad: "Nacionalidad",
       celular: "Celular/WhatsApp", email: "Email", domicilio: "Domicilio",
-      agregar_persona: "+ Agregar persona", placeholder_nacionalidad: "canadiense, estadounidense...",
+      agregar_persona: "+ Agregar persona",
+      genero_m: "Masculino", genero_f: "Femenino", placeholder_nacionalidad: "canadiense, estadounidense...",
       // Inmueble
       descripcion_corta: "Descripción corta", ubicacion_completa: "Ubicación completa",
       nivel_torre: "Nivel/Torre", interior: "Interior",
@@ -210,7 +211,8 @@ const UI = {
     fields: {
       nombre_completo: "FULL NAME", nacionalidad: "Nationality",
       celular: "Cell/WhatsApp", email: "Email", domicilio: "Address",
-      agregar_persona: "+ Add person", placeholder_nacionalidad: "Canadian, American, French...",
+      agregar_persona: "+ Add person",
+      genero_m: "Male", genero_f: "Female", placeholder_nacionalidad: "Canadian, American, French...",
       descripcion_corta: "Short description", ubicacion_completa: "Full location",
       nivel_torre: "Level/Tower", interior: "Interior",
       superficie_m2: "Area m²", superficie_letras: "Area in words",
@@ -279,7 +281,8 @@ const UI = {
     fields: {
       nombre_completo: "NOM COMPLET", nacionalidad: "Nationalité",
       celular: "Cellulaire/WhatsApp", email: "Courriel", domicilio: "Adresse",
-      agregar_persona: "+ Ajouter personne", placeholder_nacionalidad: "Canadien, Américain, Français...",
+      agregar_persona: "+ Ajouter personne",
+      genero_m: "Masculin", genero_f: "Féminin", placeholder_nacionalidad: "Canadien, Américain, Français...",
       descripcion_corta: "Description courte", ubicacion_completa: "Emplacement complet",
       nivel_torre: "Niveau/Tour", interior: "Intérieur",
       superficie_m2: "Surface m²", superficie_letras: "Surface en lettres",
