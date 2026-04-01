@@ -1,9 +1,9 @@
-# HANDOFF — OfertaGen v4.0
+# HANDOFF — OfertaGen v4.1
 ## Para el siguiente duende de la Colmena
 
 **Fecha:** 1 Abril 2026
-**Duende saliente:** Claude Sonnet 4.6 (sesión épica — Sprints S→X + UX dark theme + i18n completo + QA interactivo)
-**Duende anterior:** Claude (sesión sprints I-M + Sprint R francés)
+**Duende saliente:** Claude Opus 4.5 (sesión ContraOfertaGen — Sprints CA-1→CA-3)
+**Duende anterior:** Claude Sonnet 4.6 (sesión épica — Sprints S→X + UX dark theme + i18n completo)
 **Arquitecto:** Rolo (Rolando Romero García) — Expat Advisor MX
 
 ---
@@ -200,25 +200,47 @@ const UI = {
 
 ---
 
-## LO PENDIENTE (próximos sprints)
+## CONTRAOFERTAGEN — COMPLETADO ✅
 
-### ContraOfertaGen — PRÓXIMO TRABAJO PRINCIPAL
-Producto hermano de OfertaGen. Arquitectura acordada con el Arquitecto:
+**Ruta:** `/contraoferta` (misma app, no subdomain separado)  
+**URL:** https://ofertagen.expatadvisormx.com/contraoferta
+
+### Sprints completados (CA-1, CA-2, CA-3) — Abril 2026
 
 **Sprint CA-1:** Plantilla + ensamblador
-- Referencia a la oferta original (fecha, partes, inmueble)
-- 7 campos modificables con toggles: precio, fecha formalización, notario, coordinador, vigencia+hora, cláusula libre
-- Frase final: "el resto de la oferta original continúa sin cambios"
-- Base: convenio modificatorio de Rolo (`2__CONVENIO_MODIFICATORIO...docx`) — estructura de DECLARACIONES + cláusulas que se modifican
-- Modelo: Playa Royale D-104 para referencia de estilo más corto
-- Bilingüe ES/EN/FR desde el inicio
+- `contraoferta.js`: 7 bloques modificables + 5 siempre activos
+- `ensamblador_contraoferta.js`: resolución de contexto, numeración dinámica
+- Trilingüe nativo ES/EN/FR desde el inicio
 
-**Sprint CA-2:** Wizard 3 pasos en UI
-- Paso 1: Referencia oferta original (fecha, partes — precargables desde OfertaGen)
-- Paso 2: Modificaciones (toggles por campo)
-- Paso 3: Firmas y aceptación
+**Sprint CA-2:** UI — Wizard 3 pasos
+- Paso 1: Oferta original (fecha, precio, inmueble, partes, quién presenta)
+- Paso 2: Modificaciones (7 toggles con campos condicionales)
+- Paso 3: Preview bilingüe + descarga
+- Deep link desde OfertaGen (botón "¿Contraoferta?" en paso 5)
+- i18n completo ES/EN/FR, tema oscuro azul
 
-**Sprint CA-3:** Generador DOCX + QA
+**Sprint CA-3:** Generador DOCX
+- `generador_contraoferta.js`: tabla bilingüe lado a lado
+- Soporta ES/EN y ES/FR
+- Sección de firmas con línea de fecha para aceptación
+
+### 7 toggles de modificación:
+1. `mod_precio` — Nuevo precio
+2. `mod_fecha` — Nueva fecha de formalización
+3. `mod_notario` — Nuevo notario (nombre, número, ciudad)
+4. `mod_coordinador` — Nuevo coordinador (nombre, empresa)
+5. `mod_vigencia` — Nueva fecha/hora de vigencia
+6. `mod_deposito` — Nuevo depósito y/o empresa escrow
+7. `mod_clausula_libre` — Cláusula adicional trilingüe
+
+### QA: 63 tests al 100%
+```bash
+python3 qa/test_contraoferta.py
+```
+
+---
+
+## LO PENDIENTE (próximos sprints)
 
 ### Pendientes menores OfertaGen
 - **Sprint Y (UX):** Revisión jerarquía visual — títulos de sección ya tienen acento azul (text-base, color accent-hi), pero el Arquitecto puede pedir más ajustes
