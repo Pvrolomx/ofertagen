@@ -88,7 +88,16 @@ function PartePanel({ data, pid, label, upParte, upPersona, addPersona, rmPerson
         </div>
       ))}
       <button onClick={() => addPersona(pid)} className="col-span-2 text-xs py-1" style={{color:"var(--og-accent-hi)"}}>{t?.fields?.agregar_persona || "+ Agregar persona"}</button>
-      <Input label={t.fields.nacionalidad} value={p.nacionalidad} onChange={v => upParte(pid, "nacionalidad", v)} placeholder={t?.fields?.placeholder_nacionalidad || "canadiense, estadounidense..."} />
+      <div className="flex flex-col gap-1">
+        <label className="text-xs font-medium" style={{color:"var(--og-secondary)"}}>{t.fields.nacionalidad}</label>
+        <select value={p.nacionalidad||""} onChange={e => upParte(pid, "nacionalidad", e.target.value)}
+          className="rounded-lg px-3 py-2 text-sm" style={{background:"var(--og-surface)",border:"1px solid var(--og-border)",color:"var(--og-primary)"}}>
+          <option value="">—</option>
+          {(t.fields.nacionalidades||[]).map(n => (
+            <option key={n.v} value={n.v}>{n.l}</option>
+          ))}
+        </select>
+      </div>
       <Input label={t.fields.celular} value={p.celular} onChange={v => upParte(pid, "celular", v)} type="tel" required />
       <Input label={t.fields.email} value={p.email} onChange={v => upParte(pid, "email", v)} type="email" required wide />
       <div className="col-span-2 flex flex-col gap-2">
@@ -144,7 +153,7 @@ const UI = {
       celular: "Celular/WhatsApp", email: "Email", domicilio: "Domicilio",
       agregar_persona: "+ Agregar persona",
       genero_m: "Masculino", genero_f: "Femenino", placeholder_nacionalidad: "canadiense, estadounidense...",
-      domicilio_inmueble: "Inmueble materia de la presente oferta", label_ofertante: "Ofertante", label_propietario: "Propietario",
+      domicilio_inmueble: "Inmueble materia de la presente oferta", label_ofertante: "Ofertante", label_propietario: "Propietario", nacionalidades: [{v:"estadounidense", l:"🇺🇸 Estadounidense"}, {v:"canadiense", l:"🇨🇦 Canadiense"}, {v:"francocanadiense", l:"🇨🇦 Franco-canadiense"}],
       // Inmueble
       descripcion_corta: "Descripción corta", ubicacion_completa: "Ubicación completa",
       nivel_torre: "Nivel/Torre", interior: "Interior",
@@ -225,7 +234,7 @@ const UI = {
       celular: "Cell/WhatsApp", email: "Email", domicilio: "Address",
       agregar_persona: "+ Add person",
       genero_m: "Male", genero_f: "Female", placeholder_nacionalidad: "Canadian, American, French...",
-      domicilio_inmueble: "Property subject matter of this offer", label_ofertante: "Buyer", label_propietario: "Owner",
+      domicilio_inmueble: "Property subject matter of this offer", label_ofertante: "Buyer", label_propietario: "Owner", nacionalidades: [{v:"estadounidense", l:"🇺🇸 American"}, {v:"canadiense", l:"🇨🇦 Canadian"}, {v:"francocanadiense", l:"🇨🇦 Franco-Canadian"}],
       descripcion_corta: "Short description", ubicacion_completa: "Full location",
       nivel_torre: "Level/Tower", interior: "Interior",
       superficie_m2: "Area m²", superficie_letras: "Area in words",
@@ -296,7 +305,7 @@ const UI = {
       celular: "Cellulaire/WhatsApp", email: "Courriel", domicilio: "Adresse",
       agregar_persona: "+ Ajouter personne",
       genero_m: "Masculin", genero_f: "Féminin", placeholder_nacionalidad: "Canadien, Américain, Français...",
-      domicilio_inmueble: "Bien immobilier objet de la présente offre", label_ofertante: "Offrant", label_propietario: "Propriétaire",
+      domicilio_inmueble: "Bien immobilier objet de la présente offre", label_ofertante: "Offrant", label_propietario: "Propriétaire", nacionalidades: [{v:"estadounidense", l:"🇺🇸 Américain(e)"}, {v:"canadiense", l:"🇨🇦 Canadien(ne)"}, {v:"francocanadiense", l:"🇨🇦 Franco-canadien(ne)"}],
       descripcion_corta: "Description courte", ubicacion_completa: "Emplacement complet",
       nivel_torre: "Niveau/Tour", interior: "Intérieur",
       superficie_m2: "Surface m²", superficie_letras: "Surface en lettres",
