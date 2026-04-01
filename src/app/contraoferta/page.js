@@ -3,6 +3,7 @@
 import { useState, useMemo, useCallback, useEffect } from "react";
 import { ensamblarContextoContraoferta, renderizarBloquesContraoferta } from "@/lib/plantillas/ensamblador_contraoferta";
 import PLANTILLA from "@/lib/plantillas/contraoferta";
+import { generarDocxBlobContraoferta } from "@/lib/docx/generador_contraoferta";
 
 // ============================================================
 // INIT DATA
@@ -312,6 +313,28 @@ export default function ContraOfertaGenPage() {
   const ctx = useMemo(() => ensamblar(data), [data]);
   const bloques = useMemo(() => renderBlks(ctx), [ctx]);
 
+  // Generar y descargar DOCX
+  const handleGenerate = useCallback(async () => {
+    if (generating || !bloques.length) return;
+    setGenerating(true);
+    try {
+      const blob = await generarDocxBlobContraoferta(bloques, PLANTILLA.meta, { idiomaSecundario: contractLang });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      const nombre = data.partes?.ofertante?.personas?.[0]?.nombre?.split(" ")[0] || "CONTRAOFERTA";
+      const fecha = new Date().toISOString().slice(0, 10);
+      a.href = url;
+      a.download = `CONTRAOFERTA_${nombre}_${fecha}.docx`;
+      a.click();
+      URL.revokeObjectURL(url);
+    } catch (err) {
+      console.error("Error generando DOCX:", err);
+      alert("Error al generar el documento. Intenta de nuevo.");
+    } finally {
+      setGenerating(false);
+    }
+  }, [bloques, contractLang, data.partes, generating]);
+
   // ── STEP 1: Oferta Original ───────────────────────────────────
   const renderStep1 = () => (
     <>
@@ -540,8 +563,8 @@ export default function ContraOfertaGenPage() {
               {t.nav.siguiente}
             </button>
           ) : (
-            <button onClick={() => alert("DOCX generation coming in Sprint CA-3")} disabled={generating}
-              className="px-6 py-2 text-sm font-medium rounded-lg transition-all"
+            <button onClick={handleGenerate} disabled={generating || !bloques.length}
+              className="px-6 py-2 text-sm font-medium rounded-lg transition-all disabled:opacity-50"
               style={{ background: "var(--og-success)", color: "#fff" }}>
               {generating ? "..." : t.nav.generar}
             </button>

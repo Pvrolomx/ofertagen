@@ -235,6 +235,44 @@ log("Footer duendes.app",
     "duendes.app 2026" in ui_code)
 
 # ============================================================
+# 11. Generador DOCX — Sprint CA-3
+# ============================================================
+print("\n📄 11. Generador DOCX — Sprint CA-3")
+
+docx_path = "src/lib/docx/generador_contraoferta.js"
+log("generador_contraoferta.js existe", 
+    os.path.exists(os.path.join(BASE_DIR, docx_path)))
+
+docx_code = read_file(docx_path)
+
+log("Import: Document, Packer, Table",
+    "Document" in docx_code and "Packer" in docx_code and "Table" in docx_code)
+
+log("Export: generarDocxContraoferta",
+    "export async function generarDocxContraoferta" in docx_code)
+
+log("Export: generarDocxBlobContraoferta",
+    "export async function generarDocxBlobContraoferta" in docx_code)
+
+log("Soporta idiomaSecundario en/fr",
+    "idiomaSecundario" in docx_code and "lang2 ===" in docx_code)
+
+log("Tabla bilingüe COL_ES / COL_EN",
+    "COL_ES" in docx_code and "COL_EN" in docx_code)
+
+log("Sección de firmas",
+    "crearSeccionFirmas" in docx_code)
+
+log("Footer duendes.app en DOCX",
+    "duendes.app 2026" in docx_code)
+
+log("UI importa generarDocxBlobContraoferta",
+    "generarDocxBlobContraoferta" in ui_code)
+
+log("UI tiene handleGenerate",
+    "handleGenerate" in ui_code)
+
+# ============================================================
 # 10. Deep link desde OfertaGen
 # ============================================================
 print("\n🔗 10. Deep link desde OfertaGen")
