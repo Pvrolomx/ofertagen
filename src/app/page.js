@@ -733,7 +733,6 @@ export default function OfertaGenPage() {
             <Input label={t.fields.superficie_m2} value={data.campos.inmueble?.superficie_m2} onChange={v=>upCampo("inmueble","superficie_m2",v)} type="number" required />
             <Input label={t.fields.superficie_letras} value={data.campos.inmueble?.superficie_letras} onChange={v=>upCampo("inmueble","superficie_letras",v)} required />
             <Input label={t.fields.indiviso} value={data.campos.inmueble?.indiviso} onChange={v=>upCampo("inmueble","indiviso",v)} />
-            <Input label={t.fields.clave_catastral} value={data.campos.inmueble?.clave_catastral} onChange={v=>upCampo("inmueble","clave_catastral",v)} placeholder="020-024-01-039-258-000" />
             <div className="col-span-2 flex items-center gap-3 p-3 rounded-lg" style={{background:"var(--og-surface)",border:"1px solid var(--og-border)"}}>
               <input type="checkbox" checked={!!data.campos.inmueble?.tiene_uso_exclusivo} onChange={e=>upCampo("inmueble","tiene_uso_exclusivo",e.target.checked)} className="rounded" />
               <div>
@@ -780,6 +779,7 @@ export default function OfertaGenPage() {
               <Input label={t.fields.seccion} value={data.campos.antecedente?.seccion_jal} onChange={v=>upCampo("antecedente","seccion_jal",v)} />
             </>)}
             <Input label={t.fields.cuenta_predial} value={data.campos.antecedente?.cuenta_predial} onChange={v=>upCampo("antecedente","cuenta_predial",v)} />
+            <Input label={t.fields.clave_catastral} value={data.campos.inmueble?.clave_catastral} onChange={v=>upCampo("inmueble","clave_catastral",v)} placeholder="020-024-01-039-258-000" />
           </Section>
         </>}
 
