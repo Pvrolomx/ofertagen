@@ -418,6 +418,31 @@ log("Sprint S: page.js DEMO tiene confidencialidad:false",
 log("Sprint S: page.js INIT tiene confidencialidad:false",
     pagejs and pagejs.count("confidencialidad:false") >= 2)
 
+
+# ─────────────────────────────────────────────────────────────
+# SPRINT U — VALIDADOR PRE-GENERACIÓN
+# ─────────────────────────────────────────────────────────────
+print("\n── Sprint U: Validador pre-generación ──")
+log("Sprint U: page.js — función validarOferta",
+    pagejs and "validarOferta" in pagejs)
+log("Sprint U: page.js — estado validationResult",
+    pagejs and "validationResult" in pagejs)
+log("Sprint U: page.js — handleGenerateForced",
+    pagejs and "handleGenerateForced" in pagejs)
+log("Sprint U: page.js — detección placeholders PLACEHOLDER_RE",
+    pagejs and "PLACEHOLDER_RE" in pagejs)
+log("Sprint U: page.js — validación campo precio",
+    pagejs and "precio_total" in pagejs and "validarOferta" in pagejs)
+log("Sprint U: page.js — validación campo notario",
+    pagejs and "notario_seleccion" in pagejs and "validarOferta" in pagejs)
+log("Sprint U: page.js — validación ratio ES/idioma2",
+    pagejs and "ratio" in pagejs and "traducción incompleta" in pagejs)
+log("Sprint U: page.js — modal con botón Corregir",
+    pagejs and "Corregir" in pagejs and "validationResult" in pagejs)
+log("Sprint U: page.js — modal errores críticos",
+    pagejs and "Errores críticos" in pagejs)
+log("Sprint U: page.js — modal advertencias",
+    pagejs and "Advertencias" in pagejs and "validationResult" in pagejs)
 # ═══════════════════════════════════════════════════════════════
 # 8. PAGE.JS — UI INTEGRITY
 # ═══════════════════════════════════════════════════════════════

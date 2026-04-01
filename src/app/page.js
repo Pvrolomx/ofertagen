@@ -103,6 +103,7 @@ export default function OfertaGenPage() {
   const [data, setData] = useState(INIT);
   const [step, setStep] = useState(0);
   const [generating, setGenerating] = useState(false);
+  const [validationResult, setValidationResult] = useState(null);
   const [logoBase64, setLogoBase64] = useState(null);
   const [logoPreview, setLogoPreview] = useState(null);
   const [idiomaSecundario, setIdiomaSecundario] = useState('en'); // 'en' o 'fr'
@@ -194,8 +195,80 @@ export default function OfertaGenPage() {
   const ctx = useMemo(() => ensamblar(data), [data]);
   const bloques = useMemo(() => renderBlks(ctx), [ctx]);
 
+  // ── VALIDADOR SPRINT U ──────────────────────────────────────
+  const validarOferta = useCallback((bloquesRenderizados) => {
+    const errors = [];
+    const warnings = [];
+
+    // Campos críticos
+    const partes = data.partes;
+    if (!partes.ofertante.personas[0]?.nombre?.trim())
+      errors.push("Nombre del ofertante vacío");
+    if (!partes.ofertante.email?.trim())
+      errors.push("Email del ofertante vacío");
+    if (!partes.propietario.personas[0]?.nombre?.trim())
+      errors.push("Nombre del propietario vacío");
+    if (!data.campos.precio?.precio_total || data.campos.precio.precio_total <= 0)
+      errors.push("Precio de oferta no definido");
+    if (!data.campos.fechas?.fecha_vigencia)
+      errors.push("Fecha de vigencia no definida");
+    if (!data.campos.notario?.notario_seleccion)
+      errors.push("Notario no seleccionado");
+
+    // Placeholders no resueltos — revisa ES + idioma secundario
+    const PLACEHOLDER_RE = /\[([A-ZÁÉÍÓÚÑ_]{3,})\]/g;
+    bloquesRenderizados.forEach((b) => {
+      const lang2 = idiomaSecundario === 'fr' ? b.fr : b.en;
+      [b.es, lang2].forEach((txt) => {
+        if (!txt) return;
+        const matches = [...txt.matchAll(PLACEHOLDER_RE)];
+        matches.forEach(([match]) => {
+          if (!warnings.includes(`Placeholder sin resolver: ${match}`))
+            warnings.push(`Placeholder sin resolver: ${match}`);
+        });
+      });
+    });
+
+    // Ratio ES/idioma2 — posible traducción incompleta
+    bloquesRenderizados.forEach((b) => {
+      const lang2 = idiomaSecundario === 'fr' ? b.fr : b.en;
+      if (!b.es || !lang2) return;
+      const ratio = b.es.length / lang2.length;
+      if (ratio < 0.4 || ratio > 2.5) {
+        const id = b.id || b.t?.es?.slice(0, 20) || '?';
+        warnings.push(`Posible traducción incompleta en: "${id}"`);
+      }
+    });
+
+    return { valid: errors.length === 0, errors, warnings };
+  }, [data, idiomaSecundario]);
+
+  const handleGenerateForced = useCallback(async () => {
+    setValidationResult(null);
+    setGenerating(true);
+    try {
+      const blob = await generarDocxBlob(bloques, PLANTILLA.meta, { logoBase64, idiomaSecundario });
+      const nombre = data.partes.ofertante.personas[0]?.nombre?.replace(/\s+/g, "_") || "OFERTA";
+      const idiomaSufijo = idiomaSecundario === 'fr' ? '_FR' : '';
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url; a.download = `OFERTA_${nombre}${idiomaSufijo}.docx`;
+      document.body.appendChild(a); a.click();
+      document.body.removeChild(a); URL.revokeObjectURL(url);
+    } catch (err) {
+      console.error("Error generando DOCX:", err);
+      alert("Error al generar el documento. Revisa la consola.");
+    } finally { setGenerating(false); }
+  }, [bloques, data, logoBase64, idiomaSecundario]);
+
   const handleGenerate = useCallback(async () => {
     if (!bloques.length) return;
+    // Validar antes de generar
+    const result = validarOferta(bloques);
+    if (!result.valid || result.warnings.length > 0) {
+      setValidationResult(result);
+      return;
+    }
     setGenerating(true);
     try {
       const blob = await generarDocxBlob(bloques, PLANTILLA.meta, { logoBase64, idiomaSecundario });
@@ -218,6 +291,48 @@ export default function OfertaGenPage() {
 
   return (
     <div className="max-w-4xl mx-auto px-4 py-6">
+      {/* Modal de validación Sprint U */}
+      {validationResult && (
+        <div className="fixed inset-0 bg-black/60 flex items-center justify-center z-50 p-4">
+          <div className="bg-white dark:bg-gray-900 rounded-2xl shadow-2xl max-w-md w-full p-6">
+            <h2 className="text-lg font-bold mb-4">
+              {validationResult.valid ? "⚠️ Advertencias" : "❌ Errores en el documento"}
+            </h2>
+            {validationResult.errors.length > 0 && (
+              <div className="mb-4">
+                <p className="text-xs font-semibold text-red-500 uppercase mb-2">Errores críticos</p>
+                <ul className="space-y-1 max-h-40 overflow-y-auto">
+                  {validationResult.errors.map((e, i) => (
+                    <li key={i} className="text-sm text-red-600 dark:text-red-400 flex gap-2"><span>❌</span>{e}</li>
+                  ))}
+                </ul>
+              </div>
+            )}
+            {validationResult.warnings.length > 0 && (
+              <div className="mb-4">
+                <p className="text-xs font-semibold text-yellow-500 uppercase mb-2">Advertencias</p>
+                <ul className="space-y-1 max-h-40 overflow-y-auto">
+                  {validationResult.warnings.map((w, i) => (
+                    <li key={i} className="text-sm text-yellow-600 dark:text-yellow-400 flex gap-2"><span>⚠️</span>{w}</li>
+                  ))}
+                </ul>
+              </div>
+            )}
+            <div className="flex gap-3 mt-5">
+              <button onClick={() => setValidationResult(null)}
+                className="flex-1 px-4 py-2 text-sm border border-gray-300 dark:border-gray-600 rounded-xl hover:bg-gray-50 dark:hover:bg-gray-800 transition">
+                Corregir
+              </button>
+              {validationResult.valid && (
+                <button onClick={handleGenerateForced}
+                  className="flex-1 px-4 py-2 text-sm bg-green-600 hover:bg-green-700 text-white rounded-xl transition">
+                  Generar de todas formas
+                </button>
+              )}
+            </div>
+          </div>
+        </div>
+      )}
       {/* Header */}
       <div className="flex items-baseline justify-between mb-6">
         <div>
