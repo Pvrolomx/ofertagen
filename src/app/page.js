@@ -129,7 +129,7 @@ const UI = {
     },
     nav: { siguiente: "Siguiente", anterior: "Anterior", generar: "Descargar .docx" },
     validation: {
-      errores: {t.validation.errores}, advertencias: {t.validation.advertencias},
+      errores: "Errores críticos", advertencias: "Advertencias",
       corregir: "Corregir", generar_igual: "Generar de todas formas",
     },
   },
