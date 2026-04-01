@@ -82,7 +82,7 @@ function PartePanel({ data, pid, label, upParte, upPersona, addPersona, rmPerson
           <div className="flex gap-2">
             {[["M", t?.fields?.genero_m || "M"], ["F", t?.fields?.genero_f || "F"]].map(([g, label]) => (
               <button key={g} onClick={() => upPersona(pid, i, "genero", g)} title={label}
-                className={`px-4 py-1.5 text-xs font-medium rounded-lg transition-all ${per.genero === g ? "og-step-active" : ""}`}>{g}</button>
+                className={`px-4 py-1.5 text-xs font-medium rounded-lg transition-all ${per.genero === g ? "og-step-active" : "og-genero-off"}`}>{g}</button>
             ))}
           </div>
         </div>
@@ -586,7 +586,7 @@ export default function OfertaGenPage() {
           <button onClick={exportDraft} className="px-3 py-1.5 text-xs rounded-lg transition flex items-center gap-1" style={{background:"var(--og-surface)",border:"1px solid var(--og-border)",color:"var(--og-secondary)"}}>
             <span>💾</span> {t.header.guardar}
           </button>
-          <button onClick={loadDemo} className="px-3 py-1.5 text-xs rounded-lg transition" style={{background:"rgba(210,153,34,0.15)",border:"1px solid rgba(210,153,34,0.4)",color:"#d29922"}}>Demo</button>
+          <button onClick={loadDemo} className="px-3 py-1.5 text-xs rounded-lg transition og-btn-demo">Demo</button>
           <button onClick={resetAll} className="px-3 py-1.5 text-xs rounded-lg transition" style={{background:"var(--og-surface)",border:"1px solid var(--og-border)",color:"var(--og-secondary)"}}>{t.header.limpiar}</button>
           {/* Toggle idioma UI — Sprint V-a */}
           <div className="flex rounded-lg border border-gray-200 overflow-hidden text-xs font-medium">

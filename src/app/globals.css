@@ -84,3 +84,32 @@ label {
 ::-webkit-scrollbar { width: 6px; }
 ::-webkit-scrollbar-track { background: var(--og-bg); }
 ::-webkit-scrollbar-thumb { background: var(--og-muted); border-radius: 3px; }
+
+/* Botón género no seleccionado — borde visible */
+.og-genero-off {
+  background: var(--og-surface) !important;
+  border: 1px solid var(--og-border) !important;
+  color: var(--og-secondary) !important;
+}
+.og-genero-off:hover {
+  border-color: var(--og-accent-hi) !important;
+  color: var(--og-primary) !important;
+}
+
+/* Labels más brillantes */
+label {
+  color: var(--og-primary) !important;
+  opacity: 0.75;
+}
+
+/* Card borde más definido — aplica a todos los divs con bg card */
+[style*="var(--og-card)"] {
+  border-color: rgba(56,139,253,0.2) !important;
+}
+
+/* Demo button — azul en vez de dorado */
+.og-btn-demo {
+  background: rgba(29,107,184,0.2) !important;
+  border: 1px solid rgba(56,139,253,0.35) !important;
+  color: var(--og-accent-hi) !important;
+}
