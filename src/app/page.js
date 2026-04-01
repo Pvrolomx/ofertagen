@@ -67,17 +67,17 @@ function Section({ title, children }) {
   );
 }
 
-function PartePanel({ data, pid, label, upParte, upPersona, addPersona, rmPersona }) {
+function PartePanel({ data, pid, label, upParte, upPersona, addPersona, rmPersona, t }) {
   const p = data.partes[pid];
   return (
     <Section title={label}>
       {p.personas.map((per, i) => (
         <div key={i} className="col-span-2 flex flex-col gap-2 p-3 bg-gray-50 dark:bg-gray-800/50 rounded-lg">
           <div className="flex items-center gap-2">
-            <span className="text-xs font-medium text-gray-400">Persona {i + 1}</span>
+            <span className="text-xs font-medium text-gray-400">{t?.fields?.nombre_completo ? `#${i+1}` : `Persona ${i+1}`}</span>
             {p.personas.length > 1 && <button onClick={() => rmPersona(pid, i)} className="ml-auto text-xs text-red-500 hover:text-red-700">Quitar</button>}
           </div>
-          <input value={per.nombre} onChange={e => upPersona(pid, i, "nombre", e.target.value.toUpperCase())} placeholder="NOMBRE COMPLETO"
+          <input value={per.nombre} onChange={e => upPersona(pid, i, "nombre", e.target.value.toUpperCase())} placeholder={t?.fields?.nombre_completo || "NOMBRE COMPLETO"}
             className="border border-gray-200 dark:border-gray-600 rounded-lg px-3 py-2 text-sm bg-white dark:bg-gray-800 focus:ring-2 focus:ring-blue-400 outline-none font-medium" />
           <div className="flex gap-2">
             {["M", "F"].map(g => (
@@ -88,10 +88,10 @@ function PartePanel({ data, pid, label, upParte, upPersona, addPersona, rmPerson
         </div>
       ))}
       <button onClick={() => addPersona(pid)} className="col-span-2 text-xs text-blue-500 hover:text-blue-700 py-1">+ Agregar persona</button>
-      <Input label="Nacionalidad" value={p.nacionalidad} onChange={v => upParte(pid, "nacionalidad", v)} placeholder="canadiense, estadounidense..." />
-      <Input label="Celular/WhatsApp" value={p.celular} onChange={v => upParte(pid, "celular", v)} type="tel" required />
-      <Input label="Email" value={p.email} onChange={v => upParte(pid, "email", v)} type="email" required />
-      <Input label="Domicilio" value={p.domicilio} onChange={v => upParte(pid, "domicilio", v)} wide rows={2} />
+      <Input label={t.fields.nacionalidad} value={p.nacionalidad} onChange={v => upParte(pid, "nacionalidad", v)} placeholder="canadiense, estadounidense..." />
+      <Input label={t.fields.celular} value={p.celular} onChange={v => upParte(pid, "celular", v)} type="tel" required />
+      <Input label={t.fields.email} value={p.email} onChange={v => upParte(pid, "email", v)} type="email" required />
+      <Input label={t.fields.domicilio} value={p.domicilio} onChange={v => upParte(pid, "domicilio", v)} wide rows={2} />
     </Section>
   );
 }
@@ -127,6 +127,53 @@ const UI = {
       descargar: "Descargar .docx",
       generando: "Generando...",
     },
+    fields: {
+      // Partes
+      nombre_completo: "NOMBRE COMPLETO", nacionalidad: "Nacionalidad",
+      celular: "Celular/WhatsApp", email: "Email", domicilio: "Domicilio",
+      // Inmueble
+      descripcion_corta: "Descripción corta", ubicacion_completa: "Ubicación completa",
+      nivel_torre: "Nivel/Torre", interior: "Interior",
+      superficie_m2: "Superficie m²", superficie_letras: "Superficie en letras",
+      indiviso: "Indiviso %", clave_catastral: "Clave catastral",
+      notas_uso_exclusivo_es: "Notas uso exclusivo (ES)", notas_uso_exclusivo_en: "Notas uso exclusivo (EN)",
+      uso_exclusivo_label: "Incluir notas de uso exclusivo",
+      uso_exclusivo_sub: "Estacionamiento, bodega, servidumbre, terraza privada...",
+      // Antecedente
+      fecha_escritura: "Fecha escritura", no_escritura: "No. escritura",
+      notario_ant: "Notario", no_notaria: "No. notaría", ciudad: "Ciudad",
+      folio_real_electronico: "Folio Real Electrónico", folio_real: "Folio Real",
+      libro: "Libro", seccion: "Sección", serie: "Serie", partida: "Partida",
+      documento: "Documento", folios: "Folios", cuenta_predial: "Cuenta predial",
+      estado_rpp: "Estado del RPP", tipo_inscripcion: "Tipo de inscripción",
+      // Precio
+      precio_total: "Precio total", deposito_escrow: "Depósito escrow",
+      dias_depositar: "Días hábiles para depositar",
+      dias_saldo: "Días hábiles saldo (antes del cierre)",
+      anticipo_gastos: "Anticipo gastos de escrituración",
+      honorarios_escrow: "Honorarios escrow (USD)",
+      // Fechas
+      fecha_presentacion: "Fecha presentación", ciudad_presentacion: "Ciudad",
+      fecha_vigencia: "Fecha de vencimiento", hora_vigencia: "Hora de vencimiento",
+      formalizacion_es: "Formalización (ES)", formalizacion_en: "Formalización (EN)",
+      extension_es: "Extensión (ES)", extension_en: "Extensión (EN)",
+      // Notario
+      nombre_notario: "Nombre del notario", no_notaria_dest: "No. notaría",
+      ciudad_notaria: "Ciudad",
+      // Comisión
+      pct_total: "% total", agencia1: "Agencia 1", pct_ag1: "% Ag. 1",
+      agencia2: "Agencia 2", pct_ag2: "% Ag. 2",
+      // Penalidad
+      pct_penalidad: "% penalidad", jurisdiccion: "Jurisdicción",
+      pct_parte_afectada: "% parte afectada", pct_agencia: "% agencia",
+      // Coordinador
+      nombre_coord: "Nombre", empresa_coord: "Empresa",
+      // Financiamiento
+      nombre_lender: "Nombre del prestamista / lender",
+      dias_due_diligence: "Días due diligence del lender",
+      // Inventario
+      exclusiones_es: "Exclusiones (ES)", exclusiones_en: "Exclusiones (EN)",
+    },
     nav: { siguiente: "Siguiente", anterior: "Anterior", generar: "Descargar .docx" },
     validation: {
       errores: "Errores críticos", advertencias: "Advertencias",
@@ -159,6 +206,42 @@ const UI = {
       descargar: "Download .docx",
       generando: "Generating...",
     },
+    fields: {
+      nombre_completo: "FULL NAME", nacionalidad: "Nationality",
+      celular: "Cell/WhatsApp", email: "Email", domicilio: "Address",
+      descripcion_corta: "Short description", ubicacion_completa: "Full location",
+      nivel_torre: "Level/Tower", interior: "Interior",
+      superficie_m2: "Area m²", superficie_letras: "Area in words",
+      indiviso: "Undivided %", clave_catastral: "Cadastral key",
+      notas_uso_exclusivo_es: "Exclusive use notes (ES)", notas_uso_exclusivo_en: "Exclusive use notes (EN)",
+      uso_exclusivo_label: "Include exclusive use notes",
+      uso_exclusivo_sub: "Parking, storage, easement, private terrace...",
+      fecha_escritura: "Deed date", no_escritura: "Deed no.",
+      notario_ant: "Notary", no_notaria: "Notary no.", ciudad: "City",
+      folio_real_electronico: "Electronic Land Registry Folio", folio_real: "Land Registry Folio",
+      libro: "Book", seccion: "Section", serie: "Series", partida: "Entry",
+      documento: "Document", folios: "Folios", cuenta_predial: "Property tax account",
+      estado_rpp: "Registry state", tipo_inscripcion: "Registration type",
+      precio_total: "Total price", deposito_escrow: "Escrow deposit",
+      dias_depositar: "Business days to deposit",
+      dias_saldo: "Business days for balance (before closing)",
+      anticipo_gastos: "Closing cost advance",
+      honorarios_escrow: "Escrow fees (USD)",
+      fecha_presentacion: "Presentation date", ciudad_presentacion: "City",
+      fecha_vigencia: "Expiration date", hora_vigencia: "Expiration time",
+      formalizacion_es: "Closing date (ES)", formalizacion_en: "Closing date (EN)",
+      extension_es: "Extension (ES)", extension_en: "Extension (EN)",
+      nombre_notario: "Notary name", no_notaria_dest: "Notary no.",
+      ciudad_notaria: "City",
+      pct_total: "Total %", agencia1: "Agency 1", pct_ag1: "% Ag. 1",
+      agencia2: "Agency 2", pct_ag2: "% Ag. 2",
+      pct_penalidad: "Penalty %", jurisdiccion: "Jurisdiction",
+      pct_parte_afectada: "% injured party", pct_agencia: "% agency",
+      nombre_coord: "Name", empresa_coord: "Company",
+      nombre_lender: "Lender name",
+      dias_due_diligence: "Lender due diligence days",
+      exclusiones_es: "Exclusions (ES)", exclusiones_en: "Exclusions (EN)",
+    },
     nav: { siguiente: "Next", anterior: "Back", generar: "Download .docx" },
     validation: {
       errores: "Critical errors", advertencias: "Warnings",
@@ -190,6 +273,42 @@ const UI = {
       title: "Aperçu bilingue",
       descargar: "Télécharger .docx",
       generando: "Génération...",
+    },
+    fields: {
+      nombre_completo: "NOM COMPLET", nacionalidad: "Nationalité",
+      celular: "Cellulaire/WhatsApp", email: "Courriel", domicilio: "Adresse",
+      descripcion_corta: "Description courte", ubicacion_completa: "Emplacement complet",
+      nivel_torre: "Niveau/Tour", interior: "Intérieur",
+      superficie_m2: "Surface m²", superficie_letras: "Surface en lettres",
+      indiviso: "Quote-part %", clave_catastral: "Référence cadastrale",
+      notas_uso_exclusivo_es: "Notes usage exclusif (ES)", notas_uso_exclusivo_en: "Notes usage exclusif (EN)",
+      uso_exclusivo_label: "Inclure notes d'usage exclusif",
+      uso_exclusivo_sub: "Stationnement, rangement, servitude, terrasse privée...",
+      fecha_escritura: "Date de l'acte", no_escritura: "No. acte",
+      notario_ant: "Notaire", no_notaria: "No. étude", ciudad: "Ville",
+      folio_real_electronico: "Folio foncier électronique", folio_real: "Folio foncier",
+      libro: "Livre", seccion: "Section", serie: "Série", partida: "Entrée",
+      documento: "Document", folios: "Folios", cuenta_predial: "Taxe foncière",
+      estado_rpp: "État du registre", tipo_inscripcion: "Type d'inscription",
+      precio_total: "Prix total", deposito_escrow: "Dépôt de séquestre",
+      dias_depositar: "Jours ouvrables pour déposer",
+      dias_saldo: "Jours ouvrables solde (avant clôture)",
+      anticipo_gastos: "Avance frais de notaire",
+      honorarios_escrow: "Honoraires séquestre (USD)",
+      fecha_presentacion: "Date de présentation", ciudad_presentacion: "Ville",
+      fecha_vigencia: "Date d'expiration", hora_vigencia: "Heure d'expiration",
+      formalizacion_es: "Date de clôture (ES)", formalizacion_en: "Date de clôture (EN)",
+      extension_es: "Extension (ES)", extension_en: "Extension (EN)",
+      nombre_notario: "Nom du notaire", no_notaria_dest: "No. étude",
+      ciudad_notaria: "Ville",
+      pct_total: "% total", agencia1: "Agence 1", pct_ag1: "% Ag. 1",
+      agencia2: "Agence 2", pct_ag2: "% Ag. 2",
+      pct_penalidad: "% pénalité", jurisdiccion: "Juridiction",
+      pct_parte_afectada: "% partie lésée", pct_agencia: "% agence",
+      nombre_coord: "Nom", empresa_coord: "Entreprise",
+      nombre_lender: "Nom du prêteur",
+      dias_due_diligence: "Jours due diligence prêteur",
+      exclusiones_es: "Exclusions (ES)", exclusiones_en: "Exclusions (EN)",
     },
     nav: { siguiente: "Suivant", anterior: "Retour", generar: "Télécharger .docx" },
     validation: {
@@ -489,8 +608,8 @@ export default function OfertaGenPage() {
       <div className="bg-white dark:bg-gray-800/50 rounded-2xl border border-gray-200 dark:border-gray-700 p-6 mb-4 min-h-[400px]">
 
         {step === 0 && <>
-          <PartePanel data={data} pid="ofertante" label="Ofertante / Buyer" upParte={upParte} upPersona={upPersona} addPersona={addPersona} rmPersona={rmPersona} />
-          <PartePanel data={data} pid="propietario" label="Propietario / Owner" upParte={upParte} upPersona={upPersona} addPersona={addPersona} rmPersona={rmPersona} />
+          <PartePanel data={data} pid="ofertante" label={idiomaSecundario === "fr" ? "Offrant / Acheteur" : "Ofertante / Buyer"} upParte={upParte} upPersona={upPersona} addPersona={addPersona} rmPersona={rmPersona} t={t} />
+          <PartePanel data={data} pid="propietario" label={idiomaSecundario === "fr" ? "Propriétaire / Vendeur" : "Propietario / Owner"} upParte={upParte} upPersona={upPersona} addPersona={addPersona} rmPersona={rmPersona} t={t} />
           <Section title={t.sections.idioma}>
             <div className="col-span-2 flex flex-col gap-1">
               <label className="text-xs font-medium text-gray-500">¿En qué idioma prefiere su copia el comprador? / {t.sections.idioma_sub}</label>
@@ -504,32 +623,32 @@ export default function OfertaGenPage() {
 
         {step === 1 && <>
           <Section title={t.sections.inmueble}>
-            <Input label="Descripción corta" value={data.campos.inmueble?.descripcion_corta} onChange={v=>upCampo("inmueble","descripcion_corta",v)} placeholder="Departamento 43 del Condo Orquídeas" required wide />
-            <Input label="Ubicación completa" value={data.campos.inmueble?.ubicacion_completa} onChange={v=>upCampo("inmueble","ubicacion_completa",v)} wide rows={3} required />
-            <Input label="Nivel/Torre" value={data.campos.inmueble?.nivel_torre} onChange={v=>upCampo("inmueble","nivel_torre",v)} />
-            <Input label="Interior" value={data.campos.inmueble?.descripcion_interior} onChange={v=>upCampo("inmueble","descripcion_interior",v)} />
-            <Input label="Superficie m²" value={data.campos.inmueble?.superficie_m2} onChange={v=>upCampo("inmueble","superficie_m2",v)} type="number" required />
-            <Input label="Superficie en letras" value={data.campos.inmueble?.superficie_letras} onChange={v=>upCampo("inmueble","superficie_letras",v)} required />
-            <Input label="Indiviso %" value={data.campos.inmueble?.indiviso} onChange={v=>upCampo("inmueble","indiviso",v)} />
-            <Input label="Clave catastral" value={data.campos.inmueble?.clave_catastral} onChange={v=>upCampo("inmueble","clave_catastral",v)} placeholder="020-024-01-039-258-000" />
+            <Input label={t.fields.descripcion_corta} value={data.campos.inmueble?.descripcion_corta} onChange={v=>upCampo("inmueble","descripcion_corta",v)} placeholder="Departamento 43 del Condo Orquídeas" required wide />
+            <Input label={t.fields.ubicacion_completa} value={data.campos.inmueble?.ubicacion_completa} onChange={v=>upCampo("inmueble","ubicacion_completa",v)} wide rows={3} required />
+            <Input label={t.fields.nivel_torre} value={data.campos.inmueble?.nivel_torre} onChange={v=>upCampo("inmueble","nivel_torre",v)} />
+            <Input label={t.fields.interior} value={data.campos.inmueble?.descripcion_interior} onChange={v=>upCampo("inmueble","descripcion_interior",v)} />
+            <Input label={t.fields.superficie_m2} value={data.campos.inmueble?.superficie_m2} onChange={v=>upCampo("inmueble","superficie_m2",v)} type="number" required />
+            <Input label={t.fields.superficie_letras} value={data.campos.inmueble?.superficie_letras} onChange={v=>upCampo("inmueble","superficie_letras",v)} required />
+            <Input label={t.fields.indiviso} value={data.campos.inmueble?.indiviso} onChange={v=>upCampo("inmueble","indiviso",v)} />
+            <Input label={t.fields.clave_catastral} value={data.campos.inmueble?.clave_catastral} onChange={v=>upCampo("inmueble","clave_catastral",v)} placeholder="020-024-01-039-258-000" />
             <div className="col-span-2 flex items-center gap-3 p-3 bg-gray-50 dark:bg-gray-800/50 rounded-lg">
               <input type="checkbox" checked={!!data.campos.inmueble?.tiene_uso_exclusivo} onChange={e=>upCampo("inmueble","tiene_uso_exclusivo",e.target.checked)} className="rounded" />
               <div>
-                <label className="text-sm font-medium">Incluir notas de uso exclusivo</label>
-                <p className="text-xs text-gray-400">Estacionamiento, bodega, servidumbre, terraza privada...</p>
+                <label className="text-sm font-medium">{t.fields.uso_exclusivo_label}</label>
+                <p className="text-xs text-gray-400">{t.fields.uso_exclusivo_sub}</p>
               </div>
             </div>
             {data.campos.inmueble?.tiene_uso_exclusivo && <>
-              <Input label="Notas uso exclusivo (ES)" value={data.campos.inmueble?.notas_uso_exclusivo} onChange={v=>upCampo("inmueble","notas_uso_exclusivo",v)} wide rows={2} placeholder="un estacionamiento con superficie descubierta de 14.40 m² y una bodega de 2.80 m²" />
-              <Input label="Notas uso exclusivo (EN)" value={data.campos.inmueble?.notas_uso_exclusivo_en} onChange={v=>upCampo("inmueble","notas_uso_exclusivo_en",v)} wide rows={2} placeholder="a parking space of 14.40 sq m and a storage room of 2.80 sq m" />
+              <Input label={t.fields.notas_uso_exclusivo_es} value={data.campos.inmueble?.notas_uso_exclusivo} onChange={v=>upCampo("inmueble","notas_uso_exclusivo",v)} wide rows={2} placeholder="un estacionamiento con superficie descubierta de 14.40 m² y una bodega de 2.80 m²" />
+              <Input label={t.fields.notas_uso_exclusivo_en} value={data.campos.inmueble?.notas_uso_exclusivo_en} onChange={v=>upCampo("inmueble","notas_uso_exclusivo_en",v)} wide rows={2} placeholder="a parking space of 14.40 sq m and a storage room of 2.80 sq m" />
             </>}
           </Section>
           <Section title={t.sections.antecedente}>
-            <Input label="Fecha escritura" value={data.campos.antecedente?.fecha_escritura} onChange={v=>upCampo("antecedente","fecha_escritura",v)} type="date" required />
-            <Input label="No. escritura" value={data.campos.antecedente?.numero_escritura} onChange={v=>upCampo("antecedente","numero_escritura",v)} required />
-            <Input label="Notario" value={data.campos.antecedente?.notario_anterior} onChange={v=>upCampo("antecedente","notario_anterior",v)} required />
-            <Input label="No. notaría" value={data.campos.antecedente?.numero_notaria_anterior} onChange={v=>upCampo("antecedente","numero_notaria_anterior",v)} required />
-            <Input label="Ciudad" value={data.campos.antecedente?.ciudad_notaria_anterior} onChange={v=>upCampo("antecedente","ciudad_notaria_anterior",v)} required />
+            <Input label={t.fields.fecha_escritura} value={data.campos.antecedente?.fecha_escritura} onChange={v=>upCampo("antecedente","fecha_escritura",v)} type="date" required />
+            <Input label={t.fields.no_escritura} value={data.campos.antecedente?.numero_escritura} onChange={v=>upCampo("antecedente","numero_escritura",v)} required />
+            <Input label={t.fields.notario_ant} value={data.campos.antecedente?.notario_anterior} onChange={v=>upCampo("antecedente","notario_anterior",v)} required />
+            <Input label={t.fields.no_notaria} value={data.campos.antecedente?.numero_notaria_anterior} onChange={v=>upCampo("antecedente","numero_notaria_anterior",v)} required />
+            <Input label={t.fields.ciudad} value={data.campos.antecedente?.ciudad_notaria_anterior} onChange={v=>upCampo("antecedente","ciudad_notaria_anterior",v)} required />
             <div className="flex flex-col gap-1">
               <label className="text-xs font-medium text-gray-500">Estado del RPP</label>
               <select value={data.campos.antecedente?.estado_registro||"nayarit"} onChange={e=>upCampo("antecedente","estado_registro",e.target.value)} className="border border-gray-200 dark:border-gray-600 rounded-lg px-3 py-2 text-sm bg-white dark:bg-gray-800">
@@ -547,32 +666,32 @@ export default function OfertaGenPage() {
             {(data.campos.antecedente?.tipo_registro||"folio_real") === "folio_real" ? (
               <Input label={(data.campos.antecedente?.estado_registro||"nayarit") === "nayarit" ? "Folio Real Electrónico" : "Folio Real"} value={data.campos.antecedente?.folio_real} onChange={v=>upCampo("antecedente","folio_real",v)} placeholder="Ej: 54832" />
             ) : (data.campos.antecedente?.estado_registro||"nayarit") === "nayarit" ? (<>
-              <Input label="Libro" value={data.campos.antecedente?.libro_rpp} onChange={v=>upCampo("antecedente","libro_rpp",v)} />
-              <Input label="Sección" value={data.campos.antecedente?.seccion_rpp} onChange={v=>upCampo("antecedente","seccion_rpp",v)} />
-              <Input label="Serie" value={data.campos.antecedente?.serie_rpp} onChange={v=>upCampo("antecedente","serie_rpp",v)} />
-              <Input label="Partida" value={data.campos.antecedente?.partida_rpp} onChange={v=>upCampo("antecedente","partida_rpp",v)} />
+              <Input label={t.fields.libro} value={data.campos.antecedente?.libro_rpp} onChange={v=>upCampo("antecedente","libro_rpp",v)} />
+              <Input label={t.fields.seccion} value={data.campos.antecedente?.seccion_rpp} onChange={v=>upCampo("antecedente","seccion_rpp",v)} />
+              <Input label={t.fields.serie} value={data.campos.antecedente?.serie_rpp} onChange={v=>upCampo("antecedente","serie_rpp",v)} />
+              <Input label={t.fields.partida} value={data.campos.antecedente?.partida_rpp} onChange={v=>upCampo("antecedente","partida_rpp",v)} />
             </>) : (<>
-              <Input label="Documento" value={data.campos.antecedente?.documento_rpp} onChange={v=>upCampo("antecedente","documento_rpp",v)} />
-              <Input label="Folios" value={data.campos.antecedente?.folios_rpp} onChange={v=>upCampo("antecedente","folios_rpp",v)} />
-              <Input label="Libro" value={data.campos.antecedente?.libro_jal} onChange={v=>upCampo("antecedente","libro_jal",v)} />
-              <Input label="Sección" value={data.campos.antecedente?.seccion_jal} onChange={v=>upCampo("antecedente","seccion_jal",v)} />
+              <Input label={t.fields.documento} value={data.campos.antecedente?.documento_rpp} onChange={v=>upCampo("antecedente","documento_rpp",v)} />
+              <Input label={t.fields.folios} value={data.campos.antecedente?.folios_rpp} onChange={v=>upCampo("antecedente","folios_rpp",v)} />
+              <Input label={t.fields.libro} value={data.campos.antecedente?.libro_jal} onChange={v=>upCampo("antecedente","libro_jal",v)} />
+              <Input label={t.fields.seccion} value={data.campos.antecedente?.seccion_jal} onChange={v=>upCampo("antecedente","seccion_jal",v)} />
             </>)}
-            <Input label="Cuenta predial" value={data.campos.antecedente?.cuenta_predial} onChange={v=>upCampo("antecedente","cuenta_predial",v)} />
+            <Input label={t.fields.cuenta_predial} value={data.campos.antecedente?.cuenta_predial} onChange={v=>upCampo("antecedente","cuenta_predial",v)} />
           </Section>
         </>}
 
         {step === 2 && <>
           <Section title={t.sections.precio}>
-            <Input label="Precio total" value={data.campos.precio?.precio_total} onChange={v=>upCampo("precio","precio_total",v)} type="number" required />
+            <Input label={t.fields.precio_total} value={data.campos.precio?.precio_total} onChange={v=>upCampo("precio","precio_total",v)} type="number" required />
             <div className="flex flex-col gap-1">
               <label className="text-xs font-medium text-gray-500">Moneda</label>
               <select value={data.campos.precio?.moneda||"USD"} onChange={e=>upCampo("precio","moneda",e.target.value)} className="border border-gray-200 dark:border-gray-600 rounded-lg px-3 py-2 text-sm bg-white dark:bg-gray-800">
                 <option value="USD">USD</option><option value="MXN">MXN</option>
               </select>
             </div>
-            <Input label="Depósito escrow" value={data.campos.precio?.deposito_escrow} onChange={v=>upCampo("precio","deposito_escrow",v)} type="number" />
-            <Input label="Días hábiles para depositar" value={data.campos.precio?.dias_deposito||3} onChange={v=>upCampo("precio","dias_deposito",v)} type="number" />
-            <Input label="Días hábiles saldo (antes del cierre)" value={data.campos.precio?.dias_saldo||5} onChange={v=>upCampo("precio","dias_saldo",v)} type="number" />
+            <Input label={t.fields.deposito_escrow} value={data.campos.precio?.deposito_escrow} onChange={v=>upCampo("precio","deposito_escrow",v)} type="number" />
+            <Input label={t.fields.dias_depositar} value={data.campos.precio?.dias_deposito||3} onChange={v=>upCampo("precio","dias_deposito",v)} type="number" />
+            <Input label={t.fields.dias_saldo} value={data.campos.precio?.dias_saldo||5} onChange={v=>upCampo("precio","dias_saldo",v)} type="number" />
             <div className="flex flex-col gap-1">
               <label className="text-xs font-medium text-gray-500">Anticipo gastos de escrituración</label>
               <select value={data.campos.precio?.anticipo_gastos||"0"} onChange={e=>upCampo("precio","anticipo_gastos",e.target.value)} className="border border-gray-200 dark:border-gray-600 rounded-lg px-3 py-2 text-sm bg-white dark:bg-gray-800">
@@ -601,17 +720,17 @@ export default function OfertaGenPage() {
                 <option value="P&A ESCROW">P&A Escrow</option>
               </select>
             </div>
-            <Input label="Honorarios escrow (USD)" value={data.campos.escrow?.honorarios_escrow||750} onChange={v=>upCampo("escrow","honorarios_escrow",v)} type="number" />
+            <Input label={t.fields.honorarios_escrow} value={data.campos.escrow?.honorarios_escrow||750} onChange={v=>upCampo("escrow","honorarios_escrow",v)} type="number" />
           </Section>
           <Section title={t.sections.fechas}>
-            <Input label="Fecha presentación" value={data.campos.fechas?.fecha_presentacion} onChange={v=>upCampo("fechas","fecha_presentacion",v)} type="date" required />
-            <Input label="Ciudad" value={data.campos.fechas?.ciudad_presentacion} onChange={v=>upCampo("fechas","ciudad_presentacion",v)} required />
-            <Input label="Fecha de vencimiento" value={data.campos.fechas?.fecha_vigencia} onChange={v=>upCampo("fechas","fecha_vigencia",v)} type="date" required />
-            <Input label="Hora de vencimiento" value={data.campos.fechas?.hora_vigencia||"medianoche"} onChange={v=>upCampo("fechas","hora_vigencia",v)} placeholder="medianoche, 17:00 horas..." />
-            <Input label="Formalización (ES)" value={data.campos.fechas?.fecha_formalizacion} onChange={v=>upCampo("fechas","fecha_formalizacion",v)} wide />
-            <Input label="Formalización (EN)" value={data.campos.fechas?.fecha_formalizacion_en} onChange={v=>upCampo("fechas","fecha_formalizacion_en",v)} wide />
-            <Input label="Extensión (ES)" value={data.campos.fechas?.fecha_extension} onChange={v=>upCampo("fechas","fecha_extension",v)} />
-            <Input label="Extensión (EN)" value={data.campos.fechas?.fecha_extension_en} onChange={v=>upCampo("fechas","fecha_extension_en",v)} />
+            <Input label={t.fields.fecha_presentacion} value={data.campos.fechas?.fecha_presentacion} onChange={v=>upCampo("fechas","fecha_presentacion",v)} type="date" required />
+            <Input label={t.fields.ciudad} value={data.campos.fechas?.ciudad_presentacion} onChange={v=>upCampo("fechas","ciudad_presentacion",v)} required />
+            <Input label={t.fields.fecha_vigencia} value={data.campos.fechas?.fecha_vigencia} onChange={v=>upCampo("fechas","fecha_vigencia",v)} type="date" required />
+            <Input label={t.fields.hora_vigencia} value={data.campos.fechas?.hora_vigencia||"medianoche"} onChange={v=>upCampo("fechas","hora_vigencia",v)} placeholder="medianoche, 17:00 horas..." />
+            <Input label={t.fields.formalizacion_es} value={data.campos.fechas?.fecha_formalizacion} onChange={v=>upCampo("fechas","fecha_formalizacion",v)} wide />
+            <Input label={t.fields.formalizacion_en} value={data.campos.fechas?.fecha_formalizacion_en} onChange={v=>upCampo("fechas","fecha_formalizacion_en",v)} wide />
+            <Input label={t.fields.extension_es} value={data.campos.fechas?.fecha_extension} onChange={v=>upCampo("fechas","fecha_extension",v)} />
+            <Input label={t.fields.extension_en} value={data.campos.fechas?.fecha_extension_en} onChange={v=>upCampo("fechas","fecha_extension_en",v)} />
           </Section>
           <Section title={t.sections.notario}>
             <div className="flex flex-col gap-1 col-span-2">
@@ -628,18 +747,18 @@ export default function OfertaGenPage() {
               </select>
             </div>
             {data.campos.notario?.notario_seleccion === "otro" && <>
-              <Input label="Nombre del notario" value={data.campos.notario?.nombre_notario} onChange={v=>upCampo("notario","nombre_notario",v)} required />
-              <Input label="No. notaría" value={data.campos.notario?.numero_notaria} onChange={v=>upCampo("notario","numero_notaria",v)} required />
-              <Input label="Ciudad" value={data.campos.notario?.ciudad_notaria} onChange={v=>upCampo("notario","ciudad_notaria",v)} required />
+              <Input label={t.fields.nombre_notario} value={data.campos.notario?.nombre_notario} onChange={v=>upCampo("notario","nombre_notario",v)} required />
+              <Input label={t.fields.no_notaria} value={data.campos.notario?.numero_notaria} onChange={v=>upCampo("notario","numero_notaria",v)} required />
+              <Input label={t.fields.ciudad} value={data.campos.notario?.ciudad_notaria} onChange={v=>upCampo("notario","ciudad_notaria",v)} required />
             </>}
           </Section>
           {data.bloques.financiamiento && <Section title="Sujeto a financiamiento">
-            <Input label="Nombre del prestamista / lender" value={data.campos.financiamiento?.nombre_lender} onChange={v=>upCampo("financiamiento","nombre_lender",v)} placeholder="MXMORTGAGE, Intercam..." />
-            <Input label="Días due diligence del lender" value={data.campos.financiamiento?.dias_due_diligence||30} onChange={v=>upCampo("financiamiento","dias_due_diligence",v)} type="number" />
+            <Input label={t.fields.nombre_lender} value={data.campos.financiamiento?.nombre_lender} onChange={v=>upCampo("financiamiento","nombre_lender",v)} placeholder="MXMORTGAGE, Intercam..." />
+            <Input label={t.fields.dias_due_diligence} value={data.campos.financiamiento?.dias_due_diligence||30} onChange={v=>upCampo("financiamiento","dias_due_diligence",v)} type="number" />
           </Section>}
           {data.bloques.inventario && <Section title="Inventario / Inclusion list">
-            <Input label="Exclusiones (ES)" value={data.campos.inventario?.exclusiones} onChange={v=>upCampo("inventario","exclusiones",v)} wide rows={2} placeholder="obras de arte, artículos personales del vendedor" />
-            <Input label="Exclusiones (EN)" value={data.campos.inventario?.exclusiones_en} onChange={v=>upCampo("inventario","exclusiones_en",v)} wide rows={2} placeholder="artwork, seller personal items" />
+            <Input label={t.fields.exclusiones_es} value={data.campos.inventario?.exclusiones} onChange={v=>upCampo("inventario","exclusiones",v)} wide rows={2} placeholder="obras de arte, artículos personales del vendedor" />
+            <Input label={t.fields.exclusiones_en} value={data.campos.inventario?.exclusiones_en} onChange={v=>upCampo("inventario","exclusiones_en",v)} wide rows={2} placeholder="artwork, seller personal items" />
           </Section>}
           {data.bloques.arrendamientos && <Section title="Arrendamientos vigentes">
             <div className="flex flex-col gap-1 col-span-2">
@@ -652,19 +771,19 @@ export default function OfertaGenPage() {
             </div>
           </Section>}
           <Section title={t.sections.comision}>
-            <Input label="% total" value={data.campos.comision?.porcentaje_total} onChange={v=>upCampo("comision","porcentaje_total",v)} />
+            <Input label={t.fields.pct_total} value={data.campos.comision?.porcentaje_total} onChange={v=>upCampo("comision","porcentaje_total",v)} />
             <div className="flex items-center gap-2 self-end pb-2">
               <input type="checkbox" checked={!!data.campos.comision?.incluye_iva} onChange={e=>upCampo("comision","incluye_iva",e.target.checked)} className="rounded" />
               <label className="text-xs text-gray-500">+ IVA 16%</label>
             </div>
-            <Input label="Agencia 1" value={data.campos.comision?.agencia1_nombre} onChange={v=>upCampo("comision","agencia1_nombre",v)} />
-            <Input label="% Ag. 1" value={data.campos.comision?.agencia1_porcentaje} onChange={v=>upCampo("comision","agencia1_porcentaje",v)} />
-            <Input label="Agencia 2" value={data.campos.comision?.agencia2_nombre} onChange={v=>upCampo("comision","agencia2_nombre",v)} />
-            <Input label="% Ag. 2" value={data.campos.comision?.agencia2_porcentaje} onChange={v=>upCampo("comision","agencia2_porcentaje",v)} />
+            <Input label={t.fields.agencia1} value={data.campos.comision?.agencia1_nombre} onChange={v=>upCampo("comision","agencia1_nombre",v)} />
+            <Input label={t.fields.pct_ag1} value={data.campos.comision?.agencia1_porcentaje} onChange={v=>upCampo("comision","agencia1_porcentaje",v)} />
+            <Input label={t.fields.agencia2} value={data.campos.comision?.agencia2_nombre} onChange={v=>upCampo("comision","agencia2_nombre",v)} />
+            <Input label={t.fields.pct_ag2} value={data.campos.comision?.agencia2_porcentaje} onChange={v=>upCampo("comision","agencia2_porcentaje",v)} />
           </Section>
           <Section title={t.sections.penalidad}>
-            <Input label="% penalidad" value={data.campos.penalidad?.porcentaje_penalidad} onChange={v=>upCampo("penalidad","porcentaje_penalidad",v)} />
-            <Input label="Jurisdicción" value={data.campos.jurisdiccion?.ciudad_jurisdiccion} onChange={v=>upCampo("jurisdiccion","ciudad_jurisdiccion",v)} />
+            <Input label={t.fields.pct_penalidad} value={data.campos.penalidad?.porcentaje_penalidad} onChange={v=>upCampo("penalidad","porcentaje_penalidad",v)} />
+            <Input label={t.fields.jurisdiccion} value={data.campos.jurisdiccion?.ciudad_jurisdiccion} onChange={v=>upCampo("jurisdiccion","ciudad_jurisdiccion",v)} />
             <div className="col-span-2 flex items-center gap-3 p-3 bg-gray-50 dark:bg-gray-800/50 rounded-lg">
               <input type="checkbox" checked={!!data.campos.penalidad?.distribuir_agencia} onChange={e=>upCampo("penalidad","distribuir_agencia",e.target.checked)} className="rounded" />
               <div>
@@ -673,8 +792,8 @@ export default function OfertaGenPage() {
               </div>
             </div>
             {data.campos.penalidad?.distribuir_agencia && <>
-              <Input label="% parte afectada" value={data.campos.penalidad?.pct_parte_afectada||"60%"} onChange={v=>upCampo("penalidad","pct_parte_afectada",v)} />
-              <Input label="% agencia" value={data.campos.penalidad?.pct_agencia||"40%"} onChange={v=>upCampo("penalidad","pct_agencia",v)} />
+              <Input label={t.fields.pct_parte_afectada} value={data.campos.penalidad?.pct_parte_afectada||"60%"} onChange={v=>upCampo("penalidad","pct_parte_afectada",v)} />
+              <Input label={t.fields.pct_agencia} value={data.campos.penalidad?.pct_agencia||"40%"} onChange={v=>upCampo("penalidad","pct_agencia",v)} />
             </>}
           </Section>
           <Section title={t.sections.testigos}>
@@ -694,10 +813,10 @@ export default function OfertaGenPage() {
             </div>
           </Section>
           <Section title={t.sections.coordinador}>
-            <Input label="Nombre" value={data.campos.coordinador?.nombre_coordinador} onChange={v=>upCampo("coordinador","nombre_coordinador",v)} placeholder="Lic. Rolando Romero García" />
-            <Input label="Empresa" value={data.campos.coordinador?.empresa_coordinador} onChange={v=>upCampo("coordinador","empresa_coordinador",v)} placeholder="Expat Advisor MX" />
-            <Input label="Celular/WhatsApp" value={data.campos.coordinador?.celular_coordinador} onChange={v=>upCampo("coordinador","celular_coordinador",v)} type="tel" />
-            <Input label="Email" value={data.campos.coordinador?.email_coordinador} onChange={v=>upCampo("coordinador","email_coordinador",v)} type="email" />
+            <Input label={t.fields.nombre_coord} value={data.campos.coordinador?.nombre_coordinador} onChange={v=>upCampo("coordinador","nombre_coordinador",v)} placeholder="Lic. Rolando Romero García" />
+            <Input label={t.fields.empresa_coord} value={data.campos.coordinador?.empresa_coordinador} onChange={v=>upCampo("coordinador","empresa_coordinador",v)} placeholder="Expat Advisor MX" />
+            <Input label={t.fields.celular} value={data.campos.coordinador?.celular_coordinador} onChange={v=>upCampo("coordinador","celular_coordinador",v)} type="tel" />
+            <Input label={t.fields.email} value={data.campos.coordinador?.email_coordinador} onChange={v=>upCampo("coordinador","email_coordinador",v)} type="email" />
           </Section>
         </>}
 

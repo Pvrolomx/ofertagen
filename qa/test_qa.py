@@ -45,13 +45,15 @@ log("Site: Subtitle 'Expat Advisor MX'", "Expat Advisor MX" in html)
 log("Site: Footer 'Hecho por duendes.app 2026'", "duendes.app 2026" in html)
 
 # Wizard steps
+# Sprint V-b: steps son dinámicos via i18n — verificar en fuente local
+_pjs_early = open(f"{REPO}/src/app/page.js", encoding="utf-8").read()
 for step in ["Partes", "Inmueble", "Operación", "Cláusulas", "Preview"]:
-    log(f"Site: Step '{step}' presente", step in html)
+    log(f"Site: Step '{step}' en fuente i18n", step in _pjs_early)
 
 # Buttons
 log("Site: Botón 'Demo'", ">Demo<" in html)
-log("Site: Botón 'Limpiar'", ">Limpiar<" in html)
-log("Site: Botón 'Siguiente'", ">Siguiente<" in html)
+log("Site: Botón 'Limpiar' en fuente i18n", "t.header.limpiar" in _pjs_early)
+log("Site: Botón 'Siguiente' en fuente i18n", "t.nav.siguiente" in _pjs_early)
 
 # Form elements
 log("Site: Input 'NOMBRE COMPLETO'", 'NOMBRE COMPLETO' in html)
@@ -474,6 +476,31 @@ log("Sprint V-a: steps EN correctos",
     pagejs and "Parties" in pagejs and "Property" in pagejs)
 log("Sprint V-a: steps FR correctos",
     pagejs and "Propriété" in pagejs and "Aperçu" in pagejs)
+
+# ─────────────────────────────────────────────────────────────
+# SPRINT V-b — i18n UI: LABELS Y PLACEHOLDERS DE CAMPOS
+# ─────────────────────────────────────────────────────────────
+print("\n── Sprint V-b: i18n campos ──")
+log("Sprint V-b: t.fields.descripcion_corta en page.js",
+    pagejs and "t.fields.descripcion_corta" in pagejs)
+log("Sprint V-b: t.fields.precio_total en page.js",
+    pagejs and "t.fields.precio_total" in pagejs)
+log("Sprint V-b: t.fields.fecha_vigencia en page.js",
+    pagejs and "t.fields.fecha_vigencia" in pagejs)
+log("Sprint V-b: t.fields.nombre_notario en page.js",
+    pagejs and "t.fields.nombre_notario" in pagejs)
+log("Sprint V-b: t.fields.nacionalidad en page.js",
+    pagejs and "t.fields.nacionalidad" in pagejs)
+log("Sprint V-b: t.fields.jurisdiccion en page.js",
+    pagejs and "t.fields.jurisdiccion" in pagejs)
+log("Sprint V-b: PartePanel recibe prop t",
+    pagejs and "rmPersona, t })" in pagejs)
+log("Sprint V-b: PartePanel Ofertante label dinámico FR",
+    pagejs and "Offrant / Acheteur" in pagejs)
+log("Sprint V-b: fields EN en objeto UI",
+    pagejs and '"Total price"' in pagejs)
+log("Sprint V-b: fields FR en objeto UI",
+    pagejs and '"Prix total"' in pagejs)
 # ═══════════════════════════════════════════════════════════════
 # 8. PAGE.JS — UI INTEGRITY
 # ═══════════════════════════════════════════════════════════════
