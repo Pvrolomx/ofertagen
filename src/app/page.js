@@ -880,15 +880,15 @@ export default function OfertaGenPage() {
               </button>
             </div>
           </div>
-          {bloques.length === 0 ? <p className="text-gray-400 text-sm">Completa los datos de las partes para ver la vista previa.</p> :
-          <div className="border border-gray-200 rounded-xl overflow-hidden text-xs leading-relaxed">
-            <div className="grid grid-cols-2 bg-gray-100 border-b border-gray-200">
-              <div className="px-3 py-2 font-semibold text-[10px] tracking-wider border-r" style={{color:"var(--og-secondary)",borderColor:"var(--og-border)"">ESPAÑOL</div>
+          {bloques.length === 0 ? <p className="text-sm" style={{color:"var(--og-secondary)"}}>Completa los datos de las partes para ver la vista previa.</p> :
+          <div className="rounded-xl overflow-hidden text-xs leading-relaxed" style={{border:"1px solid var(--og-border)"}}>
+            <div className="grid grid-cols-2" style={{background:"var(--og-surface)",borderBottom:"1px solid var(--og-border)"}}>
+              <div className="px-3 py-2 font-semibold text-[10px] tracking-wider border-r" style={{color:"var(--og-secondary)",borderColor:"var(--og-border)"}}>ESPAÑOL</div>
               <div className="px-3 py-2 font-semibold text-[10px] tracking-wider" style={{color:"var(--og-secondary)"}}>{idiomaSecundario === 'fr' ? 'FRANÇAIS' : 'ENGLISH'}</div>
             </div>
             {bloques.map((b, i) => {
               if (b.tipo === "firmas") return (
-                <div key={i} className="flex justify-around py-10 border-t border-gray-200">
+                <div key={i} className="flex justify-around py-10" style={{borderTop:"1px solid var(--og-border)"}}>
                   {b.firmas?.map((f, j) => (
                     <div key={j} className="text-center">
                       <div className="w-48 border-b border-gray-900 mb-2" />
