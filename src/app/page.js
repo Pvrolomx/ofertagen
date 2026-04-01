@@ -194,7 +194,7 @@ const UI = {
     },
   },
   en: {
-    steps: ["Parties", "Property", "Transaction", "Clauses", "Preview"],
+    steps: ["Parties", "Property", "Deal", "Clauses", "Preview"],
     sections: {
       idioma: "Buyer's language",
       idioma_sub: "Buyer's preferred language for their copy",
@@ -264,7 +264,7 @@ const UI = {
     },
   },
   fr: {
-    steps: ["Parties", "Propriété", "Transaction", "Clauses", "Aperçu"],
+    steps: ["Parties", "Propriété", "Contrat", "Clauses", "Aperçu"],
     sections: {
       idioma: "Langue de l'acheteur",
       idioma_sub: "Langue préférée de l'acheteur pour sa copie",
