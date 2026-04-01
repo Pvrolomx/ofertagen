@@ -376,10 +376,10 @@ log("Sprint R: page.js — estado idiomaSecundario",
     pagejs and "idiomaSecundario" in pagejs)
 log("Sprint T: page.js — selector idioma en Paso 1",
     pagejs and "Idioma del comprador" in pagejs)
-log("Sprint T: page.js — opción English en Paso 1",
-    pagejs and "Estadounidense" in pagejs)
-log("Sprint T: page.js — opción Français en Paso 1",
-    pagejs and "Franco-canadien" in pagejs)
+log("Sprint T: page.js — bloque informativo English en Paso 1",
+    pagejs and "'🇺🇸'" in pagejs or pagejs and "Français'" in pagejs)
+log("Sprint T: page.js — bloque informativo Français en Paso 1",
+    pagejs and "idioma_sub" in pagejs and "🇨🇦" in pagejs)
 log("Sprint R: page.js — header FRANÇAIS dinámico",
     pagejs and "FRANÇAIS" in pagejs)
 
