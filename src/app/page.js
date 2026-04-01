@@ -608,8 +608,8 @@ export default function OfertaGenPage() {
       <div className="bg-white dark:bg-gray-800/50 rounded-2xl border border-gray-200 dark:border-gray-700 p-6 mb-4 min-h-[400px]">
 
         {step === 0 && <>
-          <PartePanel data={data} pid="ofertante" label={idiomaSecundario === "fr" ? "Offrant / Acheteur" : "Ofertante / Buyer"} upParte={upParte} upPersona={upPersona} addPersona={addPersona} rmPersona={rmPersona} t={t} />
-          <PartePanel data={data} pid="propietario" label={idiomaSecundario === "fr" ? "Propriétaire / Vendeur" : "Propietario / Owner"} upParte={upParte} upPersona={upPersona} addPersona={addPersona} rmPersona={rmPersona} t={t} />
+          <PartePanel data={data} pid="ofertante" label={idiomaSecundario === "fr" ? "Ofertante / Offrant" : "Ofertante / Buyer"} upParte={upParte} upPersona={upPersona} addPersona={addPersona} rmPersona={rmPersona} t={t} />
+          <PartePanel data={data} pid="propietario" label={idiomaSecundario === "fr" ? "Propietario / Propriétaire" : "Propietario / Owner"} upParte={upParte} upPersona={upPersona} addPersona={addPersona} rmPersona={rmPersona} t={t} />
           <Section title={t.sections.idioma}>
             <div className="col-span-2 flex flex-col gap-1">
               <label className="text-xs font-medium text-gray-500">¿En qué idioma prefiere su copia el comprador? / {t.sections.idioma_sub}</label>
