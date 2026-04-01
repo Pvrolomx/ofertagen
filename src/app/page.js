@@ -144,6 +144,7 @@ const UI = {
       celular: "Celular/WhatsApp", email: "Email", domicilio: "Domicilio",
       agregar_persona: "+ Agregar persona",
       genero_m: "Masculino", genero_f: "Femenino", placeholder_nacionalidad: "canadiense, estadounidense...",
+      domicilio_inmueble: "Inmueble materia de la presente oferta", label_ofertante: "Ofertante", label_propietario: "Propietario",
       // Inmueble
       descripcion_corta: "Descripción corta", ubicacion_completa: "Ubicación completa",
       nivel_torre: "Nivel/Torre", interior: "Interior",
@@ -224,6 +225,7 @@ const UI = {
       celular: "Cell/WhatsApp", email: "Email", domicilio: "Address",
       agregar_persona: "+ Add person",
       genero_m: "Male", genero_f: "Female", placeholder_nacionalidad: "Canadian, American, French...",
+      domicilio_inmueble: "Property subject matter of this offer", label_ofertante: "Buyer", label_propietario: "Owner",
       descripcion_corta: "Short description", ubicacion_completa: "Full location",
       nivel_torre: "Level/Tower", interior: "Interior",
       superficie_m2: "Area m²", superficie_letras: "Area in words",
@@ -294,6 +296,7 @@ const UI = {
       celular: "Cellulaire/WhatsApp", email: "Courriel", domicilio: "Adresse",
       agregar_persona: "+ Ajouter personne",
       genero_m: "Masculin", genero_f: "Féminin", placeholder_nacionalidad: "Canadien, Américain, Français...",
+      domicilio_inmueble: "Bien immobilier objet de la présente offre", label_ofertante: "Offrant", label_propietario: "Propriétaire",
       descripcion_corta: "Description courte", ubicacion_completa: "Emplacement complet",
       nivel_torre: "Niveau/Tour", interior: "Intérieur",
       superficie_m2: "Surface m²", superficie_letras: "Surface en lettres",
@@ -625,8 +628,8 @@ export default function OfertaGenPage() {
       <div className="bg-white rounded-2xl p-6 mb-4 min-h-[400px]" style={{background:"var(--og-card)",border:"1px solid var(--og-border)"}}>
 
         {step === 0 && <>
-          <PartePanel data={data} pid="ofertante" label={idiomaSecundario === "fr" ? "Ofertante / Offrant" : "Ofertante / Buyer"} upParte={upParte} upPersona={upPersona} addPersona={addPersona} rmPersona={rmPersona} t={t} />
-          <PartePanel data={data} pid="propietario" label={idiomaSecundario === "fr" ? "Propietario / Propriétaire" : "Propietario / Owner"} upParte={upParte} upPersona={upPersona} addPersona={addPersona} rmPersona={rmPersona} t={t} />
+          <PartePanel data={data} pid="ofertante" label={t.fields.label_ofertante} upParte={upParte} upPersona={upPersona} addPersona={addPersona} rmPersona={rmPersona} t={t} />
+          <PartePanel data={data} pid="propietario" label={t.fields.label_propietario} upParte={upParte} upPersona={upPersona} addPersona={addPersona} rmPersona={rmPersona} t={t} />
           <Section title={t.sections.idioma}>
             <div className="col-span-2 flex items-center gap-4 p-3 rounded-xl" style={{background:"rgba(29,107,184,0.15)",border:"1px solid rgba(56,139,253,0.3)"}}>
               <span className="text-3xl">{idiomaSecundario === 'fr' ? '🇨🇦' : '🇺🇸'}</span>
