@@ -421,8 +421,9 @@ export default function OfertaGenPage() {
   const [logoBase64, setLogoBase64] = useState(null);
   const [logoPreview, setLogoPreview] = useState(null);
   const [idiomaSecundario, setIdiomaSecundario] = useState('es'); // 'es', 'en' o 'fr'
+  const [contractLang, setContractLang] = useState('en'); // 'en' o 'fr' — idioma secundario del contrato
   const t = UI[idiomaSecundario] || UI.es; // i18n activo Sprint V-a
-  const lang2 = idiomaSecundario === 'fr' ? 'fr' : 'en'; // idioma secundario del contrato
+  const lang2 = contractLang; // idioma secundario del contrato — independiente de la UI
   const steps = t.steps;
 
   // Auto-save draft
@@ -557,7 +558,7 @@ export default function OfertaGenPage() {
     });
 
     return { valid: errors.length === 0, errors, warnings };
-  }, [data, lang2]);
+  }, [data, contractLang]);
 
   const handleGenerateForced = useCallback(async () => {
     setValidationResult(null);
@@ -678,7 +679,7 @@ export default function OfertaGenPage() {
           {/* Toggle idioma UI — Sprint V-a */}
           <div className="flex rounded-lg border border-gray-200 overflow-hidden text-xs font-medium">
             {[['es','ES'],['en','EN'],['fr','FR']].map(([lang, label]) => (
-              <button key={lang} onClick={() => setIdiomaSecundario(lang)}
+              <button key={lang} onClick={() => { setIdiomaSecundario(lang); setContractLang(lang === 'fr' ? 'fr' : 'en'); }}
                 className={`px-2.5 py-1.5 transition ${idiomaSecundario === lang ? "og-step-active" : ""}`}>
                 {label}
               </button>
@@ -704,13 +705,20 @@ export default function OfertaGenPage() {
           <PartePanel data={data} pid="ofertante" label={t.fields.label_ofertante} upParte={upParte} upPersona={upPersona} addPersona={addPersona} rmPersona={rmPersona} t={t} />
           <PartePanel data={data} pid="propietario" label={t.fields.label_propietario} upParte={upParte} upPersona={upPersona} addPersona={addPersona} rmPersona={rmPersona} t={t} />
           <Section title={t.sections.idioma}>
-            <div className="col-span-2 flex items-center gap-4 p-3 rounded-xl" style={{background:"rgba(29,107,184,0.15)",border:"1px solid rgba(56,139,253,0.3)"}}>
-              <span className="text-3xl">{lang2 === 'fr' ? '🇨🇦' : '🇺🇸'}</span>
-              <div>
-                <p className="text-sm font-semibold" style={{color:"var(--og-accent-hi)"}}>
-                  {lang2 === 'fr' ? 'Français' : 'English'}
-                </p>
-                <p className="text-xs" style={{color:"var(--og-secondary)"}}>{t.sections.idioma_sub}</p>
+            <div className="col-span-2 flex flex-col gap-2">
+              <p className="text-xs" style={{color:"var(--og-secondary)"}}>{t.sections.idioma_sub}</p>
+              <div className="flex gap-2">
+                {[['en','🇺🇸 English'],['fr','🇨🇦 Français']].map(([cl, label]) => (
+                  <button key={cl} onClick={() => setContractLang(cl)}
+                    className="flex-1 px-3 py-2 text-sm rounded-xl transition font-medium"
+                    style={{
+                      background: contractLang === cl ? "var(--og-accent)" : "var(--og-surface)",
+                      border: contractLang === cl ? "1px solid var(--og-accent-hi)" : "1px solid var(--og-border)",
+                      color: contractLang === cl ? "#fff" : "var(--og-secondary)"
+                    }}>
+                    {label}
+                  </button>
+                ))}
               </div>
             </div>
           </Section>
