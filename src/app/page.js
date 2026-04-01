@@ -87,8 +87,8 @@ function PartePanel({ data, pid, label, upParte, upPersona, addPersona, rmPerson
           </div>
         </div>
       ))}
-      <button onClick={() => addPersona(pid)} className="col-span-2 text-xs text-blue-500 hover:text-blue-700 py-1">+ Agregar persona</button>
-      <Input label={t.fields.nacionalidad} value={p.nacionalidad} onChange={v => upParte(pid, "nacionalidad", v)} placeholder="canadiense, estadounidense..." />
+      <button onClick={() => addPersona(pid)} className="col-span-2 text-xs text-blue-500 hover:text-blue-700 py-1">{t?.fields?.agregar_persona || "+ Agregar persona"}</button>
+      <Input label={t.fields.nacionalidad} value={p.nacionalidad} onChange={v => upParte(pid, "nacionalidad", v)} placeholder={t?.fields?.placeholder_nacionalidad || "canadiense, estadounidense..."} />
       <Input label={t.fields.celular} value={p.celular} onChange={v => upParte(pid, "celular", v)} type="tel" required />
       <Input label={t.fields.email} value={p.email} onChange={v => upParte(pid, "email", v)} type="email" required />
       <Input label={t.fields.domicilio} value={p.domicilio} onChange={v => upParte(pid, "domicilio", v)} wide rows={2} />
@@ -131,6 +131,7 @@ const UI = {
       // Partes
       nombre_completo: "NOMBRE COMPLETO", nacionalidad: "Nacionalidad",
       celular: "Celular/WhatsApp", email: "Email", domicilio: "Domicilio",
+      agregar_persona: "+ Agregar persona", placeholder_nacionalidad: "canadiense, estadounidense...",
       // Inmueble
       descripcion_corta: "Descripción corta", ubicacion_completa: "Ubicación completa",
       nivel_torre: "Nivel/Torre", interior: "Interior",
@@ -209,6 +210,7 @@ const UI = {
     fields: {
       nombre_completo: "FULL NAME", nacionalidad: "Nationality",
       celular: "Cell/WhatsApp", email: "Email", domicilio: "Address",
+      agregar_persona: "+ Add person", placeholder_nacionalidad: "Canadian, American, French...",
       descripcion_corta: "Short description", ubicacion_completa: "Full location",
       nivel_torre: "Level/Tower", interior: "Interior",
       superficie_m2: "Area m²", superficie_letras: "Area in words",
@@ -277,6 +279,7 @@ const UI = {
     fields: {
       nombre_completo: "NOM COMPLET", nacionalidad: "Nationalité",
       celular: "Cellulaire/WhatsApp", email: "Courriel", domicilio: "Adresse",
+      agregar_persona: "+ Ajouter personne", placeholder_nacionalidad: "Canadien, Américain, Français...",
       descripcion_corta: "Description courte", ubicacion_completa: "Emplacement complet",
       nivel_torre: "Niveau/Tour", interior: "Intérieur",
       superficie_m2: "Surface m²", superficie_letras: "Surface en lettres",
