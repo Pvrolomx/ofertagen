@@ -17,14 +17,12 @@ import {
   bloquePrecio,
   fechaEs,
   fechaEn,
-  fechaFr,
 } from '../core/index';
 
 /**
  * Genera fecha en francés (formato largo).
- * Si fechaFr no está en core, usamos fallback.
  */
-function fechaFrFallback(isoDate) {
+function fechaFr(isoDate) {
   if (!isoDate) return '';
   const meses = ['janvier', 'février', 'mars', 'avril', 'mai', 'juin', 
                  'juillet', 'août', 'septembre', 'octobre', 'novembre', 'décembre'];
@@ -129,7 +127,7 @@ export function ensamblarContextoContraoferta(plantilla, datos) {
   ctx.oferta_original = {
     fecha_es: fechaEs(ofertaOrig.fecha_oferta) || '[FECHA]',
     fecha_en: fechaEn(ofertaOrig.fecha_oferta) || '[DATE]',
-    fecha_fr: (typeof fechaFr === 'function' ? fechaFr : fechaFrFallback)(ofertaOrig.fecha_oferta) || '[DATE]',
+    fecha_fr: fechaFr(ofertaOrig.fecha_oferta) || '[DATE]',
     descripcion_inmueble: ofertaOrig.descripcion_inmueble || '[INMUEBLE]',
     precio_completo: bloquePrecio(precioOrig, 'USD').completo,
   };
@@ -150,7 +148,7 @@ export function ensamblarContextoContraoferta(plantilla, datos) {
     // Fecha de formalización
     nueva_fecha_formalizacion_es: fechaEs(mods.nueva_fecha_formalizacion) || '',
     nueva_fecha_formalizacion_en: fechaEn(mods.nueva_fecha_formalizacion) || '',
-    nueva_fecha_formalizacion_fr: (typeof fechaFr === 'function' ? fechaFr : fechaFrFallback)(mods.nueva_fecha_formalizacion) || '',
+    nueva_fecha_formalizacion_fr: fechaFr(mods.nueva_fecha_formalizacion) || '',
     
     // Notario
     nuevo_notario_nombre: mods.nuevo_notario_nombre || '',
@@ -164,7 +162,7 @@ export function ensamblarContextoContraoferta(plantilla, datos) {
     // Vigencia
     nueva_fecha_vigencia_es: fechaEs(mods.nueva_fecha_vigencia) || '',
     nueva_fecha_vigencia_en: fechaEn(mods.nueva_fecha_vigencia) || '',
-    nueva_fecha_vigencia_fr: (typeof fechaFr === 'function' ? fechaFr : fechaFrFallback)(mods.nueva_fecha_vigencia) || '',
+    nueva_fecha_vigencia_fr: fechaFr(mods.nueva_fecha_vigencia) || '',
     nueva_hora_vigencia: horaVig.es,
     nueva_hora_vigencia_en: horaVig.en,
     nueva_hora_vigencia_fr: horaVig.fr,
@@ -190,12 +188,12 @@ export function ensamblarContextoContraoferta(plantilla, datos) {
   ctx.aceptacion = {
     fecha_contraoferta_es: fechaEs(acep.fecha_contraoferta) || '[FECHA]',
     fecha_contraoferta_en: fechaEn(acep.fecha_contraoferta) || '[DATE]',
-    fecha_contraoferta_fr: (typeof fechaFr === 'function' ? fechaFr : fechaFrFallback)(acep.fecha_contraoferta) || '[DATE]',
+    fecha_contraoferta_fr: fechaFr(acep.fecha_contraoferta) || '[DATE]',
     ciudad_contraoferta: acep.ciudad_contraoferta || 'Bucerías, Nayarit',
     vigencia_horas: vigenciaHoras,
     fecha_limite_es: fechaLimite ? fechaEs(fechaLimite.toISOString().split('T')[0]) : '',
     fecha_limite_en: fechaLimite ? fechaEn(fechaLimite.toISOString().split('T')[0]) : '',
-    fecha_limite_fr: fechaLimite ? (typeof fechaFr === 'function' ? fechaFr : fechaFrFallback)(fechaLimite.toISOString().split('T')[0]) : '',
+    fecha_limite_fr: fechaLimite ? fechaFr(fechaLimite.toISOString().split('T')[0]) : '',
     hora_limite_es: fechaLimite ? `${fechaLimite.getHours()}:${String(fechaLimite.getMinutes()).padStart(2, '0')} horas` : '',
     hora_limite_en: fechaLimite ? fechaLimite.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit', hour12: true }) : '',
     hora_limite_fr: fechaLimite ? `${fechaLimite.getHours()}h${String(fechaLimite.getMinutes()).padStart(2, '0')}` : '',

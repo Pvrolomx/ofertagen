@@ -195,6 +195,59 @@ log("Reemplaza ordinales dinámicamente",
     "ctx._ordinal_es" in ensamblador)
 
 # ============================================================
+# 9. UI — Sprint CA-2
+# ============================================================
+print("\n🖥️ 9. UI — Sprint CA-2")
+
+ui_path = "src/app/contraoferta/page.js"
+log("page.js existe", os.path.exists(os.path.join(BASE_DIR, ui_path)))
+
+ui_code = read_file(ui_path)
+
+log("Import: ensamblarContextoContraoferta",
+    "ensamblarContextoContraoferta" in ui_code)
+
+log("Import: PLANTILLA contraoferta",
+    'from "@/lib/plantillas/contraoferta"' in ui_code)
+
+log("INIT tiene 7 bloques",
+    "mod_precio" in ui_code and "mod_clausula_libre" in ui_code)
+
+log("i18n: UI tiene ES/EN/FR",
+    "const UI = {" in ui_code and "'es':" in ui_code or "es: {" in ui_code)
+
+log("Wizard: 3 pasos",
+    "renderStep1" in ui_code and "renderStep2" in ui_code and "renderStep3" in ui_code)
+
+log("Deep link: contraoferta_preload",
+    "contraoferta_preload" in ui_code)
+
+log("Auto-save: contraoferta_draft",
+    "contraoferta_draft" in ui_code)
+
+log("Toggles condicionales en Step 2",
+    "data.bloques[id] &&" in ui_code or "data.bloques[id] && id ==" in ui_code)
+
+log("Preview bilingüe en Step 3",
+    "contractLang" in ui_code and "bloques.map" in ui_code)
+
+log("Footer duendes.app",
+    "duendes.app 2026" in ui_code)
+
+# ============================================================
+# 10. Deep link desde OfertaGen
+# ============================================================
+print("\n🔗 10. Deep link desde OfertaGen")
+
+main_page = read_file("src/app/page.js")
+
+log("Botón Contraoferta en step 4",
+    "contraoferta_preload" in main_page and "/contraoferta" in main_page)
+
+log("Precarga datos: partes, fecha, precio",
+    "partes: data.partes" in main_page and "precio_original" in main_page)
+
+# ============================================================
 # RESULTADO
 # ============================================================
 print("\n" + "="*60)

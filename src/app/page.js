@@ -1076,13 +1076,30 @@ export default function OfertaGenPage() {
       </div>
 
       {/* Nav */}
-      <div className="flex justify-between">
+      <div className="flex justify-between items-center">
         {step > 0 ? <button onClick={() => setStep(s => s - 1)} className="px-5 py-2 text-sm rounded-xl transition" style={{background:"var(--og-surface)",border:"1px solid var(--og-border)",color:"var(--og-secondary)"}}>{t.nav.anterior}</button> : <div />}
-        {step < 4 ? <button onClick={() => setStep(s => s + 1)} className="px-5 py-2 text-sm font-medium text-white rounded-xl transition" style={{background:"var(--og-accent)",border:"1px solid var(--og-border-hi)"}}>{t.nav.siguiente}</button>
-          : <button onClick={handleGenerate} disabled={generating || !bloques.length}
-              className="px-6 py-2 text-sm font-medium text-white bg-green-600 hover:bg-green-700 disabled:bg-gray-300 rounded-xl shadow-sm transition">
-              {generating ? t.preview.generando : t.preview.descargar}
-            </button>}
+        <div className="flex gap-3">
+          {step === 4 && (
+            <button onClick={() => {
+              // Precargar datos para contraoferta
+              const preload = {
+                partes: data.partes,
+                fecha_oferta: data.campos.fechas?.fecha_presentacion || '',
+                descripcion_inmueble: data.campos.inmueble?.descripcion_corta || '',
+                precio_original: data.campos.precio?.precio_total || 0,
+              };
+              localStorage.setItem("contraoferta_preload", JSON.stringify(preload));
+              window.location.href = "/contraoferta";
+            }} className="px-4 py-2 text-sm font-medium rounded-xl transition" style={{background:"var(--og-surface)",border:"1px solid var(--og-accent)",color:"var(--og-accent-hi)"}}>
+              {idiomaSecundario === 'es' ? '¿Contraoferta?' : idiomaSecundario === 'fr' ? 'Contre-offre?' : 'Counter-offer?'}
+            </button>
+          )}
+          {step < 4 ? <button onClick={() => setStep(s => s + 1)} className="px-5 py-2 text-sm font-medium text-white rounded-xl transition" style={{background:"var(--og-accent)",border:"1px solid var(--og-border-hi)"}}>{t.nav.siguiente}</button>
+            : <button onClick={handleGenerate} disabled={generating || !bloques.length}
+                className="px-6 py-2 text-sm font-medium text-white bg-green-600 hover:bg-green-700 disabled:bg-gray-300 rounded-xl shadow-sm transition">
+                {generating ? t.preview.generando : t.preview.descargar}
+              </button>}
+        </div>
       </div>
 
       {/* Footer — RDE regla 10 */}
