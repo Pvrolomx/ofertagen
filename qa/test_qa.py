@@ -496,7 +496,7 @@ log("Sprint V-b: t.fields.jurisdiccion en page.js",
 log("Sprint V-b: PartePanel recibe prop t",
     pagejs and "rmPersona, t })" in pagejs)
 log("Sprint V-b: PartePanel Ofertante label dinámico FR",
-    pagejs and "Ofertante / Offrant" in pagejs)
+    pagejs and "label_ofertante" in pagejs and '"Offrant"' in pagejs)
 log("Sprint V-b: fields EN en objeto UI",
     pagejs and '"Total price"' in pagejs)
 log("Sprint V-b: fields FR en objeto UI",
