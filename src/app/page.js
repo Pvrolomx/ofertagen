@@ -640,16 +640,20 @@ export default function OfertaGenPage() {
   }, [bloques, data.partes.ofertante.personas, logoBase64, idiomaSecundario]);
 
   const handleGeneratePdf = useCallback(async () => {
+    console.log('handleGeneratePdf: iniciando, bloques:', bloques.length);
     if (!bloques.length) return;
     // Validar antes de generar
     const result = validarOferta(bloques, lang2);
     if (!result.valid || result.warnings.length > 0) {
+      console.log('handleGeneratePdf: validación falló o tiene warnings');
       setValidationResult(result);
       return;
     }
+    console.log('handleGeneratePdf: validación OK, generando...');
     setGenerating(true);
     try {
       const blob = await generarPdfBlob(bloques, PLANTILLA.meta, { idiomaSecundario: lang2 });
+      console.log('handleGeneratePdf: blob generado, descargando...');
       const nombre = data.partes.ofertante.personas[0]?.nombre?.replace(/\s+/g, "_") || "OFERTA";
       const idiomaSufijo = lang2 === 'fr' ? '_FR' : '';
       const url = URL.createObjectURL(blob);
