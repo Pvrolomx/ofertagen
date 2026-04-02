@@ -640,24 +640,18 @@ export default function OfertaGenPage() {
   }, [bloques, data.partes.ofertante.personas, logoBase64, idiomaSecundario]);
 
   const handleGeneratePdf = useCallback(async () => {
-    console.log('handleGeneratePdf: iniciando, bloques:', bloques.length);
     if (!bloques.length) return;
-    // Validar antes de generar
     const result = validarOferta(bloques, lang2);
     if (!result.valid || result.warnings.length > 0) {
-      console.log('handleGeneratePdf: validación falló o tiene warnings');
       setValidationResult(result);
       return;
     }
-    console.log('handleGeneratePdf: validación OK, generando...');
     setGenerating(true);
     try {
-      // generarPdfBlob ahora usa download() directo
       await generarPdfBlob(bloques, PLANTILLA.meta, { 
         idiomaSecundario: lang2,
         nombre: data.partes.ofertante.personas[0]?.nombre?.replace(/\s+/g, "_") || "OFERTA"
       });
-      console.log('handleGeneratePdf: PDF generado');
     } catch (err) {
       console.error("Error generando PDF:", err);
       alert("Error al generar el PDF. Revisa la consola.");

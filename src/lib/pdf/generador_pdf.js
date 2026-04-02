@@ -30,16 +30,10 @@ function limpiarTexto(texto, lang = 'es') {
 // ============================================================
 
 export async function generarPdfBlob(bloques, meta = {}, opciones = {}) {
-  console.log('generarPdfBlob: función llamada');
-  
   try {
-    console.log('generarPdfBlob: importando pdfmake...');
     // Import dinámico
     const pdfMakeModule = await import('pdfmake/build/pdfmake');
-    console.log('generarPdfBlob: pdfmake importado');
-    
     const pdfFontsModule = await import('pdfmake/build/vfs_fonts');
-    console.log('generarPdfBlob: vfs_fonts importado');
     
     const pdfMake = pdfMakeModule.default || pdfMakeModule;
     
@@ -61,8 +55,6 @@ export async function generarPdfBlob(bloques, meta = {}, opciones = {}) {
         bolditalics: 'Roboto-MediumItalic.ttf'
       }
     };
-    
-    console.log('generarPdfBlob: fonts configuradas');
     
     const { idiomaSecundario = 'en' } = opciones;
   const lang2 = idiomaSecundario;
@@ -188,26 +180,20 @@ export async function generarPdfBlob(bloques, meta = {}, opciones = {}) {
     }
   };
   
-  console.log('generarPdfBlob: docDefinition creado, generando PDF...');
-  
-  // Usar download directo - más confiable
+  // Usar download directo
   const pdfDoc = pdfMake.createPdf(docDefinition);
   
-  // Obtener nombre del archivo desde opciones
+  // Nombre del archivo
   const nombreBase = opciones.nombre || 'OFERTA';
   const idiomaSufijo = lang2 === 'fr' ? '_FR' : '';
   const filename = `OFERTA_${nombreBase}${idiomaSufijo}.pdf`;
   
-  console.log('generarPdfBlob: llamando download con filename:', filename);
   pdfDoc.download(filename);
-  console.log('generarPdfBlob: download llamado');
-  
-  // Retornar null ya que download() maneja todo
   return null;
   
-  } catch (outerErr) {
-    console.error('generarPdfBlob: error general:', outerErr);
-    throw outerErr;
+  } catch (err) {
+    console.error('Error generando PDF:', err);
+    throw err;
   }
 }
 
