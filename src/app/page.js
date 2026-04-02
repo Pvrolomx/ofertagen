@@ -706,7 +706,6 @@ export default function OfertaGenPage() {
           <button onClick={exportDraft} className="px-3 py-1.5 text-xs rounded-lg transition flex items-center gap-1" style={{background:"var(--og-surface)",border:"1px solid var(--og-border)",color:"var(--og-secondary)"}}>
             <span>💾</span> {t.header.guardar}
           </button>
-          <button onClick={loadDemo} className="px-3 py-1.5 text-xs rounded-lg transition og-btn-demo">Demo</button>
           <button onClick={resetAll} className="px-3 py-1.5 text-xs rounded-lg transition" style={{background:"var(--og-surface)",border:"1px solid var(--og-border)",color:"var(--og-secondary)"}}>{t.header.limpiar}</button>
           {/* Toggle idioma UI — Sprint V-a */}
           <div className="flex rounded-lg border border-gray-200 overflow-hidden text-xs font-medium">
@@ -1111,7 +1110,7 @@ export default function OfertaGenPage() {
 
       {/* Footer */}
       <footer className="mt-8 pt-4 border-t flex items-center justify-between text-xs" style={{borderTop:"1px solid var(--og-border)",color:"var(--og-muted)"}}>
-        <span>Hecho por Colmena 2026</span>
+        <span>Hecho por Colmena <span onClick={loadDemo} className="cursor-pointer hover:text-blue-400 transition">2026</span></span>
         <button id="install-btn" onClick={() => window.installApp?.()} className="hidden px-3 py-1.5 bg-blue-50 text-blue-600 border border-blue-200 rounded-lg hover:bg-blue-100 transition">
           Instalar App
         </button>

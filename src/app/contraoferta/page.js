@@ -83,7 +83,7 @@ const UI = {
     },
     nav: { anterior: "Anterior", siguiente: "Siguiente", generar: "Descargar .docx" },
     preview: { title: "Vista previa", idioma: "Idioma secundario" },
-    header: { volver: "← Volver a OfertaGen", limpiar: "Limpiar" },
+    header: { volver: "← Volver a OfertaGen", limpiar: "Limpiar", cargar: "Cargar", guardar: "Guardar" },
     footer: "Hecho por Colmena 2026",
   },
   en: {
@@ -135,7 +135,7 @@ const UI = {
     },
     nav: { anterior: "Back", siguiente: "Next", generar: "Download .docx" },
     preview: { title: "Preview", idioma: "Secondary language" },
-    header: { volver: "← Back to OfertaGen", limpiar: "Clear" },
+    header: { volver: "← Back to OfertaGen", limpiar: "Clear", cargar: "Load", guardar: "Save" },
     footer: "Made by Colmena 2026",
   },
   fr: {
@@ -187,7 +187,7 @@ const UI = {
     },
     nav: { anterior: "Retour", siguiente: "Suivant", generar: "Télécharger .docx" },
     preview: { title: "Aperçu", idioma: "Langue secondaire" },
-    header: { volver: "← Retour à OfertaGen", limpiar: "Effacer" },
+    header: { volver: "← Retour à OfertaGen", limpiar: "Effacer", cargar: "Charger", guardar: "Sauver" },
     footer: "Fait par Colmena 2026",
   },
 };
@@ -309,6 +309,52 @@ export default function ContraOfertaGenPage() {
   const upCampo = (sec, k, v) => setData(d => ({ ...d, campos: { ...d.campos, [sec]: { ...d.campos[sec], [k]: v } } }));
   const togBloque = (id) => setData(d => ({ ...d, bloques: { ...d.bloques, [id]: !d.bloques[id] } }));
   const resetAll = () => { setData(JSON.parse(JSON.stringify(INIT))); setStep(0); localStorage.removeItem("contraoferta_draft"); };
+
+  // Import/Export draft
+  const exportDraft = () => {
+    const blob = new Blob([JSON.stringify(data, null, 2)], { type: "application/json" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = `contraoferta_draft_${new Date().toISOString().slice(0, 10)}.json`;
+    a.click();
+    URL.revokeObjectURL(url);
+  };
+  const importDraft = () => {
+    const input = document.createElement("input");
+    input.type = "file";
+    input.accept = ".json";
+    input.onchange = async (e) => {
+      const file = e.target.files?.[0];
+      if (!file) return;
+      try {
+        const text = await file.text();
+        const parsed = JSON.parse(text);
+        setData(parsed);
+      } catch { alert("Error al cargar archivo"); }
+    };
+    input.click();
+  };
+
+  // Demo data (easter egg)
+  const loadDemo = () => {
+    setData({
+      ...INIT,
+      partes: {
+        ofertante: { personas: [{ nombre: "DENNIS DREISBACH DOTY", genero: "M" }] },
+        propietario: { personas: [{ nombre: "KIMBERLY MARIE PARKER", genero: "F" }] },
+      },
+      campos: {
+        ...INIT.campos,
+        oferta_original: { fecha_oferta: "2026-03-15", precio_original: 280000, descripcion_inmueble: "Unidad 5204, Condominio La Joya de Mismaloya" },
+        quien_presenta: "vendedor",
+        modificaciones: { nuevo_precio: 295000, nueva_fecha_formalizacion: "2026-06-15" },
+        aceptacion: { horas_vigencia: 48 },
+      },
+      bloques: { ...INIT.bloques, mod_precio: true, mod_fecha: true },
+    });
+    setStep(2);
+  };
 
   const ctx = useMemo(() => ensamblar(data), [data]);
   const bloques = useMemo(() => renderBlks(ctx), [ctx]);
@@ -569,13 +615,19 @@ export default function ContraOfertaGenPage() {
             <h1 className="text-2xl font-bold tracking-tight" style={{ color: "var(--og-primary)" }}>{t.title}</h1>
             <p className="text-sm" style={{ color: "var(--og-secondary)" }}>{t.subtitle}</p>
           </div>
-          <div className="flex gap-2">
+          <div className="flex gap-2 flex-wrap">
             {["es", "en", "fr"].map(lang => (
               <button key={lang} onClick={() => setIdiomaUI(lang)}
                 className={`px-2 py-1 text-xs font-medium rounded transition-all ${idiomaUI === lang ? "cog-step-active" : "og-genero-off"}`}>
                 {lang.toUpperCase()}
               </button>
             ))}
+            <button onClick={importDraft} className="px-3 py-1.5 text-xs rounded-lg transition flex items-center gap-1" style={{ background: "var(--og-surface)", border: "1px solid var(--og-border)", color: "var(--og-secondary)" }}>
+              <span>📂</span> {t.header.cargar}
+            </button>
+            <button onClick={exportDraft} className="px-3 py-1.5 text-xs rounded-lg transition flex items-center gap-1" style={{ background: "var(--og-surface)", border: "1px solid var(--og-border)", color: "var(--og-secondary)" }}>
+              <span>💾</span> {t.header.guardar}
+            </button>
             <button onClick={resetAll} className="px-3 py-1.5 text-xs rounded-lg" style={{ background: "var(--og-surface)", border: "1px solid var(--og-border)", color: "var(--og-secondary)" }}>
               {t.header.limpiar}
             </button>
@@ -624,7 +676,7 @@ export default function ContraOfertaGenPage() {
 
         {/* Footer */}
         <footer className="mt-8 text-center text-xs" style={{ color: "var(--og-muted)" }}>
-          {t.footer}
+          Hecho por Colmena <span onClick={loadDemo} className="cursor-pointer hover:text-green-400 transition">2026</span>
         </footer>
       </div>
     </main>
