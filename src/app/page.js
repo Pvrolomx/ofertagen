@@ -4,6 +4,7 @@ import { useState, useMemo, useCallback, useEffect } from "react";
 import { ensamblarContexto, renderizarBloques } from "@/lib/plantillas/ensamblador";
 import PLANTILLA from "@/lib/plantillas/oferta_compra";
 import { generarDocxBlob } from "@/lib/docx/generador";
+import { generarPdfBlob } from "@/lib/pdf/generador_pdf";
 
 // ============================================================
 // DEMO DATA (Dennis Doty → Karin Palutke)
@@ -638,6 +639,34 @@ export default function OfertaGenPage() {
     setGenerating(false);
   }, [bloques, data.partes.ofertante.personas, logoBase64, idiomaSecundario]);
 
+  const handleGeneratePdf = useCallback(async () => {
+    if (!bloques.length) return;
+    // Validar antes de generar
+    const result = validarOferta(bloques, lang2);
+    if (!result.valid || result.warnings.length > 0) {
+      setValidationResult(result);
+      return;
+    }
+    setGenerating(true);
+    try {
+      const blob = await generarPdfBlob(bloques, PLANTILLA.meta, { idiomaSecundario: lang2 });
+      const nombre = data.partes.ofertante.personas[0]?.nombre?.replace(/\s+/g, "_") || "OFERTA";
+      const idiomaSufijo = lang2 === 'fr' ? '_FR' : '';
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = `OFERTA_${nombre}${idiomaSufijo}.pdf`;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+    } catch (err) {
+      console.error("Error generando PDF:", err);
+      alert("Error al generar el PDF. Revisa la consola.");
+    }
+    setGenerating(false);
+  }, [bloques, data.partes.ofertante.personas, idiomaSecundario]);
+
   return (
     <div className="max-w-4xl mx-auto px-4 py-6" style={{minHeight:"100vh",background:"var(--og-bg)"}}>
       {/* Modal de validación Sprint U */}
@@ -1028,10 +1057,14 @@ export default function OfertaGenPage() {
         {step === 4 && <div>
           <div className="flex items-center justify-between mb-4">
             <h2 className="text-lg font-semibold" style={{color:"var(--og-primary)"}}>{t.preview.title}</h2>
-            <div className="flex items-center gap-3">
+            <div className="flex items-center gap-2">
               <button onClick={handleGenerate} disabled={generating || !bloques.length}
-                className="px-5 py-2 text-white text-sm font-medium rounded-xl transition" style={{background:"var(--og-success-hi)"}}>
-                {generating ? t.preview.generando : t.preview.descargar}
+                className="px-4 py-2 text-white text-sm font-medium rounded-xl transition flex items-center gap-1.5" style={{background:"var(--og-success-hi)"}}>
+                <span>📄</span> {generating ? t.preview.generando : "Word"}
+              </button>
+              <button onClick={handleGeneratePdf} disabled={generating || !bloques.length}
+                className="px-4 py-2 text-white text-sm font-medium rounded-xl transition flex items-center gap-1.5" style={{background:"var(--og-danger)"}}>
+                <span>📕</span> PDF
               </button>
             </div>
           </div>
