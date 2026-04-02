@@ -121,6 +121,25 @@ export async function generarPdfBlob(bloques, meta = {}, opciones = {}) {
       columns: firmasColumns,
       margin: [0, 30, 0, 0]
     });
+    
+    // Aceptación (lugar, fecha y hora)
+    if (bloqueFirmas.aceptacion !== false) {
+      firmasContent.push(
+        { text: '', margin: [0, 30, 0, 0] },
+        { 
+          text: 'LUGAR, FECHA Y HORA DE ACEPTACIÓN / ACCEPTANCE PLACE, DATE AND TIME:', 
+          bold: true, 
+          fontSize: 9, 
+          alignment: 'center' 
+        },
+        { 
+          text: '_____________________________________________________________', 
+          fontSize: 9, 
+          alignment: 'center',
+          margin: [0, 15, 0, 0]
+        }
+      );
+    }
   }
   
   const docDefinition = {
