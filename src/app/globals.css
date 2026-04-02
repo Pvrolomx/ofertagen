@@ -16,6 +16,11 @@
   --og-danger:    #da3633;
   --og-warning:   #d29922;
   --og-muted:     #484f58;
+
+  /* ContraOfertaGen — Green Theme */
+  --cog-accent:    #238636;
+  --cog-accent-hi: #2ea043;
+  --cog-border-hi: #238636;
 }
 
 /* Base */
@@ -112,4 +117,22 @@ label {
   background: rgba(29,107,184,0.2) !important;
   border: 1px solid rgba(56,139,253,0.35) !important;
   color: var(--og-accent-hi) !important;
+}
+
+/* ── ContraOfertaGen Green Theme ─────────────────────────── */
+.cog-step-active {
+  background: var(--cog-accent) !important;
+  color: #fff !important;
+  border-color: var(--cog-accent) !important;
+}
+.cog-toggle-on {
+  background: rgba(35,134,54,0.15) !important;
+  border: 1px solid var(--cog-border-hi) !important;
+}
+.cog-section-title {
+  color: var(--cog-accent-hi) !important;
+  border-bottom: 2px solid var(--cog-border-hi) !important;
+}
+.cog-card {
+  border-color: rgba(46,160,67,0.3) !important;
 }

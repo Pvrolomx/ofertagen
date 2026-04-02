@@ -228,9 +228,9 @@ function Input({ label, value, onChange, type = "text", placeholder = "", requir
 
 function Toggle({ label, checked, onChange }) {
   return (
-    <div onClick={() => onChange(!checked)} className="flex items-center gap-3 p-3 rounded-xl cursor-pointer transition-all"
-      style={{ background: checked ? "rgba(29,107,184,0.15)" : "var(--og-surface)", border: checked ? "1px solid var(--og-border-hi)" : "1px solid var(--og-border)" }}>
-      <div className="w-10 h-5 rounded-full relative transition-colors" style={{ background: checked ? "var(--og-accent)" : "var(--og-muted)" }}>
+    <div onClick={() => onChange(!checked)} className={`flex items-center gap-3 p-3 rounded-xl cursor-pointer transition-all ${checked ? "cog-toggle-on" : ""}`}
+      style={{ background: checked ? undefined : "var(--og-surface)", border: checked ? undefined : "1px solid var(--og-border)" }}>
+      <div className="w-10 h-5 rounded-full relative transition-colors" style={{ background: checked ? "var(--cog-accent)" : "var(--og-muted)" }}>
         <div className={`w-4 h-4 rounded-full bg-white absolute top-0.5 transition-all ${checked ? "left-5" : "left-0.5"}`} />
       </div>
       <div className="flex-1 min-w-0">
@@ -243,7 +243,7 @@ function Toggle({ label, checked, onChange }) {
 function Section({ title, children }) {
   return (
     <div className="mb-6">
-      <h3 className="text-base font-semibold mb-4 pb-2 tracking-wide" style={{ color: "var(--og-accent-hi)", borderBottom: "2px solid var(--og-border-hi)" }}>{title}</h3>
+      <h3 className="text-base font-semibold mb-4 pb-2 tracking-wide cog-section-title">{title}</h3>
       <div className="grid grid-cols-2 gap-3">{children}</div>
     </div>
   );
@@ -394,19 +394,19 @@ export default function ContraOfertaGenPage() {
 
               {/* Campos condicionales según toggle */}
               {data.bloques[id] && id === "mod_precio" && (
-                <div className="mt-2 pl-4 border-l-2" style={{ borderColor: "var(--og-accent)" }}>
+                <div className="mt-2 pl-4 border-l-2" style={{ borderColor: "var(--cog-accent)" }}>
                   <Input label={t.fields.nuevo_precio} value={data.campos.modificaciones.nuevo_precio} onChange={v => upCampo("modificaciones", "nuevo_precio", v)} type="number" />
                 </div>
               )}
 
               {data.bloques[id] && id === "mod_fecha" && (
-                <div className="mt-2 pl-4 border-l-2" style={{ borderColor: "var(--og-accent)" }}>
+                <div className="mt-2 pl-4 border-l-2" style={{ borderColor: "var(--cog-accent)" }}>
                   <Input label={t.fields.nueva_fecha} value={data.campos.modificaciones.nueva_fecha_formalizacion} onChange={v => upCampo("modificaciones", "nueva_fecha_formalizacion", v)} type="date" />
                 </div>
               )}
 
               {data.bloques[id] && id === "mod_notario" && (
-                <div className="mt-2 pl-4 border-l-2 grid grid-cols-3 gap-2" style={{ borderColor: "var(--og-accent)" }}>
+                <div className="mt-2 pl-4 border-l-2 grid grid-cols-3 gap-2" style={{ borderColor: "var(--cog-accent)" }}>
                   <Input label={t.fields.nuevo_notario} value={data.campos.modificaciones.nuevo_notario_nombre} onChange={v => upCampo("modificaciones", "nuevo_notario_nombre", v)} />
                   <Input label={t.fields.numero_notaria} value={data.campos.modificaciones.nuevo_notario_numero} onChange={v => upCampo("modificaciones", "nuevo_notario_numero", v)} />
                   <Input label={t.fields.ciudad_notaria} value={data.campos.modificaciones.nuevo_notario_ciudad} onChange={v => upCampo("modificaciones", "nuevo_notario_ciudad", v)} />
@@ -414,14 +414,14 @@ export default function ContraOfertaGenPage() {
               )}
 
               {data.bloques[id] && id === "mod_coordinador" && (
-                <div className="mt-2 pl-4 border-l-2 grid grid-cols-2 gap-2" style={{ borderColor: "var(--og-accent)" }}>
+                <div className="mt-2 pl-4 border-l-2 grid grid-cols-2 gap-2" style={{ borderColor: "var(--cog-accent)" }}>
                   <Input label={t.fields.nuevo_coordinador} value={data.campos.modificaciones.nuevo_coordinador_nombre} onChange={v => upCampo("modificaciones", "nuevo_coordinador_nombre", v)} />
                   <Input label={t.fields.empresa_coordinador} value={data.campos.modificaciones.nuevo_coordinador_empresa} onChange={v => upCampo("modificaciones", "nuevo_coordinador_empresa", v)} />
                 </div>
               )}
 
               {data.bloques[id] && id === "mod_vigencia" && (
-                <div className="mt-2 pl-4 border-l-2 grid grid-cols-2 gap-2" style={{ borderColor: "var(--og-accent)" }}>
+                <div className="mt-2 pl-4 border-l-2 grid grid-cols-2 gap-2" style={{ borderColor: "var(--cog-accent)" }}>
                   <Input label={t.fields.nueva_vigencia} value={data.campos.modificaciones.nueva_fecha_vigencia} onChange={v => upCampo("modificaciones", "nueva_fecha_vigencia", v)} type="date" />
                   <div className="flex flex-col gap-1">
                     <label className="text-xs font-medium" style={{ color: "var(--og-secondary)" }}>{t.fields.hora_vigencia}</label>
@@ -437,7 +437,7 @@ export default function ContraOfertaGenPage() {
               )}
 
               {data.bloques[id] && id === "mod_deposito" && (
-                <div className="mt-2 pl-4 border-l-2 grid grid-cols-2 gap-2" style={{ borderColor: "var(--og-accent)" }}>
+                <div className="mt-2 pl-4 border-l-2 grid grid-cols-2 gap-2" style={{ borderColor: "var(--cog-accent)" }}>
                   <Input label={t.fields.nuevo_deposito} value={data.campos.modificaciones.nuevo_deposito} onChange={v => upCampo("modificaciones", "nuevo_deposito", v)} type="number" />
                   <div className="flex flex-col gap-1">
                     <label className="text-xs font-medium" style={{ color: "var(--og-secondary)" }}>{t.fields.nueva_empresa_escrow}</label>
@@ -453,7 +453,7 @@ export default function ContraOfertaGenPage() {
               )}
 
               {data.bloques[id] && id === "mod_clausula_libre" && (
-                <div className="mt-2 pl-4 border-l-2 flex flex-col gap-2" style={{ borderColor: "var(--og-accent)" }}>
+                <div className="mt-2 pl-4 border-l-2 flex flex-col gap-2" style={{ borderColor: "var(--cog-accent)" }}>
                   <Input label={t.fields.clausula_es} value={data.campos.modificaciones.clausula_libre_es} onChange={v => upCampo("modificaciones", "clausula_libre_es", v)} rows={3} wide />
                   <Input label={t.fields.clausula_en} value={data.campos.modificaciones.clausula_libre_en} onChange={v => upCampo("modificaciones", "clausula_libre_en", v)} rows={3} wide />
                   <Input label={t.fields.clausula_fr} value={data.campos.modificaciones.clausula_libre_fr} onChange={v => upCampo("modificaciones", "clausula_libre_fr", v)} rows={3} wide />
@@ -491,7 +491,7 @@ export default function ContraOfertaGenPage() {
           <span className="text-sm font-medium" style={{ color: "var(--og-secondary)" }}>{t.preview.idioma}:</span>
           {["en", "fr"].map(lang => (
             <button key={lang} onClick={() => setContractLang(lang)}
-              className={`px-3 py-1 text-xs font-medium rounded-lg transition-all ${contractLang === lang ? "og-step-active" : "og-genero-off"}`}>
+              className={`px-3 py-1 text-xs font-medium rounded-lg transition-all ${contractLang === lang ? "cog-step-active" : "og-genero-off"}`}>
               {lang === "en" ? "🇺🇸 EN" : "🇫🇷 FR"}
             </button>
           ))}
@@ -565,14 +565,14 @@ export default function ContraOfertaGenPage() {
         {/* Header */}
         <header className="flex flex-wrap items-center justify-between gap-3 mb-6">
           <div>
-            <a href="/" className="text-xs hover:underline" style={{ color: "var(--og-accent-hi)" }}>{t.header.volver}</a>
+            <a href="/" className="text-xs hover:underline" style={{ color: "var(--cog-accent-hi)" }}>{t.header.volver}</a>
             <h1 className="text-2xl font-bold tracking-tight" style={{ color: "var(--og-primary)" }}>{t.title}</h1>
             <p className="text-sm" style={{ color: "var(--og-secondary)" }}>{t.subtitle}</p>
           </div>
           <div className="flex gap-2">
             {["es", "en", "fr"].map(lang => (
               <button key={lang} onClick={() => setIdiomaUI(lang)}
-                className={`px-2 py-1 text-xs font-medium rounded transition-all ${idiomaUI === lang ? "og-step-active" : "og-genero-off"}`}>
+                className={`px-2 py-1 text-xs font-medium rounded transition-all ${idiomaUI === lang ? "cog-step-active" : "og-genero-off"}`}>
                 {lang.toUpperCase()}
               </button>
             ))}
@@ -586,7 +586,7 @@ export default function ContraOfertaGenPage() {
         <nav className="flex gap-2 mb-6 overflow-x-auto pb-2">
           {steps.map((s, i) => (
             <button key={i} onClick={() => setStep(i)}
-              className={`px-4 py-2 text-sm font-medium rounded-lg whitespace-nowrap transition-all ${step === i ? "og-step-active" : i < step ? "og-step-done" : "og-step-idle"}`}>
+              className={`px-4 py-2 text-sm font-medium rounded-lg whitespace-nowrap transition-all ${step === i ? "cog-step-active" : i < step ? "og-step-done" : "og-step-idle"}`}>
               {i + 1}. {s}
             </button>
           ))}
@@ -610,7 +610,7 @@ export default function ContraOfertaGenPage() {
           {step < steps.length - 1 ? (
             <button onClick={() => setStep(s => s + 1)}
               className="px-6 py-2 text-sm font-medium rounded-lg transition-all"
-              style={{ background: "var(--og-accent)", color: "#fff" }}>
+              style={{ background: "var(--cog-accent)", color: "#fff" }}>
               {t.nav.siguiente}
             </button>
           ) : (
