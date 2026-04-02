@@ -30,21 +30,29 @@ function limpiarTexto(texto, lang = 'es') {
 // ============================================================
 
 export async function generarPdfBlob(bloques, meta = {}, opciones = {}) {
-  // Import dinámico para evitar problemas SSR
+  console.log('generarPdfBlob: iniciando...');
+  
+  // Import dinámico
   const pdfMakeModule = await import('pdfmake/build/pdfmake');
   const pdfFontsModule = await import('pdfmake/build/vfs_fonts');
   
-  const pdfMake = pdfMakeModule.default || pdfMakeModule;
-  const pdfFonts = pdfFontsModule.default || pdfFontsModule;
+  console.log('generarPdfBlob: módulos importados');
   
-  // Configurar fonts
-  if (pdfFonts.pdfMake) {
-    pdfMake.vfs = pdfFonts.pdfMake.vfs;
-  } else if (pdfFonts.vfs) {
-    pdfMake.vfs = pdfFonts.vfs;
+  const pdfMake = pdfMakeModule.default || pdfMakeModule;
+  
+  // Configurar fonts - pdfmake necesita vfs configurado
+  if (pdfFontsModule.pdfMake && pdfFontsModule.pdfMake.vfs) {
+    pdfMake.vfs = pdfFontsModule.pdfMake.vfs;
+  } else if (pdfFontsModule.default && pdfFontsModule.default.pdfMake) {
+    pdfMake.vfs = pdfFontsModule.default.pdfMake.vfs;
+  } else if (pdfFontsModule.vfs) {
+    pdfMake.vfs = pdfFontsModule.vfs;
   } else {
-    pdfMake.vfs = pdfFonts;
+    console.log('generarPdfBlob: estructura de fonts:', Object.keys(pdfFontsModule));
+    pdfMake.vfs = pdfFontsModule;
   }
+  
+  console.log('generarPdfBlob: fonts configuradas');
   
   const { idiomaSecundario = 'en' } = opciones;
   const lang2 = idiomaSecundario;
@@ -52,17 +60,15 @@ export async function generarPdfBlob(bloques, meta = {}, opciones = {}) {
   const bloquesNormales = bloques.filter(b => b.tipo !== 'firmas');
   const bloqueFirmas = bloques.find(b => b.tipo === 'firmas');
   
-  // Texto de paginación según idioma
   const paginaLang2 = lang2 === 'fr' ? 'Page' : 'Page';
   const deLang2 = lang2 === 'fr' ? 'sur' : 'of';
   
-  // Iniciales para footer
   const iniciales = bloqueFirmas?.firmas?.map(f => {
     const ini = extraerIniciales(f.nombre);
     return `${ini} _____`;
   }).join('          ') || '';
   
-  // Construir filas de la tabla bilingüe
+  // Construir filas de la tabla
   const tableBody = [];
   
   for (const bloque of bloquesNormales) {
@@ -72,19 +78,16 @@ export async function generarPdfBlob(bloques, meta = {}, opciones = {}) {
     const textoLang2 = limpiarTexto(bloque[lang2] || bloque.en || '', lang2);
     const num = bloque.numero || bloque.n || '';
     
-    // Construir contenido de cada celda
     const celdaEs = [];
     const celdaEn = [];
     
-    // Título
     if (tituloEs) {
-      celdaEs.push({ text: num ? `${num}.- ${tituloEs}` : tituloEs, bold: true, fontSize: 9, marginBottom: 3 });
+      celdaEs.push({ text: num ? `${num}.- ${tituloEs}` : tituloEs, bold: true, fontSize: 9, margin: [0, 0, 0, 3] });
     }
     if (tituloLang2) {
-      celdaEn.push({ text: num ? `${num}.- ${tituloLang2}` : tituloLang2, bold: true, fontSize: 9, marginBottom: 3 });
+      celdaEn.push({ text: num ? `${num}.- ${tituloLang2}` : tituloLang2, bold: true, fontSize: 9, margin: [0, 0, 0, 3] });
     }
     
-    // Texto
     if (textoEs) {
       celdaEs.push({ text: textoEs, fontSize: 8, lineHeight: 1.2 });
     }
@@ -93,12 +96,14 @@ export async function generarPdfBlob(bloques, meta = {}, opciones = {}) {
     }
     
     tableBody.push([
-      { stack: celdaEs, margin: [4, 4, 4, 4] },
-      { stack: celdaEn, margin: [4, 4, 4, 4] }
+      { stack: celdaEs.length ? celdaEs : [{ text: '' }], margin: [4, 4, 4, 4] },
+      { stack: celdaEn.length ? celdaEn : [{ text: '' }], margin: [4, 4, 4, 4] }
     ]);
   }
   
-  // Construir sección de firmas
+  console.log('generarPdfBlob: tabla construida, filas:', tableBody.length);
+  
+  // Firmas
   const firmasContent = [];
   if (bloqueFirmas?.firmas) {
     const firmasColumns = bloqueFirmas.firmas.map(firma => ({
@@ -118,32 +123,31 @@ export async function generarPdfBlob(bloques, meta = {}, opciones = {}) {
     });
   }
   
-  // Definición del documento
   const docDefinition = {
     pageSize: 'LETTER',
     pageMargins: [40, 50, 40, 50],
     
-    // Header con paginación bilingüe
-    header: (currentPage, pageCount) => ({
-      text: `Página ${currentPage} de ${pageCount}  |  ${paginaLang2} ${currentPage} ${deLang2} ${pageCount}`,
-      alignment: 'right',
-      fontSize: 7,
-      color: '#555555',
-      margin: [0, 20, 40, 0]
-    }),
+    header: function(currentPage, pageCount) {
+      return {
+        text: `Página ${currentPage} de ${pageCount}  |  ${paginaLang2} ${currentPage} ${deLang2} ${pageCount}`,
+        alignment: 'right',
+        fontSize: 7,
+        color: '#555555',
+        margin: [0, 20, 40, 0]
+      };
+    },
     
-    // Footer con iniciales
-    footer: (currentPage, pageCount) => ({
-      text: iniciales,
-      alignment: 'center',
-      fontSize: 8,
-      color: '#555555',
-      margin: [0, 10, 0, 0]
-    }),
+    footer: function(currentPage, pageCount) {
+      return {
+        text: iniciales,
+        alignment: 'center',
+        fontSize: 8,
+        color: '#555555',
+        margin: [0, 10, 0, 0]
+      };
+    },
     
-    // Contenido principal
     content: [
-      // Tabla bilingüe
       {
         table: {
           headerRows: 0,
@@ -151,19 +155,17 @@ export async function generarPdfBlob(bloques, meta = {}, opciones = {}) {
           body: tableBody
         },
         layout: {
-          hLineWidth: (i, node) => 0.3,
-          vLineWidth: (i, node) => (i === 1) ? 0.7 : 0.3,
-          hLineColor: () => '#cccccc',
-          vLineColor: () => '#555555',
-          paddingLeft: () => 5,
-          paddingRight: () => 5,
-          paddingTop: () => 4,
-          paddingBottom: () => 4
+          hLineWidth: function(i, node) { return 0.3; },
+          vLineWidth: function(i, node) { return (i === 1) ? 0.7 : 0.3; },
+          hLineColor: function() { return '#cccccc'; },
+          vLineColor: function() { return '#555555'; },
+          paddingLeft: function() { return 5; },
+          paddingRight: function() { return 5; },
+          paddingTop: function() { return 4; },
+          paddingBottom: function() { return 4; }
         }
       },
-      // Firmas
       ...firmasContent,
-      // Footer de Colmena
       {
         text: 'Hecho por Colmena 2026',
         alignment: 'center',
@@ -171,22 +173,21 @@ export async function generarPdfBlob(bloques, meta = {}, opciones = {}) {
         color: '#555555',
         margin: [0, 40, 0, 0]
       }
-    ],
-    
-    // Estilos por defecto
-    defaultStyle: {
-      font: 'Roboto'
-    }
+    ]
   };
   
-  // Generar PDF como blob
+  console.log('generarPdfBlob: creando PDF...');
+  
   return new Promise((resolve, reject) => {
     try {
-      const pdfDocGenerator = pdfMake.createPdf(docDefinition);
-      pdfDocGenerator.getBlob((blob) => {
+      const pdfDoc = pdfMake.createPdf(docDefinition);
+      console.log('generarPdfBlob: PDF creado, obteniendo blob...');
+      pdfDoc.getBlob((blob) => {
+        console.log('generarPdfBlob: blob obtenido, size:', blob.size);
         resolve(blob);
       });
     } catch (err) {
+      console.error('generarPdfBlob: error:', err);
       reject(err);
     }
   });
