@@ -30,32 +30,41 @@ function limpiarTexto(texto, lang = 'es') {
 // ============================================================
 
 export async function generarPdfBlob(bloques, meta = {}, opciones = {}) {
-  // Import dinámico
-  const pdfMakeModule = await import('pdfmake/build/pdfmake');
-  const pdfFontsModule = await import('pdfmake/build/vfs_fonts');
+  console.log('generarPdfBlob: función llamada');
   
-  const pdfMake = pdfMakeModule.default || pdfMakeModule;
-  
-  // Configurar VFS (virtual file system con las fonts)
-  const vfs = pdfFontsModule.pdfMake?.vfs || 
-              pdfFontsModule.default?.pdfMake?.vfs || 
-              pdfFontsModule.vfs ||
-              pdfFontsModule.default?.vfs ||
-              pdfFontsModule;
-  
-  pdfMake.vfs = vfs;
-  
-  // Definir fonts explícitamente (Roboto viene incluido en pdfmake)
-  pdfMake.fonts = {
-    Roboto: {
-      normal: 'Roboto-Regular.ttf',
-      bold: 'Roboto-Medium.ttf',
-      italics: 'Roboto-Italic.ttf',
-      bolditalics: 'Roboto-MediumItalic.ttf'
-    }
-  };
-  
-  const { idiomaSecundario = 'en' } = opciones;
+  try {
+    console.log('generarPdfBlob: importando pdfmake...');
+    // Import dinámico
+    const pdfMakeModule = await import('pdfmake/build/pdfmake');
+    console.log('generarPdfBlob: pdfmake importado');
+    
+    const pdfFontsModule = await import('pdfmake/build/vfs_fonts');
+    console.log('generarPdfBlob: vfs_fonts importado');
+    
+    const pdfMake = pdfMakeModule.default || pdfMakeModule;
+    
+    // Configurar VFS (virtual file system con las fonts)
+    const vfs = pdfFontsModule.pdfMake?.vfs || 
+                pdfFontsModule.default?.pdfMake?.vfs || 
+                pdfFontsModule.vfs ||
+                pdfFontsModule.default?.vfs ||
+                pdfFontsModule;
+    
+    pdfMake.vfs = vfs;
+    
+    // Definir fonts explícitamente (Roboto viene incluido en pdfmake)
+    pdfMake.fonts = {
+      Roboto: {
+        normal: 'Roboto-Regular.ttf',
+        bold: 'Roboto-Medium.ttf',
+        italics: 'Roboto-Italic.ttf',
+        bolditalics: 'Roboto-MediumItalic.ttf'
+      }
+    };
+    
+    console.log('generarPdfBlob: fonts configuradas');
+    
+    const { idiomaSecundario = 'en' } = opciones;
   const lang2 = idiomaSecundario;
   
   const bloquesNormales = bloques.filter(b => b.tipo !== 'firmas');
@@ -179,10 +188,15 @@ export async function generarPdfBlob(bloques, meta = {}, opciones = {}) {
     }
   };
   
+  console.log('generarPdfBlob: docDefinition creado, generando PDF...');
+  
   return new Promise((resolve, reject) => {
     try {
+      console.log('generarPdfBlob: llamando createPdf...');
       const pdfDoc = pdfMake.createPdf(docDefinition);
+      console.log('generarPdfBlob: llamando getBlob...');
       pdfDoc.getBlob((blob) => {
+        console.log('generarPdfBlob: blob recibido, size:', blob?.size);
         resolve(blob);
       }, (err) => {
         console.error('pdfmake getBlob error:', err);
@@ -193,6 +207,11 @@ export async function generarPdfBlob(bloques, meta = {}, opciones = {}) {
       reject(err);
     }
   });
+  
+  } catch (outerErr) {
+    console.error('generarPdfBlob: error general:', outerErr);
+    throw outerErr;
+  }
 }
 
 export default { generarPdfBlob };
