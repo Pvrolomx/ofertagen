@@ -7,12 +7,6 @@
  * Sprint PDF v2 — Abril 2026
  */
 
-import pdfMake from 'pdfmake/build/pdfmake';
-import pdfFonts from 'pdfmake/build/vfs_fonts';
-
-// Configurar fonts
-pdfMake.vfs = pdfFonts.pdfMake ? pdfFonts.pdfMake.vfs : pdfFonts.vfs || pdfFonts;
-
 // ============================================================
 // HELPERS
 // ============================================================
@@ -36,6 +30,22 @@ function limpiarTexto(texto, lang = 'es') {
 // ============================================================
 
 export async function generarPdfBlob(bloques, meta = {}, opciones = {}) {
+  // Import dinámico para evitar problemas SSR
+  const pdfMakeModule = await import('pdfmake/build/pdfmake');
+  const pdfFontsModule = await import('pdfmake/build/vfs_fonts');
+  
+  const pdfMake = pdfMakeModule.default || pdfMakeModule;
+  const pdfFonts = pdfFontsModule.default || pdfFontsModule;
+  
+  // Configurar fonts
+  if (pdfFonts.pdfMake) {
+    pdfMake.vfs = pdfFonts.pdfMake.vfs;
+  } else if (pdfFonts.vfs) {
+    pdfMake.vfs = pdfFonts.vfs;
+  } else {
+    pdfMake.vfs = pdfFonts;
+  }
+  
   const { idiomaSecundario = 'en' } = opciones;
   const lang2 = idiomaSecundario;
   
@@ -142,7 +152,7 @@ export async function generarPdfBlob(bloques, meta = {}, opciones = {}) {
         },
         layout: {
           hLineWidth: (i, node) => 0.3,
-          vLineWidth: (i, node) => (i === 1) ? 0.7 : 0.3, // Línea central más gruesa
+          vLineWidth: (i, node) => (i === 1) ? 0.7 : 0.3,
           hLineColor: () => '#cccccc',
           vLineColor: () => '#555555',
           paddingLeft: () => 5,
