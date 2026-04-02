@@ -617,15 +617,20 @@ export async function generarDocx(bloques, meta = {}, opciones = {}) {
   }
   
   // Paginación (siempre presente, a la derecha si hay logo, centrada si no)
+  // Trilingüe: ES siempre + EN o FR según idiomaSecundario
+  const paginaEs = 'Página';
+  const paginaLang2 = idiomaSecundario === 'fr' ? 'Page' : 'Page';
+  const deLang2 = idiomaSecundario === 'fr' ? 'sur' : 'of';
+  
   headerChildren.push(
-    new TextRun({ text: 'Página ', font: FONT, size: 14, color: '888888' }),
-    new TextRun({ children: [PageNumber.CURRENT], font: FONT, size: 14, color: '888888' }),
-    new TextRun({ text: ' de ', font: FONT, size: 14, color: '888888' }),
-    new TextRun({ children: [PageNumber.TOTAL_PAGES], font: FONT, size: 14, color: '888888' }),
-    new TextRun({ text: '  |  Page ', font: FONT, size: 14, color: '888888' }),
-    new TextRun({ children: [PageNumber.CURRENT], font: FONT, size: 14, color: '888888' }),
-    new TextRun({ text: ' of ', font: FONT, size: 14, color: '888888' }),
-    new TextRun({ children: [PageNumber.TOTAL_PAGES], font: FONT, size: 14, color: '888888' })
+    new TextRun({ text: `${paginaEs} `, font: FONT, size: 14, color: '555555' }),
+    new TextRun({ children: [PageNumber.CURRENT], font: FONT, size: 14, color: '555555' }),
+    new TextRun({ text: ' de ', font: FONT, size: 14, color: '555555' }),
+    new TextRun({ children: [PageNumber.TOTAL_PAGES], font: FONT, size: 14, color: '555555' }),
+    new TextRun({ text: `  |  ${paginaLang2} `, font: FONT, size: 14, color: '555555' }),
+    new TextRun({ children: [PageNumber.CURRENT], font: FONT, size: 14, color: '555555' }),
+    new TextRun({ text: ` ${deLang2} `, font: FONT, size: 14, color: '555555' }),
+    new TextRun({ children: [PageNumber.TOTAL_PAGES], font: FONT, size: 14, color: '555555' })
   );
 
   // Header: Logo izquierda + Paginación derecha (usando TabStops)
@@ -643,7 +648,7 @@ export async function generarDocx(bloques, meta = {}, opciones = {}) {
   const footerIniciales = new Footer({
     children: [
       new Paragraph({
-        children: [new TextRun({ text: inicialesText, font: FONT, size: 14, color: '888888' })],
+        children: [new TextRun({ text: inicialesText, font: FONT, size: 14, color: '555555' })],
         alignment: AlignmentType.CENTER,
       }),
     ],

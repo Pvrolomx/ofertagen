@@ -252,12 +252,16 @@ export async function generarDocxContraoferta(bloques, meta = {}, opciones = {})
         text: 'Hecho por Colmena 2026', 
         font: FONT, 
         size: 14, 
-        color: '888888' 
+        color: '555555' 
       })],
     }),
   );
   
   // Crear documento
+  // Paginación trilingüe según idioma secundario
+  const paginaLang2 = lang2 === 'fr' ? 'Page' : 'Page';
+  const deLang2 = lang2 === 'fr' ? 'sur' : 'of';
+  
   const doc = new Document({
     sections: [{
       properties: {
@@ -271,14 +275,14 @@ export async function generarDocxContraoferta(bloques, meta = {}, opciones = {})
           children: [new Paragraph({
             alignment: AlignmentType.RIGHT,
             children: [
-              new TextRun({ text: 'Página ', font: FONT, size: 16, color: '666666' }),
-              new TextRun({ children: [PageNumber.CURRENT], font: FONT, size: 16, color: '666666' }),
-              new TextRun({ text: ' de ', font: FONT, size: 16, color: '666666' }),
-              new TextRun({ children: [PageNumber.TOTAL_PAGES], font: FONT, size: 16, color: '666666' }),
-              new TextRun({ text: ` / Page `, font: FONT, size: 16, color: '666666' }),
-              new TextRun({ children: [PageNumber.CURRENT], font: FONT, size: 16, color: '666666' }),
-              new TextRun({ text: ' of ', font: FONT, size: 16, color: '666666' }),
-              new TextRun({ children: [PageNumber.TOTAL_PAGES], font: FONT, size: 16, color: '666666' }),
+              new TextRun({ text: 'Página ', font: FONT, size: 16, color: '555555' }),
+              new TextRun({ children: [PageNumber.CURRENT], font: FONT, size: 16, color: '555555' }),
+              new TextRun({ text: ' de ', font: FONT, size: 16, color: '555555' }),
+              new TextRun({ children: [PageNumber.TOTAL_PAGES], font: FONT, size: 16, color: '555555' }),
+              new TextRun({ text: ` / ${paginaLang2} `, font: FONT, size: 16, color: '555555' }),
+              new TextRun({ children: [PageNumber.CURRENT], font: FONT, size: 16, color: '555555' }),
+              new TextRun({ text: ` ${deLang2} `, font: FONT, size: 16, color: '555555' }),
+              new TextRun({ children: [PageNumber.TOTAL_PAGES], font: FONT, size: 16, color: '555555' }),
             ],
           })],
         }),
