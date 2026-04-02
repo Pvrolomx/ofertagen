@@ -133,34 +133,36 @@ export async function generarPdfBlob(bloques, meta = {}, opciones = {}) {
       y += titleHeight;
     }
     
-    // Contenido
+    // Contenido - renderizar ambas columnas línea por línea sincronizadas
     doc.setFontSize(FONT_SIZE_BODY);
     doc.setFont('helvetica', 'normal');
     
-    // Columna ES
-    doc.setTextColor(0, 0, 0);
     let lineY = y + 10;
-    for (const line of linesEs) {
+    
+    // Renderizar línea por línea, ambas columnas juntas
+    for (let lineIdx = 0; lineIdx < maxLines; lineIdx++) {
+      // Verificar si necesitamos nueva página
       if (lineY > PAGE_HEIGHT - 50) {
         doc.addPage();
         lineY = MARGIN_TOP + 10;
       }
-      doc.text(line, MARGIN_SIDE + 4, lineY);
-      lineY += LINE_HEIGHT;
-    }
-    
-    // Columna EN/FR
-    doc.setTextColor(60, 60, 60);
-    lineY = y + 10;
-    for (const line of linesLang2) {
-      if (lineY > PAGE_HEIGHT - 50) {
-        // Ya se hizo addPage en ES si era necesario
+      
+      // Columna ES
+      if (lineIdx < linesEs.length) {
+        doc.setTextColor(0, 0, 0);
+        doc.text(linesEs[lineIdx], MARGIN_SIDE + 4, lineY);
       }
-      doc.text(line, MARGIN_SIDE + COL_WIDTH + 12, lineY);
+      
+      // Columna EN/FR
+      if (lineIdx < linesLang2.length) {
+        doc.setTextColor(60, 60, 60);
+        doc.text(linesLang2[lineIdx], MARGIN_SIDE + COL_WIDTH + 12, lineY);
+      }
+      
       lineY += LINE_HEIGHT;
     }
     
-    y += textHeight + 4;
+    y = lineY + 4;
     
     // Línea divisoria vertical (centro)
     doc.setDrawColor(160, 160, 160);
