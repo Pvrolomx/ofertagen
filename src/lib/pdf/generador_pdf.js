@@ -194,16 +194,16 @@ export async function generarPdfBlob(bloques, meta = {}, opciones = {}) {
     try {
       console.log('generarPdfBlob: llamando createPdf...');
       const pdfDoc = pdfMake.createPdf(docDefinition);
-      console.log('generarPdfBlob: llamando getBlob...');
-      pdfDoc.getBlob((blob) => {
-        console.log('generarPdfBlob: blob recibido, size:', blob?.size);
+      console.log('generarPdfBlob: llamando getBuffer...');
+      pdfDoc.getBuffer((buffer) => {
+        console.log('generarPdfBlob: buffer recibido, length:', buffer?.length);
+        // Convertir buffer a Blob
+        const blob = new Blob([buffer], { type: 'application/pdf' });
+        console.log('generarPdfBlob: blob creado, size:', blob.size);
         resolve(blob);
-      }, (err) => {
-        console.error('pdfmake getBlob error:', err);
-        reject(err);
       });
     } catch (err) {
-      console.error('pdfmake createPdf error:', err);
+      console.error('pdfmake error:', err);
       reject(err);
     }
   });
