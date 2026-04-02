@@ -13,32 +13,27 @@ import { jsPDF } from 'jspdf';
 // CONSTANTES
 // ============================================================
 
-const MARGIN_TOP = 45;
-const MARGIN_SIDE = 36;
+const MARGIN_TOP = 50;
+const MARGIN_BOTTOM = 50;
+const MARGIN_SIDE = 40;
 const PAGE_WIDTH = 612; // US Letter
 const PAGE_HEIGHT = 792;
 const CONTENT_WIDTH = PAGE_WIDTH - (MARGIN_SIDE * 2);
-const COL_WIDTH = CONTENT_WIDTH / 2 - 4;
+const COL_WIDTH = (CONTENT_WIDTH - 8) / 2; // 8px gap en medio
 const FONT_SIZE_BODY = 8;
 const FONT_SIZE_TITLE = 9;
 const FONT_SIZE_HEADER = 7;
-const LINE_HEIGHT = 11; // Puntos entre líneas
+const LINE_HEIGHT = 11;
 
 // ============================================================
 // HELPERS
 // ============================================================
 
-/**
- * Extrae iniciales de un nombre.
- */
 function extraerIniciales(nombre) {
   if (!nombre) return '';
   return nombre.split(/\s+/).map(p => p.charAt(0)).join('');
 }
 
-/**
- * Limpia texto de undefined y caracteres problemáticos.
- */
 function limpiarTexto(texto, lang = 'es') {
   if (!texto) return '';
   const placeholder = lang === 'es' ? '[SIN DEFINIR]' : '[UNDEFINED]';
@@ -52,9 +47,6 @@ function limpiarTexto(texto, lang = 'es') {
 // API PÚBLICA
 // ============================================================
 
-/**
- * Genera PDF y devuelve como Blob.
- */
 export async function generarPdfBlob(bloques, meta = {}, opciones = {}) {
   const { idiomaSecundario = 'en' } = opciones;
   const lang2 = idiomaSecundario;
@@ -65,30 +57,36 @@ export async function generarPdfBlob(bloques, meta = {}, opciones = {}) {
     format: 'letter',
   });
   
-  // Separar bloques normales de firmas
   const bloquesNormales = bloques.filter(b => b.tipo !== 'firmas');
   const bloqueFirmas = bloques.find(b => b.tipo === 'firmas');
   
-  // Paginación según idioma
   const paginaLang2 = lang2 === 'fr' ? 'Page' : 'Page';
   const deLang2 = lang2 === 'fr' ? 'sur' : 'of';
   
-  // Iniciales para footer
   const iniciales = bloqueFirmas?.firmas?.map(f => {
     const ini = extraerIniciales(f.nombre);
     return `${ini} _____`;
   }).join('          ') || '';
   
   let y = MARGIN_TOP;
+  const colEsX = MARGIN_SIDE;
+  const colEnX = MARGIN_SIDE + COL_WIDTH + 8;
+  const maxY = PAGE_HEIGHT - MARGIN_BOTTOM;
   
-  // Función para verificar espacio y agregar página si necesario
-  const checkSpace = (needed) => {
-    if (y + needed > PAGE_HEIGHT - 50) {
-      doc.addPage();
-      y = MARGIN_TOP;
-      return true;
+  // Track de líneas verticales por página (para dibujarlas al final)
+  const verticalLines = []; // {page, startY, endY}
+  let currentPageStartY = y;
+  let currentPage = 1;
+  
+  const newPage = () => {
+    // Guardar línea vertical de la página actual
+    if (y > currentPageStartY) {
+      verticalLines.push({ page: currentPage, startY: currentPageStartY, endY: y });
     }
-    return false;
+    doc.addPage();
+    currentPage++;
+    y = MARGIN_TOP;
+    currentPageStartY = y;
   };
   
   // Renderizar cada bloque
@@ -99,88 +97,76 @@ export async function generarPdfBlob(bloques, meta = {}, opciones = {}) {
     const textoLang2 = limpiarTexto(bloque[lang2] || bloque.en || '', lang2);
     const num = bloque.numero || bloque.n || '';
     
-    // Wrap texto para ambas columnas
+    // Wrap texto
     doc.setFontSize(FONT_SIZE_BODY);
     doc.setFont('helvetica', 'normal');
-    const linesEs = doc.splitTextToSize(textoEs, COL_WIDTH - 8);
-    const linesLang2 = doc.splitTextToSize(textoLang2, COL_WIDTH - 8);
+    const linesEs = doc.splitTextToSize(textoEs, COL_WIDTH - 10);
+    const linesLang2 = doc.splitTextToSize(textoLang2, COL_WIDTH - 10);
     const maxLines = Math.max(linesEs.length, linesLang2.length);
     
-    // Calcular altura del bloque
-    const titleHeight = (tituloEs || tituloLang2) ? 14 : 0;
-    const textHeight = maxLines * LINE_HEIGHT;
-    const blockHeight = titleHeight + textHeight + 8;
-    
-    // Nueva página si no cabe
-    checkSpace(blockHeight);
-    
-    const blockStartY = y;
-    
-    // Títulos
+    // Título (si hay)
     if (tituloEs || tituloLang2) {
+      // Verificar espacio para título
+      if (y + 20 > maxY) {
+        newPage();
+      }
+      
       doc.setFontSize(FONT_SIZE_TITLE);
       doc.setFont('helvetica', 'bold');
       doc.setTextColor(0, 0, 0);
       
+      const tEs = num ? `${num}.- ${tituloEs}` : tituloEs;
+      const tEn = num ? `${num}.- ${tituloLang2}` : tituloLang2;
+      
       if (tituloEs) {
-        const t = num ? `${num}.- ${tituloEs}` : tituloEs;
-        doc.text(t, MARGIN_SIDE + 4, y + 10, { maxWidth: COL_WIDTH - 8 });
+        doc.text(tEs, colEsX, y, { maxWidth: COL_WIDTH - 10 });
       }
       if (tituloLang2) {
-        const t = num ? `${num}.- ${tituloLang2}` : tituloLang2;
-        doc.text(t, MARGIN_SIDE + COL_WIDTH + 12, y + 10, { maxWidth: COL_WIDTH - 8 });
+        doc.text(tEn, colEnX, y, { maxWidth: COL_WIDTH - 10 });
       }
-      y += titleHeight;
+      
+      y += 14;
     }
     
-    // Contenido - renderizar ambas columnas línea por línea sincronizadas
+    // Contenido línea por línea
     doc.setFontSize(FONT_SIZE_BODY);
     doc.setFont('helvetica', 'normal');
     
-    let lineY = y + 10;
-    
-    // Renderizar línea por línea, ambas columnas juntas
-    for (let lineIdx = 0; lineIdx < maxLines; lineIdx++) {
-      // Verificar si necesitamos nueva página
-      if (lineY > PAGE_HEIGHT - 50) {
-        doc.addPage();
-        lineY = MARGIN_TOP + 10;
+    for (let i = 0; i < maxLines; i++) {
+      // Verificar espacio
+      if (y + LINE_HEIGHT > maxY) {
+        newPage();
       }
       
       // Columna ES
-      if (lineIdx < linesEs.length) {
+      if (i < linesEs.length) {
         doc.setTextColor(0, 0, 0);
-        doc.text(linesEs[lineIdx], MARGIN_SIDE + 4, lineY);
+        doc.text(linesEs[i], colEsX, y);
       }
       
       // Columna EN/FR
-      if (lineIdx < linesLang2.length) {
+      if (i < linesLang2.length) {
         doc.setTextColor(60, 60, 60);
-        doc.text(linesLang2[lineIdx], MARGIN_SIDE + COL_WIDTH + 12, lineY);
+        doc.text(linesLang2[i], colEnX, y);
       }
       
-      lineY += LINE_HEIGHT;
+      y += LINE_HEIGHT;
     }
     
-    y = lineY + 4;
-    
-    // Línea divisoria vertical (centro)
-    doc.setDrawColor(160, 160, 160);
-    doc.setLineWidth(0.5);
-    doc.line(MARGIN_SIDE + COL_WIDTH + 4, blockStartY, MARGIN_SIDE + COL_WIDTH + 4, y);
-    
-    // Línea horizontal separadora
+    // Separador horizontal
+    y += 4;
     doc.setDrawColor(200, 200, 200);
     doc.setLineWidth(0.3);
-    doc.line(MARGIN_SIDE, y + 2, PAGE_WIDTH - MARGIN_SIDE, y + 2);
-    
-    y += 10;
+    doc.line(MARGIN_SIDE, y, PAGE_WIDTH - MARGIN_SIDE, y);
+    y += 8;
   }
   
   // Firmas
   if (bloqueFirmas?.firmas) {
-    checkSpace(100);
-    y += 20;
+    if (y + 80 > maxY) {
+      newPage();
+    }
+    y += 15;
     
     const firmas = bloqueFirmas.firmas;
     const firmaWidth = CONTENT_WIDTH / firmas.length;
@@ -191,17 +177,14 @@ export async function generarPdfBlob(bloques, meta = {}, opciones = {}) {
       const firma = firmas[i];
       const x = MARGIN_SIDE + (i * firmaWidth) + (firmaWidth / 2);
       
-      // Línea de firma
       doc.setDrawColor(0, 0, 0);
       doc.setLineWidth(0.5);
       doc.line(x - 50, y, x + 50, y);
       
-      // Nombre
       doc.setFontSize(8);
       doc.setFont('helvetica', 'bold');
       doc.text(firma.nombre || '', x, y + 12, { align: 'center' });
       
-      // Rol
       doc.setFontSize(7);
       doc.setFont('helvetica', 'normal');
       doc.setTextColor(80, 80, 80);
@@ -209,27 +192,38 @@ export async function generarPdfBlob(bloques, meta = {}, opciones = {}) {
     }
   }
   
-  // Agregar headers/footers a todas las páginas
+  // Guardar última línea vertical
+  if (y > currentPageStartY) {
+    verticalLines.push({ page: currentPage, startY: currentPageStartY, endY: y });
+  }
+  
+  // Dibujar líneas verticales centrales en cada página
+  doc.setDrawColor(150, 150, 150);
+  doc.setLineWidth(0.5);
+  const centerX = MARGIN_SIDE + COL_WIDTH + 4;
+  
+  for (const vl of verticalLines) {
+    doc.setPage(vl.page);
+    doc.line(centerX, vl.startY - 5, centerX, vl.endY);
+  }
+  
+  // Headers y footers
   const totalPages = doc.internal.getNumberOfPages();
   for (let i = 1; i <= totalPages; i++) {
     doc.setPage(i);
     
-    // Header - paginación
     doc.setFontSize(FONT_SIZE_HEADER);
     doc.setFont('helvetica', 'normal');
     doc.setTextColor(85, 85, 85);
     const headerText = `Página ${i} de ${totalPages} | ${paginaLang2} ${i} ${deLang2} ${totalPages}`;
-    doc.text(headerText, PAGE_WIDTH - MARGIN_SIDE, 25, { align: 'right' });
+    doc.text(headerText, PAGE_WIDTH - MARGIN_SIDE, 30, { align: 'right' });
     
-    // Footer - iniciales
     if (iniciales) {
       doc.text(iniciales, PAGE_WIDTH / 2, PAGE_HEIGHT - 25, { align: 'center' });
     }
   }
   
-  // Generar blob
-  const blob = doc.output('blob');
-  return blob;
+  return doc.output('blob');
 }
 
 export default { generarPdfBlob };
