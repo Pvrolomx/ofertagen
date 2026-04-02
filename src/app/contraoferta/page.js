@@ -298,8 +298,33 @@ export default function ContraOfertaGenPage() {
   const [generating, setGenerating] = useState(false);
   const [idiomaUI, setIdiomaUI] = useState("es");
   const [contractLang, setContractLang] = useState("en");
+  const [logoPreview, setLogoPreview] = useState(null);
+  const [logoBase64, setLogoBase64] = useState(null);
   const t = UI[idiomaUI] || UI.es;
   const steps = t.steps;
+
+  // Logo upload handler
+  const handleLogoUpload = useCallback(() => {
+    const input = document.createElement("input");
+    input.type = "file";
+    input.accept = "image/png,image/jpeg,image/jpg";
+    input.onchange = async (e) => {
+      const file = e.target.files?.[0];
+      if (!file) return;
+      const reader = new FileReader();
+      reader.onload = (ev) => {
+        const dataUrl = ev.target?.result;
+        if (typeof dataUrl === "string") {
+          setLogoPreview(dataUrl);
+          const base64 = dataUrl.split(",")[1];
+          setLogoBase64(base64);
+        }
+      };
+      reader.readAsDataURL(file);
+    };
+    input.click();
+  }, []);
+  const clearLogo = () => { setLogoPreview(null); setLogoBase64(null); };
 
   // Check for preloaded data from OfertaGen
   useEffect(() => {
@@ -665,13 +690,18 @@ export default function ContraOfertaGenPage() {
             <h1 className="text-2xl font-bold tracking-tight" style={{ color: "var(--og-primary)" }}>{t.title}</h1>
             <p className="text-sm" style={{ color: "var(--og-secondary)" }}>{t.subtitle}</p>
           </div>
-          <div className="flex gap-2 flex-wrap">
-            {["es", "en", "fr"].map(lang => (
-              <button key={lang} onClick={() => setIdiomaUI(lang)}
-                className={`px-2 py-1 text-xs font-medium rounded transition-all ${idiomaUI === lang ? "cog-step-active" : "og-genero-off"}`}>
-                {lang.toUpperCase()}
+          <div className="flex gap-2 flex-wrap items-center">
+            {/* Logo upload */}
+            {logoPreview ? (
+              <div className="flex items-center gap-1 px-2 py-1 bg-purple-50 border border-purple-200 rounded-lg">
+                <img src={logoPreview} alt="Logo" className="h-6 max-w-16 object-contain" />
+                <button onClick={clearLogo} className="text-purple-500 hover:text-purple-700 text-xs ml-1" title="Quitar logo">✕</button>
+              </div>
+            ) : (
+              <button onClick={handleLogoUpload} className="px-3 py-1.5 text-xs rounded-lg transition flex items-center gap-1" style={{ background: "var(--og-surface)", border: "1px solid var(--og-border)", color: "var(--og-secondary)" }}>
+                <span>🖼️</span> Logo
               </button>
-            ))}
+            )}
             <button onClick={importDraft} className="px-3 py-1.5 text-xs rounded-lg transition flex items-center gap-1" style={{ background: "var(--og-surface)", border: "1px solid var(--og-border)", color: "var(--og-secondary)" }}>
               <span>📂</span> {t.header.cargar}
             </button>
@@ -681,6 +711,15 @@ export default function ContraOfertaGenPage() {
             <button onClick={resetAll} className="px-3 py-1.5 text-xs rounded-lg" style={{ background: "var(--og-surface)", border: "1px solid var(--og-border)", color: "var(--og-secondary)" }}>
               {t.header.limpiar}
             </button>
+            {/* Toggle idioma UI */}
+            <div className="flex rounded-lg border overflow-hidden text-xs font-medium" style={{ borderColor: "var(--og-border)" }}>
+              {["es", "en", "fr"].map(lang => (
+                <button key={lang} onClick={() => setIdiomaUI(lang)}
+                  className={`px-2.5 py-1.5 transition ${idiomaUI === lang ? "cog-step-active" : ""}`}>
+                  {lang.toUpperCase()}
+                </button>
+              ))}
+            </div>
           </div>
         </header>
 
