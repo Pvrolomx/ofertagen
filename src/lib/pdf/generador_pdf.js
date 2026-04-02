@@ -146,7 +146,7 @@ export async function generarPdfBlob(bloques, meta = {}, opciones = {}) {
       
       // Columna EN/FR
       if (i < linesLang2.length) {
-        doc.setTextColor(60, 60, 60);
+        doc.setTextColor(0, 0, 0);
         doc.text(linesLang2[i], colEnX, y);
       }
       
