@@ -300,8 +300,18 @@ export default function ContraOfertaGenPage() {
   const [contractLang, setContractLang] = useState("en");
   const [logoPreview, setLogoPreview] = useState(null);
   const [logoBase64, setLogoBase64] = useState(null);
+  const [showDisclaimer, setShowDisclaimer] = useState(false);
+  const [disclaimerAccepted, setDisclaimerAccepted] = useState(false);
   const t = UI[idiomaUI] || UI.es;
   const steps = t.steps;
+
+  // Cargar estado de disclaimer desde localStorage
+  useEffect(() => {
+    try {
+      const accepted = localStorage.getItem("ofertagen_disclaimer_accepted");
+      if (accepted) setDisclaimerAccepted(true);
+    } catch {}
+  }, []);
 
   // Logo upload handler
   const handleLogoUpload = useCallback(() => {
@@ -413,9 +423,8 @@ export default function ContraOfertaGenPage() {
   const ctx = useMemo(() => ensamblar(data), [data]);
   const bloques = useMemo(() => renderBlks(ctx), [ctx]);
 
-  // Generar y descargar DOCX
-  const handleGenerate = useCallback(async () => {
-    if (generating || !bloques.length) return;
+  // Función interna para generar (después de aceptar disclaimer)
+  const doGenerate = useCallback(async () => {
     setGenerating(true);
     try {
       const blob = await generarDocxBlobContraoferta(bloques, PLANTILLA.meta, { idiomaSecundario: contractLang });
@@ -434,7 +443,28 @@ export default function ContraOfertaGenPage() {
     } finally {
       setGenerating(false);
     }
-  }, [bloques, contractLang, data.partes, data.tipo_documento, generating]);
+  }, [bloques, contractLang, data.partes, data.tipo_documento]);
+
+  // Generar y descargar DOCX (con verificación de disclaimer)
+  const handleGenerate = useCallback(async () => {
+    if (generating || !bloques.length) return;
+    // Si no ha aceptado disclaimer, mostrar modal
+    if (!disclaimerAccepted) {
+      setShowDisclaimer(true);
+      return;
+    }
+    await doGenerate();
+  }, [bloques, generating, disclaimerAccepted, doGenerate]);
+
+  // Manejar aceptación del disclaimer
+  const handleAcceptDisclaimer = useCallback(async () => {
+    setDisclaimerAccepted(true);
+    setShowDisclaimer(false);
+    try {
+      localStorage.setItem("ofertagen_disclaimer_accepted", new Date().toISOString());
+    } catch {}
+    await doGenerate();
+  }, [doGenerate]);
 
   // ── STEP 1: Oferta Original ───────────────────────────────────
   const renderStep1 = () => (
@@ -683,6 +713,66 @@ export default function ContraOfertaGenPage() {
     <main className="min-h-screen p-4 md:p-8" style={{ background: "var(--og-bg)" }}>
       <div className="max-w-3xl mx-auto">
 
+        {/* Modal de Disclaimer */}
+        {showDisclaimer && (
+          <div className="fixed inset-0 flex items-center justify-center z-50 p-4" style={{background:"rgba(0,0,0,0.8)"}}>
+            <div className="rounded-2xl shadow-2xl max-w-lg w-full p-6" style={{background:"var(--og-card)",border:"1px solid var(--og-border)"}}>
+              <h2 className="text-lg font-bold mb-4 flex items-center gap-2" style={{color:"var(--cog-accent)"}}>
+                <span>⚠️</span> {idiomaUI === 'es' ? 'Antes de descargar' : idiomaUI === 'fr' ? 'Avant de télécharger' : 'Before downloading'}
+              </h2>
+              <div className="text-sm mb-5 space-y-3" style={{color:"var(--og-secondary)"}}>
+                <p>
+                  {idiomaUI === 'es' 
+                    ? 'ContraOfertaGen genera documentos basados en plantillas inmobiliarias para zona restringida mexicana.'
+                    : idiomaUI === 'fr'
+                    ? 'ContraOfertaGen génère des documents basés sur des modèles immobiliers pour la zone restreinte mexicaine.'
+                    : 'ContraOfertaGen generates documents based on real estate templates for Mexican restricted zone.'}
+                </p>
+                <ul className="space-y-2 pl-4">
+                  <li className="flex items-start gap-2">
+                    <span className="text-yellow-500">•</span>
+                    {idiomaUI === 'es' 
+                      ? 'No sustituye asesoría legal personalizada'
+                      : idiomaUI === 'fr'
+                      ? 'Ne remplace pas un conseil juridique personnalisé'
+                      : 'Does not substitute personalized legal advice'}
+                  </li>
+                  <li className="flex items-start gap-2">
+                    <span className="text-yellow-500">•</span>
+                    {idiomaUI === 'es' 
+                      ? 'Debe ser revisado por un abogado antes de firmar'
+                      : idiomaUI === 'fr'
+                      ? 'Doit être révisé par un avocat avant de signer'
+                      : 'Must be reviewed by a lawyer before signing'}
+                  </li>
+                  <li className="flex items-start gap-2">
+                    <span className="text-yellow-500">•</span>
+                    {idiomaUI === 'es' 
+                      ? 'El desarrollador no asume responsabilidad por uso sin revisión profesional'
+                      : idiomaUI === 'fr'
+                      ? 'Le développeur n\'assume aucune responsabilité en cas d\'utilisation sans révision professionnelle'
+                      : 'The developer assumes no responsibility for use without professional review'}
+                  </li>
+                </ul>
+              </div>
+              <div className="flex gap-3 justify-end">
+                <button 
+                  onClick={() => setShowDisclaimer(false)}
+                  className="px-4 py-2 text-sm rounded-lg transition"
+                  style={{background:"var(--og-surface)",border:"1px solid var(--og-border)",color:"var(--og-secondary)"}}>
+                  {idiomaUI === 'es' ? 'Cancelar' : idiomaUI === 'fr' ? 'Annuler' : 'Cancel'}
+                </button>
+                <button 
+                  onClick={handleAcceptDisclaimer}
+                  className="px-4 py-2 text-sm font-medium text-white rounded-lg transition"
+                  style={{background:"var(--cog-accent)"}}>
+                  {idiomaUI === 'es' ? 'Entiendo, descargar' : idiomaUI === 'fr' ? 'Je comprends, télécharger' : 'I understand, download'}
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
+
         {/* Header */}
         <header className="flex flex-wrap items-center justify-between gap-3 mb-6">
           <div>
@@ -764,8 +854,19 @@ export default function ContraOfertaGenPage() {
         </div>
 
         {/* Footer */}
-        <footer className="mt-8 text-center text-xs" style={{ color: "var(--og-muted)" }}>
-          Hecho por Colmena <span onClick={loadDemo} className="cursor-pointer hover:text-green-400 transition">2026</span>
+        <footer className="mt-8 text-center text-xs space-y-1" style={{ color: "var(--og-muted)" }}>
+          <div>Hecho por Colmena <span onClick={loadDemo} className="cursor-pointer hover:text-green-400 transition">2026</span></div>
+          <div style={{fontSize:"10px",opacity:0.7}}>
+            {idiomaUI === 'es' 
+              ? 'Herramienta de apoyo · Revisar con abogado antes de firmar'
+              : idiomaUI === 'fr'
+              ? 'Outil d\'aide · À réviser par un avocat avant signature'
+              : 'Support tool · Review with lawyer before signing'}
+            {' · '}
+            <a href="#" onClick={(e) => { e.preventDefault(); setShowDisclaimer(true); }} className="underline hover:text-green-400">
+              {idiomaUI === 'es' ? 'Términos' : idiomaUI === 'fr' ? 'Conditions' : 'Terms'}
+            </a>
+          </div>
         </footer>
       </div>
     </main>

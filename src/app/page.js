@@ -455,9 +455,20 @@ export default function OfertaGenPage() {
   const [logoPreview, setLogoPreview] = useState(null);
   const [idiomaSecundario, setIdiomaSecundario] = useState('es'); // 'es', 'en' o 'fr'
   const [contractLang, setContractLang] = useState('en'); // 'en' o 'fr' — idioma secundario del contrato
+  const [showDisclaimer, setShowDisclaimer] = useState(false);
+  const [disclaimerAccepted, setDisclaimerAccepted] = useState(false);
+  const [pendingDownload, setPendingDownload] = useState(null); // 'word' | 'pdf' | null
   const t = UI[idiomaSecundario] || UI.es; // i18n activo Sprint V-a
   const lang2 = contractLang; // idioma secundario del contrato — independiente de la UI
   const steps = t.steps;
+
+  // Cargar estado de disclaimer desde localStorage
+  useEffect(() => {
+    try {
+      const accepted = localStorage.getItem("ofertagen_disclaimer_accepted");
+      if (accepted) setDisclaimerAccepted(true);
+    } catch {}
+  }, []);
 
   // Auto-save draft
   useEffect(() => {
@@ -611,14 +622,8 @@ export default function OfertaGenPage() {
     } finally { setGenerating(false); }
   }, [bloques, data, logoBase64, idiomaSecundario]);
 
-  const handleGenerate = useCallback(async () => {
-    if (!bloques.length) return;
-    // Validar antes de generar
-    const result = validarOferta(bloques, lang2);
-    if (!result.valid || result.warnings.length > 0) {
-      setValidationResult(result);
-      return;
-    }
+  // Función interna para generar Word (después de aceptar disclaimer)
+  const doGenerateWord = useCallback(async () => {
     setGenerating(true);
     try {
       const blob = await generarDocxBlob(bloques, PLANTILLA.meta, { logoBase64, idiomaSecundario: lang2 });
@@ -637,15 +642,10 @@ export default function OfertaGenPage() {
       alert("Error al generar el documento. Revisa la consola.");
     }
     setGenerating(false);
-  }, [bloques, data.partes.ofertante.personas, logoBase64, idiomaSecundario]);
+  }, [bloques, data.partes.ofertante.personas, logoBase64, lang2]);
 
-  const handleGeneratePdf = useCallback(async () => {
-    if (!bloques.length) return;
-    const result = validarOferta(bloques, lang2);
-    if (!result.valid || result.warnings.length > 0) {
-      setValidationResult(result);
-      return;
-    }
+  // Función interna para generar PDF (después de aceptar disclaimer)
+  const doGeneratePdf = useCallback(async () => {
     setGenerating(true);
     try {
       await generarPdfBlob(bloques, PLANTILLA.meta, { 
@@ -657,10 +657,118 @@ export default function OfertaGenPage() {
       alert("Error al generar el PDF. Revisa la consola.");
     }
     setGenerating(false);
-  }, [bloques, data.partes.ofertante.personas, idiomaSecundario]);
+  }, [bloques, data.partes.ofertante.personas, lang2]);
+
+  const handleGenerate = useCallback(async () => {
+    if (!bloques.length) return;
+    const result = validarOferta(bloques, lang2);
+    if (!result.valid || result.warnings.length > 0) {
+      setValidationResult(result);
+      return;
+    }
+    // Si no ha aceptado disclaimer, mostrar modal
+    if (!disclaimerAccepted) {
+      setPendingDownload('word');
+      setShowDisclaimer(true);
+      return;
+    }
+    await doGenerateWord();
+  }, [bloques, lang2, disclaimerAccepted, doGenerateWord, validarOferta]);
+
+  const handleGeneratePdf = useCallback(async () => {
+    if (!bloques.length) return;
+    const result = validarOferta(bloques, lang2);
+    if (!result.valid || result.warnings.length > 0) {
+      setValidationResult(result);
+      return;
+    }
+    // Si no ha aceptado disclaimer, mostrar modal
+    if (!disclaimerAccepted) {
+      setPendingDownload('pdf');
+      setShowDisclaimer(true);
+      return;
+    }
+    await doGeneratePdf();
+  }, [bloques, lang2, disclaimerAccepted, doGeneratePdf, validarOferta]);
+
+  // Manejar aceptación del disclaimer
+  const handleAcceptDisclaimer = useCallback(async () => {
+    setDisclaimerAccepted(true);
+    setShowDisclaimer(false);
+    try {
+      localStorage.setItem("ofertagen_disclaimer_accepted", new Date().toISOString());
+    } catch {}
+    // Ejecutar descarga pendiente
+    if (pendingDownload === 'word') {
+      await doGenerateWord();
+    } else if (pendingDownload === 'pdf') {
+      await doGeneratePdf();
+    }
+    setPendingDownload(null);
+  }, [pendingDownload, doGenerateWord, doGeneratePdf]);
 
   return (
     <div className="max-w-4xl mx-auto px-4 py-6" style={{minHeight:"100vh",background:"var(--og-bg)"}}>
+      {/* Modal de Disclaimer */}
+      {showDisclaimer && (
+        <div className="fixed inset-0 flex items-center justify-center z-50 p-4" style={{background:"rgba(0,0,0,0.8)"}}>
+          <div className="rounded-2xl shadow-2xl max-w-lg w-full p-6" style={{background:"var(--og-card)",border:"1px solid var(--og-border)"}}>
+            <h2 className="text-lg font-bold mb-4 flex items-center gap-2" style={{color:"var(--og-primary)"}}>
+              <span>⚠️</span> {idiomaSecundario === 'es' ? 'Antes de descargar' : idiomaSecundario === 'fr' ? 'Avant de télécharger' : 'Before downloading'}
+            </h2>
+            <div className="text-sm mb-5 space-y-3" style={{color:"var(--og-secondary)"}}>
+              <p>
+                {idiomaSecundario === 'es' 
+                  ? 'OfertaGen genera documentos basados en plantillas inmobiliarias para zona restringida mexicana.'
+                  : idiomaSecundario === 'fr'
+                  ? 'OfertaGen génère des documents basés sur des modèles immobiliers pour la zone restreinte mexicaine.'
+                  : 'OfertaGen generates documents based on real estate templates for Mexican restricted zone.'}
+              </p>
+              <ul className="space-y-2 pl-4">
+                <li className="flex items-start gap-2">
+                  <span className="text-yellow-500">•</span>
+                  {idiomaSecundario === 'es' 
+                    ? 'No sustituye asesoría legal personalizada'
+                    : idiomaSecundario === 'fr'
+                    ? 'Ne remplace pas un conseil juridique personnalisé'
+                    : 'Does not substitute personalized legal advice'}
+                </li>
+                <li className="flex items-start gap-2">
+                  <span className="text-yellow-500">•</span>
+                  {idiomaSecundario === 'es' 
+                    ? 'Debe ser revisado por un abogado antes de firmar'
+                    : idiomaSecundario === 'fr'
+                    ? 'Doit être révisé par un avocat avant de signer'
+                    : 'Must be reviewed by a lawyer before signing'}
+                </li>
+                <li className="flex items-start gap-2">
+                  <span className="text-yellow-500">•</span>
+                  {idiomaSecundario === 'es' 
+                    ? 'El desarrollador no asume responsabilidad por uso sin revisión profesional'
+                    : idiomaSecundario === 'fr'
+                    ? 'Le développeur n\'assume aucune responsabilité en cas d\'utilisation sans révision professionnelle'
+                    : 'The developer assumes no responsibility for use without professional review'}
+                </li>
+              </ul>
+            </div>
+            <div className="flex gap-3 justify-end">
+              <button 
+                onClick={() => { setShowDisclaimer(false); setPendingDownload(null); }}
+                className="px-4 py-2 text-sm rounded-lg transition"
+                style={{background:"var(--og-surface)",border:"1px solid var(--og-border)",color:"var(--og-secondary)"}}>
+                {idiomaSecundario === 'es' ? 'Cancelar' : idiomaSecundario === 'fr' ? 'Annuler' : 'Cancel'}
+              </button>
+              <button 
+                onClick={handleAcceptDisclaimer}
+                className="px-4 py-2 text-sm font-medium text-white rounded-lg transition"
+                style={{background:"var(--og-accent)"}}>
+                {idiomaSecundario === 'es' ? 'Entiendo, descargar' : idiomaSecundario === 'fr' ? 'Je comprends, télécharger' : 'I understand, download'}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* Modal de validación Sprint U */}
       {validationResult && (
         <div className="fixed inset-0 flex items-center justify-center z-50 p-4" style={{background:"rgba(0,0,0,0.75)"}}>
@@ -1134,11 +1242,24 @@ export default function OfertaGenPage() {
       </div>
 
       {/* Footer */}
-      <footer className="mt-8 pt-4 border-t flex items-center justify-between text-xs" style={{borderTop:"1px solid var(--og-border)",color:"var(--og-muted)"}}>
-        <span>Hecho por Colmena <span onClick={loadDemo} className="cursor-pointer hover:text-blue-400 transition">2026</span></span>
-        <button id="install-btn" onClick={() => window.installApp?.()} className="hidden px-3 py-1.5 bg-blue-50 text-blue-600 border border-blue-200 rounded-lg hover:bg-blue-100 transition">
-          Instalar App
-        </button>
+      <footer className="mt-8 pt-4 border-t flex flex-col gap-2 text-xs" style={{borderTop:"1px solid var(--og-border)",color:"var(--og-muted)"}}>
+        <div className="flex items-center justify-between">
+          <span>Hecho por Colmena <span onClick={loadDemo} className="cursor-pointer hover:text-blue-400 transition">2026</span></span>
+          <button id="install-btn" onClick={() => window.installApp?.()} className="hidden px-3 py-1.5 bg-blue-50 text-blue-600 border border-blue-200 rounded-lg hover:bg-blue-100 transition">
+            Instalar App
+          </button>
+        </div>
+        <div className="text-center opacity-70" style={{fontSize:"10px"}}>
+          {idiomaSecundario === 'es' 
+            ? 'Herramienta de apoyo · Revisar con abogado antes de firmar'
+            : idiomaSecundario === 'fr'
+            ? 'Outil d\'aide · À réviser par un avocat avant signature'
+            : 'Support tool · Review with lawyer before signing'}
+          {' · '}
+          <a href="#" onClick={(e) => { e.preventDefault(); setShowDisclaimer(true); setPendingDownload(null); }} className="underline hover:text-blue-400">
+            {idiomaSecundario === 'es' ? 'Términos' : idiomaSecundario === 'fr' ? 'Conditions' : 'Terms'}
+          </a>
+        </div>
       </footer>
     </div>
   );
