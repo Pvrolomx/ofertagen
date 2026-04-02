@@ -24,10 +24,12 @@ const INIT = {
   },
   campos: {
     oferta_original: { fecha_oferta: "", descripcion_inmueble: "", precio_original: 0 },
+    contraoferta_original: { fecha_contraoferta: "" }, // Para contra-contraoferta
     modificaciones: {},
     aceptacion: { fecha_contraoferta: "", ciudad_contraoferta: "Bucerías, Nayarit", vigencia_horas: 48 },
   },
   quien_presenta: "vendedor",
+  tipo_documento: "contraoferta", // "contraoferta" o "contra_contraoferta"
 };
 
 // ============================================================
@@ -40,13 +42,22 @@ const UI = {
     steps: ["Oferta Original", "Modificaciones", "Preview"],
     sections: {
       oferta_original: "Referencia a la oferta original",
+      contraoferta_original: "Referencia a la contraoferta original",
+      tipo_documento: "Tipo de documento",
       partes: "Partes",
       modificaciones: "¿Qué deseas modificar?",
       aceptacion: "Vigencia de la contraoferta",
-      quien_presenta: "¿Quién presenta la contraoferta?",
+      quien_presenta: "¿Quién presenta?",
+    },
+    tipo_doc: {
+      contraoferta: "Contraoferta",
+      contraoferta_desc: "Respuesta del vendedor a una oferta",
+      contra_contraoferta: "Contra-contraoferta",
+      contra_contraoferta_desc: "Respuesta del comprador a una contraoferta",
     },
     fields: {
       fecha_oferta: "Fecha de la oferta original",
+      fecha_contraoferta_orig: "Fecha de la contraoferta original",
       descripcion_inmueble: "Descripción del inmueble",
       precio_original: "Precio original (USD)",
       nombre_ofertante: "Nombre del comprador",
@@ -92,13 +103,22 @@ const UI = {
     steps: ["Original Offer", "Modifications", "Preview"],
     sections: {
       oferta_original: "Reference to original offer",
+      contraoferta_original: "Reference to original counter-offer",
+      tipo_documento: "Document type",
       partes: "Parties",
       modificaciones: "What do you want to modify?",
       aceptacion: "Counter-offer validity",
-      quien_presenta: "Who is presenting the counter-offer?",
+      quien_presenta: "Who is presenting?",
+    },
+    tipo_doc: {
+      contraoferta: "Counter-offer",
+      contraoferta_desc: "Seller's response to an offer",
+      contra_contraoferta: "Counter-counter-offer",
+      contra_contraoferta_desc: "Buyer's response to a counter-offer",
     },
     fields: {
       fecha_oferta: "Original offer date",
+      fecha_contraoferta_orig: "Original counter-offer date",
       descripcion_inmueble: "Property description",
       precio_original: "Original price (USD)",
       nombre_ofertante: "Buyer name",
@@ -144,13 +164,22 @@ const UI = {
     steps: ["Offre Originale", "Modifications", "Aperçu"],
     sections: {
       oferta_original: "Référence à l'offre originale",
+      contraoferta_original: "Référence à la contre-offre originale",
+      tipo_documento: "Type de document",
       partes: "Parties",
       modificaciones: "Que souhaitez-vous modifier?",
       aceptacion: "Validité de la contre-offre",
-      quien_presenta: "Qui présente la contre-offre?",
+      quien_presenta: "Qui présente?",
+    },
+    tipo_doc: {
+      contraoferta: "Contre-offre",
+      contraoferta_desc: "Réponse du vendeur à une offre",
+      contra_contraoferta: "Contre-contre-offre",
+      contra_contraoferta_desc: "Réponse de l'acheteur à une contre-offre",
     },
     fields: {
       fecha_oferta: "Date de l'offre originale",
+      fecha_contraoferta_orig: "Date de la contre-offre originale",
       descripcion_inmueble: "Description du bien",
       precio_original: "Prix original (USD)",
       nombre_ofertante: "Nom de l'acheteur",
@@ -367,10 +396,11 @@ export default function ContraOfertaGenPage() {
       const blob = await generarDocxBlobContraoferta(bloques, PLANTILLA.meta, { idiomaSecundario: contractLang });
       const url = URL.createObjectURL(blob);
       const a = document.createElement("a");
-      const nombre = data.partes?.ofertante?.personas?.[0]?.nombre?.split(" ")[0] || "CONTRAOFERTA";
+      const nombre = data.partes?.ofertante?.personas?.[0]?.nombre?.split(" ")[0] || "DOC";
       const fecha = new Date().toISOString().slice(0, 10);
+      const prefijo = data.tipo_documento === "contra_contraoferta" ? "CONTRA_CONTRAOFERTA" : "CONTRAOFERTA";
       a.href = url;
-      a.download = `CONTRAOFERTA_${nombre}_${fecha}.docx`;
+      a.download = `${prefijo}_${nombre}_${fecha}.docx`;
       a.click();
       URL.revokeObjectURL(url);
     } catch (err) {
@@ -379,16 +409,36 @@ export default function ContraOfertaGenPage() {
     } finally {
       setGenerating(false);
     }
-  }, [bloques, contractLang, data.partes, generating]);
+  }, [bloques, contractLang, data.partes, data.tipo_documento, generating]);
 
   // ── STEP 1: Oferta Original ───────────────────────────────────
   const renderStep1 = () => (
     <>
+      {/* Tipo de documento */}
+      <Section title={t.sections.tipo_documento}>
+        <div className="col-span-2 flex gap-3">
+          {["contraoferta", "contra_contraoferta"].map(tipo => (
+            <button key={tipo} onClick={() => setData(d => ({ ...d, tipo_documento: tipo }))}
+              className={`flex-1 py-3 text-sm font-medium rounded-lg transition-all ${data.tipo_documento === tipo ? "cog-step-active" : "og-genero-off"}`}>
+              <div>{t.tipo_doc[tipo]}</div>
+              <div className="text-[10px] opacity-70 mt-0.5">{t.tipo_doc[`${tipo}_desc`]}</div>
+            </button>
+          ))}
+        </div>
+      </Section>
+
       <Section title={t.sections.oferta_original}>
         <Input label={t.fields.fecha_oferta} value={data.campos.oferta_original.fecha_oferta} onChange={v => upCampo("oferta_original", "fecha_oferta", v)} type="date" required />
         <Input label={t.fields.precio_original} value={data.campos.oferta_original.precio_original} onChange={v => upCampo("oferta_original", "precio_original", v)} type="number" required />
         <Input label={t.fields.descripcion_inmueble} value={data.campos.oferta_original.descripcion_inmueble} onChange={v => upCampo("oferta_original", "descripcion_inmueble", v)} placeholder="Depto. 5204, La Joya de Mismaloya" required wide />
       </Section>
+
+      {/* Fecha de contraoferta original - solo si es contra-contraoferta */}
+      {data.tipo_documento === "contra_contraoferta" && (
+        <Section title={t.sections.contraoferta_original}>
+          <Input label={t.fields.fecha_contraoferta_orig} value={data.campos.contraoferta_original?.fecha_contraoferta || ""} onChange={v => upCampo("contraoferta_original", "fecha_contraoferta", v)} type="date" required />
+        </Section>
+      )}
 
       <Section title={t.sections.partes}>
         <div className="col-span-2 p-3 rounded-lg" style={{ background: "var(--og-surface)", border: "1px solid var(--og-border)" }}>
@@ -420,7 +470,7 @@ export default function ContraOfertaGenPage() {
         <div className="col-span-2 flex gap-3">
           {["vendedor", "comprador"].map(q => (
             <button key={q} onClick={() => setData(d => ({ ...d, quien_presenta: q }))}
-              className={`flex-1 py-2 text-sm font-medium rounded-lg transition-all ${data.quien_presenta === q ? "og-step-active" : "og-genero-off"}`}>
+              className={`flex-1 py-2 text-sm font-medium rounded-lg transition-all ${data.quien_presenta === q ? "cog-step-active" : "og-genero-off"}`}>
               {t.fields[q]}
             </button>
           ))}

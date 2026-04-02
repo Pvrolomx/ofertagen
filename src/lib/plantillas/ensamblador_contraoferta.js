@@ -133,6 +133,23 @@ export function ensamblarContextoContraoferta(plantilla, datos) {
   };
 
   // ============================================================
+  // 3.5. RESOLVER CONTRA-CONTRAOFERTA (si aplica)
+  // ============================================================
+
+  ctx.tipo_documento = datos.tipo_documento || 'contraoferta';
+  ctx.es_contra_contraoferta = ctx.tipo_documento === 'contra_contraoferta';
+  ctx.quien_presenta = datos.quien_presenta || 'vendedor';
+
+  if (ctx.es_contra_contraoferta) {
+    const contraofertaOrig = datos.campos?.contraoferta_original || {};
+    ctx.contraoferta_original = {
+      fecha_es: fechaEs(contraofertaOrig.fecha_contraoferta) || '[FECHA]',
+      fecha_en: fechaEn(contraofertaOrig.fecha_contraoferta) || '[DATE]',
+      fecha_fr: fechaFr(contraofertaOrig.fecha_contraoferta) || '[DATE]',
+    };
+  }
+
+  // ============================================================
   // 4. RESOLVER MODIFICACIONES
   // ============================================================
 

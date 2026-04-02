@@ -152,11 +152,27 @@ const PLANTILLA_CONTRAOFERTA = {
     {
       id: 'encabezado',
       siempre: true,
-      render: (ctx) => ({
-        es: `CONTRAOFERTA Y CONVENIO MODIFICATORIO\n\nCon relación a la OFERTA DE INTENCIÓN DE COMPRA de fecha ${ctx.oferta_original.fecha_es}, presentada por ${ctx.ofertante.referencia} a ${ctx.propietario.referencia}, respecto del inmueble conocido como ${ctx.oferta_original.descripcion_inmueble}, por un precio original de ${ctx.oferta_original.precio_completo}, las partes acuerdan las siguientes modificaciones:`,
-        en: `COUNTER-OFFER AND AMENDMENT AGREEMENT\n\nWith respect to the PURCHASE INTENT OFFER dated ${ctx.oferta_original.fecha_en}, submitted by ${ctx.ofertante.en.referencia} to ${ctx.propietario.en.referencia}, regarding the property known as ${ctx.oferta_original.descripcion_inmueble}, for an original price of ${ctx.oferta_original.precio_completo}, the parties agree to the following modifications:`,
-        fr: `CONTRE-OFFRE ET CONVENTION MODIFICATIVE\n\nConcernant l'OFFRE D'INTENTION D'ACHAT en date du ${ctx.oferta_original.fecha_fr}, présentée par ${ctx.ofertante.fr.referencia} à ${ctx.propietario.fr.referencia}, relativement au bien immobilier connu sous le nom de ${ctx.oferta_original.descripcion_inmueble}, pour un prix original de ${ctx.oferta_original.precio_completo}, les parties conviennent des modifications suivantes:`,
-      }),
+      render: (ctx) => {
+        // Determinar quién presenta y quién recibe
+        const presenta = ctx.quien_presenta === 'comprador' ? ctx.ofertante : ctx.propietario;
+        const recibe = ctx.quien_presenta === 'comprador' ? ctx.propietario : ctx.ofertante;
+
+        if (ctx.es_contra_contraoferta) {
+          // CONTRA-CONTRAOFERTA: referencia tanto oferta como contraoferta
+          return {
+            es: `CONTRA-CONTRAOFERTA Y CONVENIO MODIFICATORIO\n\nCon relación a la OFERTA DE INTENCIÓN DE COMPRA de fecha ${ctx.oferta_original.fecha_es}, y a la CONTRAOFERTA de fecha ${ctx.contraoferta_original.fecha_es}, respecto del inmueble conocido como ${ctx.oferta_original.descripcion_inmueble}, por un precio original de ${ctx.oferta_original.precio_completo}, ${presenta.referencia} presenta a ${recibe.referencia} las siguientes modificaciones:`,
+            en: `COUNTER-COUNTER-OFFER AND AMENDMENT AGREEMENT\n\nWith respect to the PURCHASE INTENT OFFER dated ${ctx.oferta_original.fecha_en}, and the COUNTER-OFFER dated ${ctx.contraoferta_original.fecha_en}, regarding the property known as ${ctx.oferta_original.descripcion_inmueble}, for an original price of ${ctx.oferta_original.precio_completo}, ${presenta.en.referencia} presents to ${recibe.en.referencia} the following modifications:`,
+            fr: `CONTRE-CONTRE-OFFRE ET CONVENTION MODIFICATIVE\n\nConcernant l'OFFRE D'INTENTION D'ACHAT en date du ${ctx.oferta_original.fecha_fr}, et la CONTRE-OFFRE en date du ${ctx.contraoferta_original.fecha_fr}, relativement au bien immobilier connu sous le nom de ${ctx.oferta_original.descripcion_inmueble}, pour un prix original de ${ctx.oferta_original.precio_completo}, ${presenta.fr.referencia} présente à ${recibe.fr.referencia} les modifications suivantes:`,
+          };
+        } else {
+          // CONTRAOFERTA: solo referencia la oferta original
+          return {
+            es: `CONTRAOFERTA Y CONVENIO MODIFICATORIO\n\nCon relación a la OFERTA DE INTENCIÓN DE COMPRA de fecha ${ctx.oferta_original.fecha_es}, presentada por ${ctx.ofertante.referencia} a ${ctx.propietario.referencia}, respecto del inmueble conocido como ${ctx.oferta_original.descripcion_inmueble}, por un precio original de ${ctx.oferta_original.precio_completo}, ${presenta.referencia} presenta a ${recibe.referencia} las siguientes modificaciones:`,
+            en: `COUNTER-OFFER AND AMENDMENT AGREEMENT\n\nWith respect to the PURCHASE INTENT OFFER dated ${ctx.oferta_original.fecha_en}, submitted by ${ctx.ofertante.en.referencia} to ${ctx.propietario.en.referencia}, regarding the property known as ${ctx.oferta_original.descripcion_inmueble}, for an original price of ${ctx.oferta_original.precio_completo}, ${presenta.en.referencia} presents to ${recibe.en.referencia} the following modifications:`,
+            fr: `CONTRE-OFFRE ET CONVENTION MODIFICATIVE\n\nConcernant l'OFFRE D'INTENTION D'ACHAT en date du ${ctx.oferta_original.fecha_fr}, présentée par ${ctx.ofertante.fr.referencia} à ${ctx.propietario.fr.referencia}, relativement au bien immobilier connu sous le nom de ${ctx.oferta_original.descripcion_inmueble}, pour un prix original de ${ctx.oferta_original.precio_completo}, ${presenta.fr.referencia} présente à ${recibe.fr.referencia} les modifications suivantes:`,
+          };
+        }
+      },
     },
 
     // ---- TOGGLE 1: PRECIO ----

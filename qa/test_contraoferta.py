@@ -231,8 +231,8 @@ log("Toggles condicionales en Step 2",
 log("Preview bilingüe en Step 3",
     "contractLang" in ui_code and "bloques.map" in ui_code)
 
-log("Footer duendes.app",
-    "duendes.app 2026" in ui_code)
+log("Footer Colmena",
+    "Colmena 2026" in ui_code)
 
 # ============================================================
 # 11. Generador DOCX — Sprint CA-3
@@ -263,14 +263,42 @@ log("Tabla bilingüe COL_ES / COL_EN",
 log("Sección de firmas",
     "crearSeccionFirmas" in docx_code)
 
-log("Footer duendes.app en DOCX",
-    "duendes.app 2026" in docx_code)
+log("Footer Colmena en DOCX",
+    "Colmena 2026" in docx_code)
 
 log("UI importa generarDocxBlobContraoferta",
     "generarDocxBlobContraoferta" in ui_code)
 
 log("UI tiene handleGenerate",
     "handleGenerate" in ui_code)
+
+log("UI tiene tipo_documento en INIT",
+    "tipo_documento" in ui_code and "contraoferta" in ui_code)
+
+log("UI tiene selector contra-contraoferta",
+    "contra_contraoferta" in ui_code)
+
+log("UI tiene campo fecha_contraoferta_orig",
+    "fecha_contraoferta_orig" in ui_code)
+
+# Leer archivos para tests de contra-contraoferta
+plantilla_code = read_file(plantilla_path)
+ensamblador_code = read_file(ensamblador_path)
+
+log("Plantilla tiene render dinámico encabezado",
+    "es_contra_contraoferta" in plantilla_code and "CONTRA-CONTRAOFERTA" in plantilla_code)
+
+log("Ensamblador tiene ctx.tipo_documento",
+    "ctx.tipo_documento" in ensamblador_code)
+
+log("Ensamblador tiene ctx.es_contra_contraoferta",
+    "ctx.es_contra_contraoferta" in ensamblador_code)
+
+log("Ensamblador tiene ctx.quien_presenta",
+    "ctx.quien_presenta" in ensamblador_code)
+
+log("Ensamblador resuelve contraoferta_original",
+    "ctx.contraoferta_original" in ensamblador_code)
 
 # ============================================================
 # 10. Deep link desde OfertaGen
