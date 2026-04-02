@@ -686,7 +686,7 @@ export default function OfertaGenPage() {
       <div className="flex items-baseline justify-between mb-6">
         <div>
           <h1 className="text-2xl font-bold tracking-tight" style={{color:"var(--og-primary)"}}>OfertaGen</h1>
-          <p className="text-xs mt-0.5" style={{color:"var(--og-secondary)"}}>Expat Advisor MX</p>
+          <p className="text-sm" style={{color:"var(--og-secondary)"}}>Genera oferta trilingüe ES/EN/FR</p>
         </div>
         <div className="flex gap-2 flex-wrap justify-end items-center">
           {/* Logo upload */}
@@ -1109,9 +1109,9 @@ export default function OfertaGenPage() {
         </div>
       </div>
 
-      {/* Footer — RDE regla 10 */}
+      {/* Footer */}
       <footer className="mt-8 pt-4 border-t flex items-center justify-between text-xs" style={{borderTop:"1px solid var(--og-border)",color:"var(--og-muted)"}}>
-        <span>Hecho por duendes.app 2026</span>
+        <span>Hecho por Colmena 2026</span>
         <button id="install-btn" onClick={() => window.installApp?.()} className="hidden px-3 py-1.5 bg-blue-50 text-blue-600 border border-blue-200 rounded-lg hover:bg-blue-100 transition">
           Instalar App
         </button>

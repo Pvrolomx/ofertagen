@@ -249,7 +249,7 @@ export async function generarDocxContraoferta(bloques, meta = {}, opciones = {})
     new Paragraph({
       alignment: AlignmentType.CENTER,
       children: [new TextRun({ 
-        text: 'Hecho por duendes.app 2026', 
+        text: 'Hecho por Colmena 2026', 
         font: FONT, 
         size: 14, 
         color: '888888' 

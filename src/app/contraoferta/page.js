@@ -84,7 +84,7 @@ const UI = {
     nav: { anterior: "Anterior", siguiente: "Siguiente", generar: "Descargar .docx" },
     preview: { title: "Vista previa", idioma: "Idioma secundario" },
     header: { volver: "← Volver a OfertaGen", limpiar: "Limpiar" },
-    footer: "Hecho por duendes.app 2026",
+    footer: "Hecho por Colmena 2026",
   },
   en: {
     title: "ContraOfertaGen",
@@ -136,7 +136,7 @@ const UI = {
     nav: { anterior: "Back", siguiente: "Next", generar: "Download .docx" },
     preview: { title: "Preview", idioma: "Secondary language" },
     header: { volver: "← Back to OfertaGen", limpiar: "Clear" },
-    footer: "Made by duendes.app 2026",
+    footer: "Made by Colmena 2026",
   },
   fr: {
     title: "ContraOfertaGen",
@@ -188,7 +188,7 @@ const UI = {
     nav: { anterior: "Retour", siguiente: "Suivant", generar: "Télécharger .docx" },
     preview: { title: "Aperçu", idioma: "Langue secondaire" },
     header: { volver: "← Retour à OfertaGen", limpiar: "Effacer" },
-    footer: "Fait par duendes.app 2026",
+    footer: "Fait par Colmena 2026",
   },
 };
 
