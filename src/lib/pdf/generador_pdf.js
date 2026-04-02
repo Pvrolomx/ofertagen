@@ -30,29 +30,30 @@ function limpiarTexto(texto, lang = 'es') {
 // ============================================================
 
 export async function generarPdfBlob(bloques, meta = {}, opciones = {}) {
-  console.log('generarPdfBlob: iniciando...');
-  
   // Import dinámico
   const pdfMakeModule = await import('pdfmake/build/pdfmake');
   const pdfFontsModule = await import('pdfmake/build/vfs_fonts');
   
-  console.log('generarPdfBlob: módulos importados');
-  
   const pdfMake = pdfMakeModule.default || pdfMakeModule;
   
-  // Configurar fonts - pdfmake necesita vfs configurado
-  if (pdfFontsModule.pdfMake && pdfFontsModule.pdfMake.vfs) {
-    pdfMake.vfs = pdfFontsModule.pdfMake.vfs;
-  } else if (pdfFontsModule.default && pdfFontsModule.default.pdfMake) {
-    pdfMake.vfs = pdfFontsModule.default.pdfMake.vfs;
-  } else if (pdfFontsModule.vfs) {
-    pdfMake.vfs = pdfFontsModule.vfs;
-  } else {
-    console.log('generarPdfBlob: estructura de fonts:', Object.keys(pdfFontsModule));
-    pdfMake.vfs = pdfFontsModule;
-  }
+  // Configurar VFS (virtual file system con las fonts)
+  const vfs = pdfFontsModule.pdfMake?.vfs || 
+              pdfFontsModule.default?.pdfMake?.vfs || 
+              pdfFontsModule.vfs ||
+              pdfFontsModule.default?.vfs ||
+              pdfFontsModule;
   
-  console.log('generarPdfBlob: fonts configuradas');
+  pdfMake.vfs = vfs;
+  
+  // Definir fonts explícitamente (Roboto viene incluido en pdfmake)
+  pdfMake.fonts = {
+    Roboto: {
+      normal: 'Roboto-Regular.ttf',
+      bold: 'Roboto-Medium.ttf',
+      italics: 'Roboto-Italic.ttf',
+      bolditalics: 'Roboto-MediumItalic.ttf'
+    }
+  };
   
   const { idiomaSecundario = 'en' } = opciones;
   const lang2 = idiomaSecundario;
@@ -100,8 +101,6 @@ export async function generarPdfBlob(bloques, meta = {}, opciones = {}) {
       { stack: celdaEn.length ? celdaEn : [{ text: '' }], margin: [4, 4, 4, 4] }
     ]);
   }
-  
-  console.log('generarPdfBlob: tabla construida, filas:', tableBody.length);
   
   // Firmas
   const firmasContent = [];
@@ -173,21 +172,24 @@ export async function generarPdfBlob(bloques, meta = {}, opciones = {}) {
         color: '#555555',
         margin: [0, 40, 0, 0]
       }
-    ]
+    ],
+    
+    defaultStyle: {
+      font: 'Roboto'
+    }
   };
-  
-  console.log('generarPdfBlob: creando PDF...');
   
   return new Promise((resolve, reject) => {
     try {
       const pdfDoc = pdfMake.createPdf(docDefinition);
-      console.log('generarPdfBlob: PDF creado, obteniendo blob...');
       pdfDoc.getBlob((blob) => {
-        console.log('generarPdfBlob: blob obtenido, size:', blob.size);
         resolve(blob);
+      }, (err) => {
+        console.error('pdfmake getBlob error:', err);
+        reject(err);
       });
     } catch (err) {
-      console.error('generarPdfBlob: error:', err);
+      console.error('pdfmake createPdf error:', err);
       reject(err);
     }
   });
