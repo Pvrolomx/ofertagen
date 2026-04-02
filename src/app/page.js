@@ -652,18 +652,12 @@ export default function OfertaGenPage() {
     console.log('handleGeneratePdf: validación OK, generando...');
     setGenerating(true);
     try {
-      const blob = await generarPdfBlob(bloques, PLANTILLA.meta, { idiomaSecundario: lang2 });
-      console.log('handleGeneratePdf: blob generado, descargando...');
-      const nombre = data.partes.ofertante.personas[0]?.nombre?.replace(/\s+/g, "_") || "OFERTA";
-      const idiomaSufijo = lang2 === 'fr' ? '_FR' : '';
-      const url = URL.createObjectURL(blob);
-      const a = document.createElement("a");
-      a.href = url;
-      a.download = `OFERTA_${nombre}${idiomaSufijo}.pdf`;
-      document.body.appendChild(a);
-      a.click();
-      document.body.removeChild(a);
-      URL.revokeObjectURL(url);
+      // generarPdfBlob ahora usa download() directo
+      await generarPdfBlob(bloques, PLANTILLA.meta, { 
+        idiomaSecundario: lang2,
+        nombre: data.partes.ofertante.personas[0]?.nombre?.replace(/\s+/g, "_") || "OFERTA"
+      });
+      console.log('handleGeneratePdf: PDF generado');
     } catch (err) {
       console.error("Error generando PDF:", err);
       alert("Error al generar el PDF. Revisa la consola.");

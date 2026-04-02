@@ -190,23 +190,20 @@ export async function generarPdfBlob(bloques, meta = {}, opciones = {}) {
   
   console.log('generarPdfBlob: docDefinition creado, generando PDF...');
   
-  return new Promise((resolve, reject) => {
-    try {
-      console.log('generarPdfBlob: llamando createPdf...');
-      const pdfDoc = pdfMake.createPdf(docDefinition);
-      console.log('generarPdfBlob: llamando getBuffer...');
-      pdfDoc.getBuffer((buffer) => {
-        console.log('generarPdfBlob: buffer recibido, length:', buffer?.length);
-        // Convertir buffer a Blob
-        const blob = new Blob([buffer], { type: 'application/pdf' });
-        console.log('generarPdfBlob: blob creado, size:', blob.size);
-        resolve(blob);
-      });
-    } catch (err) {
-      console.error('pdfmake error:', err);
-      reject(err);
-    }
-  });
+  // Usar download directo - más confiable
+  const pdfDoc = pdfMake.createPdf(docDefinition);
+  
+  // Obtener nombre del archivo desde opciones
+  const nombreBase = opciones.nombre || 'OFERTA';
+  const idiomaSufijo = lang2 === 'fr' ? '_FR' : '';
+  const filename = `OFERTA_${nombreBase}${idiomaSufijo}.pdf`;
+  
+  console.log('generarPdfBlob: llamando download con filename:', filename);
+  pdfDoc.download(filename);
+  console.log('generarPdfBlob: download llamado');
+  
+  // Retornar null ya que download() maneja todo
+  return null;
   
   } catch (outerErr) {
     console.error('generarPdfBlob: error general:', outerErr);
