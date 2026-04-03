@@ -391,6 +391,15 @@ const UI = {
       // Inventario
       inventario_titulo: "Inventario / Lista de inclusiones",
       exclusiones: "Exclusiones",
+      // Arrendamientos
+      arrendamientos_titulo: "Arrendamientos vigentes",
+      renta_hasta_label: "Vendedor percibe rentas hasta...",
+      renta_hasta_cierre: "La fecha de formalización",
+      renta_hasta_escrow: "Que el dinero se refleje en escrow",
+      renta_hasta_cuenta: "Que el dinero se refleje en cuenta del vendedor",
+      bloqueo_desde_label: "Vendedor bloquea calendario a partir de...",
+      bloqueo_desde_escrow: "Que el depósito se refleje en escrow",
+      bloqueo_desde_cuenta: "Que el dinero se refleje en cuenta del vendedor",
       "moneda": "Moneda",
       "anticipo_gastos": "Anticipo gastos de escrituración",
       "empresa_escrow_label": "Empresa escrow",
@@ -494,6 +503,14 @@ const UI = {
       sin_costo_sub: "El servicio de coordinación no genera honorarios adicionales",
       inventario_titulo: "Inventario / Lista de inclusiones",
       exclusiones: "Exclusiones",
+      arrendamientos_titulo: "Arrendamientos vigentes",
+      renta_hasta_label: "Vendedor percibe rentas hasta...",
+      renta_hasta_cierre: "La fecha de formalización",
+      renta_hasta_escrow: "Que el dinero se refleje en escrow",
+      renta_hasta_cuenta: "Que el dinero se refleje en cuenta del vendedor",
+      bloqueo_desde_label: "Vendedor bloquea calendario a partir de...",
+      bloqueo_desde_escrow: "Que el depósito se refleje en escrow",
+      bloqueo_desde_cuenta: "Que el dinero se refleje en cuenta del vendedor",
       "moneda": "Moneda",
       "anticipo_gastos": "Anticipo gastos de escrituración",
       "empresa_escrow_label": "Empresa escrow",
@@ -595,6 +612,14 @@ const UI = {
       sin_costo_sub: "Coordination services do not generate additional fees",
       inventario_titulo: "Inventory / Inclusion list",
       exclusiones: "Exclusions",
+      arrendamientos_titulo: "Existing leases",
+      renta_hasta_label: "Seller receives rents until...",
+      renta_hasta_cierre: "The formalizing date",
+      renta_hasta_escrow: "Funds are reflected in escrow",
+      renta_hasta_cuenta: "Funds are reflected in seller's account",
+      bloqueo_desde_label: "Seller blocks calendar as of...",
+      bloqueo_desde_escrow: "Deposit is reflected in escrow",
+      bloqueo_desde_cuenta: "Funds are reflected in seller's account",
       "moneda": "Currency",
       "anticipo_gastos": "Closing cost advance",
       "empresa_escrow_label": "Escrow company",
@@ -701,6 +726,14 @@ const UI = {
       sin_costo_sub: "Les services de coordination ne génèrent pas d'honoraires supplémentaires",
       inventario_titulo: "Inventaire / Liste d'inclusions",
       exclusiones: "Exclusions",
+      arrendamientos_titulo: "Baux en cours",
+      renta_hasta_label: "Le vendeur perçoit les loyers jusqu'à...",
+      renta_hasta_cierre: "La date de formalisation",
+      renta_hasta_escrow: "Que les fonds soient reflétés au séquestre",
+      renta_hasta_cuenta: "Que les fonds soient reflétés sur le compte du vendeur",
+      bloqueo_desde_label: "Le vendeur bloque le calendrier à partir de...",
+      bloqueo_desde_escrow: "Que le dépôt soit reflété au séquestre",
+      bloqueo_desde_cuenta: "Que les fonds soient reflétés sur le compte du vendeur",
       "moneda": "Devise",
       "anticipo_gastos": "Avance frais de clôture",
       "empresa_escrow_label": "Société de séquestre",
@@ -1335,13 +1368,20 @@ export default function OfertaGenPage() {
               placeholder={idiomaSecundario === 'es' ? "obras de arte, artículos personales del vendedor" : idiomaSecundario === 'fr' ? "œuvres d'art, effets personnels du vendeur" : "artwork, seller personal items"} 
             />
           </Section>}
-          {data.bloques.arrendamientos && <Section title="Arrendamientos vigentes">
+          {data.bloques.arrendamientos && <Section title={t.fields.arrendamientos_titulo || "Arrendamientos vigentes"}>
             <div className="flex flex-col gap-1 col-span-2">
-              <label className="text-xs font-medium text-gray-500">Vendedor percibe rentas hasta...</label>
-              <select value={data.campos.arrendamientos?.renta_hasta||"escrow"} onChange={e=>upCampo("arrendamientos","renta_hasta",e.target.value)} className="border border-gray-200 rounded-lg px-3 py-2 text-sm bg-white">
-                <option value="escrow">Hasta que el dinero se refleje en escrow</option>
-                <option value="cuenta_vendedor">Hasta que el dinero se refleje en cuenta del vendedor</option>
-                <option value="cierre">Hasta la fecha de formalización</option>
+              <label className="text-xs font-medium" style={{color:"var(--og-primary)"}}>{t.fields.renta_hasta_label || "Vendedor percibe rentas hasta..."}</label>
+              <select value={data.campos.arrendamientos?.renta_hasta||"cierre"} onChange={e=>upCampo("arrendamientos","renta_hasta",e.target.value)} className="border rounded-lg px-3 py-2 text-sm" style={{background:"var(--og-surface)",borderColor:"var(--og-border)"}}>
+                <option value="cierre">{t.fields.renta_hasta_cierre || "La fecha de formalización"}</option>
+                <option value="escrow">{t.fields.renta_hasta_escrow || "Que el dinero se refleje en escrow"}</option>
+                <option value="cuenta_vendedor">{t.fields.renta_hasta_cuenta || "Que el dinero se refleje en cuenta del vendedor"}</option>
+              </select>
+            </div>
+            <div className="flex flex-col gap-1 col-span-2">
+              <label className="text-xs font-medium" style={{color:"var(--og-primary)"}}>{t.fields.bloqueo_desde_label || "Vendedor bloquea calendario a partir de..."}</label>
+              <select value={data.campos.arrendamientos?.bloqueo_desde||"escrow"} onChange={e=>upCampo("arrendamientos","bloqueo_desde",e.target.value)} className="border rounded-lg px-3 py-2 text-sm" style={{background:"var(--og-surface)",borderColor:"var(--og-border)"}}>
+                <option value="escrow">{t.fields.bloqueo_desde_escrow || "Que el depósito se refleje en escrow"}</option>
+                <option value="cuenta_vendedor">{t.fields.bloqueo_desde_cuenta || "Que el dinero se refleje en cuenta del vendedor"}</option>
               </select>
             </div>
           </Section>}

@@ -836,7 +836,7 @@ const PLANTILLA_OFERTA_COMPRA = {
       etiqueta: 'Arrendamientos vigentes (rentas)',
       etiqueta_en: 'Existing rental agreements',
       render: (ctx) => {
-        const rentaHasta = ctx.arrendamientos?.renta_hasta || 'escrow';
+        const rentaHasta = ctx.arrendamientos?.renta_hasta || 'cierre';
         const rentaHastaEs = {
           escrow: 'hasta que el dinero se refleje en la cuenta escrow',
           cuenta_vendedor: 'hasta que el dinero se refleje en la cuenta de ' + ctx.propietario.referencia,
@@ -847,9 +847,20 @@ const PLANTILLA_OFERTA_COMPRA = {
           cuenta_vendedor: 'until the funds are reflected in ' + ctx.propietario.en.referencia + '\'s account',
           cierre: 'until THE FORMALIZING DATE',
         }[rentaHasta];
+        
+        const bloqueoDesde = ctx.arrendamientos?.bloqueo_desde || 'escrow';
+        const bloqueoDesdeEs = {
+          escrow: 'a partir de que el depósito en garantía se refleje en la cuenta escrow',
+          cuenta_vendedor: 'a partir de que el dinero se refleje en la cuenta de ' + ctx.propietario.referencia,
+        }[bloqueoDesde];
+        const bloqueoDesdeEn = {
+          escrow: 'once the guarantee deposit is reflected in the escrow account',
+          cuenta_vendedor: 'once the funds are reflected in ' + ctx.propietario.en.referencia + '\'s account',
+        }[bloqueoDesde];
+        
         return {
-          es: `${ctx._inciso}) En caso de existir contratos de arrendamiento vigentes con posterioridad a la FECHA DE FORMALIZACIÓN, ${ctx.propietario.referencia} deberá informar a ${ctx.ofertante.referencia} de dichos contratos para que éste determine si los mismos se mantendrán en vigor. En caso afirmativo, ${ctx.propietario.referencia} abonará a ${ctx.ofertante.referencia} todas las rentas y depósitos programados con posterioridad a la FECHA DE FORMALIZACIÓN, y ${ctx.ofertante.referencia} estará obligado a respetar los contratos de arrendamiento vigentes. ${ctx.propietario.referencia} tendrá derecho a percibir las rentas ${rentaHastaEs}. ${ctx.propietario.referencia} no será responsable de las cancelaciones de renta por parte de los arrendatarios. La decisión de ${ctx.ofertante.referencia} sobre la continuidad de los contratos de arrendamiento deberá comunicarse al momento de constituir el depósito en garantía.`,
-          en: `${ctx._inciso}) In the event of existing rental agreements in force after THE FORMALIZING DATE, ${ctx.propietario.en.referencia} shall inform ${ctx.ofertante.en.referencia} of such agreements in order for ${ctx.ofertante.en.referencia} to determine if the rentals will remain in force. If so, ${ctx.propietario.en.referencia} shall credit ${ctx.ofertante.en.referencia} all the rentals and deposits scheduled after THE FORMALIZING DATE, and ${ctx.ofertante.en.referencia} shall be bound to honor the rental agreements. ${ctx.propietario.en.referencia} shall be entitled to collect rents ${rentaHastaEn}. ${ctx.propietario.en.referencia} will not be responsible for any rental cancellations by the renters. ${ctx.ofertante.en.referencia}'s decision regarding the continuity of the rental agreements must be communicated at the time of constituting the guarantee deposit.`,
+          es: `${ctx._inciso}) En caso de existir contratos de arrendamiento vigentes con posterioridad a la FECHA DE FORMALIZACIÓN, ${ctx.propietario.referencia} deberá informar a ${ctx.ofertante.referencia} de dichos contratos para que éste determine si los mismos se mantendrán en vigor. En caso afirmativo, ${ctx.propietario.referencia} abonará a ${ctx.ofertante.referencia} todas las rentas y depósitos programados con posterioridad a la FECHA DE FORMALIZACIÓN, y ${ctx.ofertante.referencia} estará obligado a respetar los contratos de arrendamiento vigentes.\n\n${ctx.propietario.referencia} tendrá derecho a percibir las rentas ${rentaHastaEs}. ${ctx.propietario.referencia} se obliga a bloquear el calendario de reservaciones ${bloqueoDesdeEs}. ${ctx.propietario.referencia} no será responsable de las cancelaciones de renta por parte de los arrendatarios. La decisión de ${ctx.ofertante.referencia} sobre la continuidad de los contratos de arrendamiento deberá comunicarse al momento de constituir el depósito en garantía.`,
+          en: `${ctx._inciso}) In the event of existing rental agreements in force after THE FORMALIZING DATE, ${ctx.propietario.en.referencia} shall inform ${ctx.ofertante.en.referencia} of such agreements in order for ${ctx.ofertante.en.referencia} to determine if the rentals will remain in force. If so, ${ctx.propietario.en.referencia} shall credit ${ctx.ofertante.en.referencia} all the rentals and deposits scheduled after THE FORMALIZING DATE, and ${ctx.ofertante.en.referencia} shall be bound to honor the rental agreements.\n\n${ctx.propietario.en.referencia} shall be entitled to collect rents ${rentaHastaEn}. ${ctx.propietario.en.referencia} is obligated to block the reservation calendar ${bloqueoDesdeEn}. ${ctx.propietario.en.referencia} will not be responsible for any rental cancellations by the renters. ${ctx.ofertante.en.referencia}'s decision regarding the continuity of the rental agreements must be communicated at the time of constituting the guarantee deposit.`,
         };
       },
     },
