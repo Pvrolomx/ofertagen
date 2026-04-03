@@ -900,10 +900,12 @@ const PLANTILLA_OFERTA_COMPRA = {
       render: (ctx) => {
         const textoEs = ctx.condicion_libre?.texto_es?.trim();
         const textoEn = ctx.condicion_libre?.texto_en?.trim();
-        if (!textoEs && !textoEn) return null;
+        const textoFr = ctx.condicion_libre?.texto_fr?.trim();
+        if (!textoEs && !textoEn && !textoFr) return null;
         return {
           es: textoEs ? `${ctx._inciso}) ${textoEs}` : null,
           en: textoEn ? `${ctx._inciso}) ${textoEn}` : null,
+          fr: textoFr ? `${ctx._inciso}) ${textoFr}` : null,
         };
       },
     },

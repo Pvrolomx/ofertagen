@@ -143,6 +143,99 @@ function CondicionItem({ id, label, sub, checked, onChange, plazos, onPlazoChang
   );
 }
 
+// Componente para condición libre con traducción Google Translate
+function CondicionLibrePanel({ uiLang, textoEs, textoEn, textoFr, onChangeEs, onChangeEn, onChangeFr, t }) {
+  const [traduciendo, setTraduciendo] = useState(false);
+  
+  // Determinar qué idioma mostrar según la UI
+  const textoActual = uiLang === 'es' ? textoEs : uiLang === 'fr' ? textoFr : textoEn;
+  const onChangeActual = uiLang === 'es' ? onChangeEs : uiLang === 'fr' ? onChangeFr : onChangeEn;
+  const placeholders = {
+    es: "Ej: Que el comprador obtenga autorización de remodelación por parte del Consejo de Administración...",
+    en: "E.g.: That the buyer obtains remodeling authorization from the Condo Board...",
+    fr: "Ex: Que l'acheteur obtienne l'autorisation de rénovation du Conseil d'Administration..."
+  };
+  const labels = {
+    es: "Texto en español",
+    en: "Text in English", 
+    fr: "Texte en français"
+  };
+  
+  // Traducir usando Google Translate API (gratuita)
+  const traducir = async () => {
+    if (!textoActual.trim()) return;
+    setTraduciendo(true);
+    
+    try {
+      // Determinar idiomas destino
+      const sourceLang = uiLang === 'es' ? 'es' : uiLang === 'fr' ? 'fr' : 'en';
+      const targetLangs = ['es', 'en', 'fr'].filter(l => l !== sourceLang);
+      
+      for (const targetLang of targetLangs) {
+        const url = `https://translate.googleapis.com/translate_a/single?client=gtx&sl=${sourceLang}&tl=${targetLang}&dt=t&q=${encodeURIComponent(textoActual)}`;
+        const res = await fetch(url);
+        const data = await res.json();
+        const traducido = data[0].map(x => x[0]).join('');
+        
+        if (targetLang === 'es') onChangeEs(traducido);
+        else if (targetLang === 'en') onChangeEn(traducido);
+        else if (targetLang === 'fr') onChangeFr(traducido);
+      }
+    } catch (err) {
+      console.error('Error traduciendo:', err);
+    } finally {
+      setTraduciendo(false);
+    }
+  };
+  
+  const btnLabel = {
+    es: traduciendo ? "Traduciendo..." : "🌐 Traducir a EN/FR",
+    en: traduciendo ? "Translating..." : "🌐 Translate to ES/FR",
+    fr: traduciendo ? "Traduction..." : "🌐 Traduire en ES/EN"
+  };
+
+  return (
+    <div className="px-3 pb-3 pt-2 border-t" style={{borderColor:"var(--og-border)",background:"var(--og-surface)"}}>
+      <div className="space-y-2">
+        <label className="text-xs font-medium block" style={{color:"var(--og-primary)"}}>{labels[uiLang]}</label>
+        <textarea 
+          value={textoActual} 
+          onChange={e => { e.stopPropagation(); onChangeActual(e.target.value); }}
+          onClick={e => e.stopPropagation()}
+          placeholder={placeholders[uiLang]}
+          rows={4}
+          className="w-full px-3 py-2 text-sm border rounded-lg resize-y bg-white" 
+          style={{borderColor:"var(--og-border)",color:"var(--og-primary)"}}
+        />
+        <button
+          onClick={e => { e.stopPropagation(); traducir(); }}
+          disabled={traduciendo || !textoActual.trim()}
+          className="w-full px-3 py-2 text-sm font-medium rounded-lg transition-all disabled:opacity-50"
+          style={{background:"var(--og-accent)",color:"white"}}
+        >
+          {btnLabel[uiLang]}
+        </button>
+        {/* Mostrar otros idiomas si tienen contenido */}
+        {uiLang !== 'es' && textoEs && (
+          <div className="text-xs p-2 rounded" style={{background:"rgba(0,0,0,0.05)"}}>
+            <span className="font-medium">ES:</span> {textoEs.substring(0, 100)}{textoEs.length > 100 ? '...' : ''}
+          </div>
+        )}
+        {uiLang !== 'en' && textoEn && (
+          <div className="text-xs p-2 rounded" style={{background:"rgba(0,0,0,0.05)"}}>
+            <span className="font-medium">EN:</span> {textoEn.substring(0, 100)}{textoEn.length > 100 ? '...' : ''}
+          </div>
+        )}
+        {uiLang !== 'fr' && textoFr && (
+          <div className="text-xs p-2 rounded" style={{background:"rgba(0,0,0,0.05)"}}>
+            <span className="font-medium">FR:</span> {textoFr.substring(0, 100)}{textoFr.length > 100 ? '...' : ''}
+          </div>
+        )}
+      </div>
+    </div>
+  );
+}
+
 function PartePanel({ data, pid, label, upParte, upPersona, addPersona, rmPersona, t }) {
   const p = data.partes[pid];
   return (
@@ -1415,34 +1508,16 @@ export default function OfertaGenPage() {
                   {data.bloques.condicion_libre && <span className="text-xs" style={{color:"var(--og-accent)"}}>▼</span>}
                 </div>
                 {data.bloques.condicion_libre && (
-                  <div className="px-3 pb-3 pt-1 border-t" style={{borderColor:"var(--og-border)",background:"rgba(255,255,255,0.5)"}}>
-                    <div className="space-y-2">
-                      <div>
-                        <label className="text-xs" style={{color:"var(--og-secondary)"}}>{t.condiciones?.texto_es || "Texto en español"}</label>
-                        <textarea 
-                          value={data.campos.condicion_libre?.texto_es || ""} 
-                          onChange={e => { e.stopPropagation(); upCampo("condicion_libre", "texto_es", e.target.value); }}
-                          onClick={e => e.stopPropagation()}
-                          placeholder="Ej: Que el comprador obtenga autorización de remodelación por parte del Consejo de Administración del Condominio dentro de los 15 días naturales siguientes a la aceptación..."
-                          rows={3}
-                          className="w-full px-2 py-1.5 text-xs border rounded resize-y" 
-                          style={{borderColor:"var(--og-border)"}}
-                        />
-                      </div>
-                      <div>
-                        <label className="text-xs" style={{color:"var(--og-secondary)"}}>{t.condiciones?.texto_en || "Text in English"}</label>
-                        <textarea 
-                          value={data.campos.condicion_libre?.texto_en || ""} 
-                          onChange={e => { e.stopPropagation(); upCampo("condicion_libre", "texto_en", e.target.value); }}
-                          onClick={e => e.stopPropagation()}
-                          placeholder="E.g.: That the buyer obtains remodeling authorization from the Condo Board within 15 calendar days following acceptance..."
-                          rows={3}
-                          className="w-full px-2 py-1.5 text-xs border rounded resize-y" 
-                          style={{borderColor:"var(--og-border)"}}
-                        />
-                      </div>
-                    </div>
-                  </div>
+                  <CondicionLibrePanel 
+                    uiLang={idiomaSecundario}
+                    textoEs={data.campos.condicion_libre?.texto_es || ""}
+                    textoEn={data.campos.condicion_libre?.texto_en || ""}
+                    textoFr={data.campos.condicion_libre?.texto_fr || ""}
+                    onChangeEs={v => upCampo("condicion_libre", "texto_es", v)}
+                    onChangeEn={v => upCampo("condicion_libre", "texto_en", v)}
+                    onChangeFr={v => upCampo("condicion_libre", "texto_fr", v)}
+                    t={t.condiciones}
+                  />
                 )}
               </div>
             </div>
