@@ -83,34 +83,59 @@ function CondicionItem({ id, label, sub, checked, onChange, plazos, onPlazoChang
         {checked && <span className="text-xs" style={{color:"var(--og-accent)"}}>▼</span>}
       </div>
       {checked && plazos && (
-        <div className="px-3 pb-3 pt-1 border-t" style={{borderColor:"var(--og-border)",background:"rgba(255,255,255,0.5)"}}>
-          <div className="grid grid-cols-1 gap-2">
-            {plazos.map((plazo, idx) => (
-              <div key={idx} className="flex items-center gap-2 flex-wrap">
-                <span className="text-xs" style={{color:"var(--og-secondary)"}}>{plazo.label}:</span>
-                <input 
-                  type="number" 
-                  min="1" 
-                  max="90"
-                  value={plazo.dias} 
-                  onChange={e => onPlazoChange(plazo.campo + '_dias', parseInt(e.target.value) || plazo.default)}
-                  onClick={e => e.stopPropagation()}
-                  className="w-12 px-2 py-1 text-xs border rounded text-center" 
-                  style={{borderColor:"var(--og-border)"}}
-                />
-                <span className="text-xs" style={{color:"var(--og-secondary)"}}>días</span>
-                <select 
-                  value={plazo.tipo} 
-                  onChange={e => { e.stopPropagation(); onPlazoChange(plazo.campo + '_tipo', e.target.value); }}
-                  onClick={e => e.stopPropagation()}
-                  className="px-2 py-1 text-xs border rounded" 
-                  style={{borderColor:"var(--og-border)"}}
-                >
-                  <option value="naturales">{t?.naturales || 'naturales'}</option>
-                  <option value="habiles">{t?.habiles || 'hábiles'}</option>
-                </select>
-              </div>
-            ))}
+        <div className="px-3 pb-3 pt-2 border-t" style={{borderColor:"var(--og-border)",background:"var(--og-surface)"}}>
+          <div className="space-y-3">
+            {plazos.map((plazo, idx) => {
+              const diasValue = plazo.dias;
+              const isOtro = diasValue > 10;
+              return (
+                <div key={idx} className="space-y-1">
+                  <label className="text-xs font-medium block" style={{color:"var(--og-primary)"}}>{plazo.label}</label>
+                  <div className="flex items-center gap-2">
+                    <select 
+                      value={isOtro ? 'otro' : diasValue} 
+                      onChange={e => {
+                        e.stopPropagation();
+                        const val = e.target.value;
+                        if (val !== 'otro') {
+                          onPlazoChange(plazo.campo + '_dias', parseInt(val));
+                        }
+                      }}
+                      onClick={e => e.stopPropagation()}
+                      className="flex-1 px-3 py-2 text-sm border rounded-lg bg-white"
+                      style={{borderColor:"var(--og-border)",color:"var(--og-primary)"}}
+                    >
+                      {[1,2,3,4,5,6,7,8,9,10].map(n => (
+                        <option key={n} value={n}>{n} {n === 1 ? 'día' : 'días'}</option>
+                      ))}
+                      <option value="otro">Otro...</option>
+                    </select>
+                    {isOtro && (
+                      <input 
+                        type="number" 
+                        min="11" 
+                        max="90"
+                        value={diasValue} 
+                        onChange={e => { e.stopPropagation(); onPlazoChange(plazo.campo + '_dias', parseInt(e.target.value) || plazo.default); }}
+                        onClick={e => e.stopPropagation()}
+                        className="w-16 px-2 py-2 text-sm border rounded-lg text-center bg-white" 
+                        style={{borderColor:"var(--og-border)",color:"var(--og-primary)"}}
+                      />
+                    )}
+                    <select 
+                      value={plazo.tipo} 
+                      onChange={e => { e.stopPropagation(); onPlazoChange(plazo.campo + '_tipo', e.target.value); }}
+                      onClick={e => e.stopPropagation()}
+                      className="px-3 py-2 text-sm border rounded-lg bg-white"
+                      style={{borderColor:"var(--og-border)",color:"var(--og-primary)"}}
+                    >
+                      <option value="naturales">{t?.naturales || 'naturales'}</option>
+                      <option value="habiles">{t?.habiles || 'hábiles'}</option>
+                    </select>
+                  </div>
+                </div>
+              );
+            })}
           </div>
         </div>
       )}
