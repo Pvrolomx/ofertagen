@@ -743,19 +743,44 @@ const PLANTILLA_OFERTA_COMPRA = {
       }),
     },
 
-    // ---- SUB-BLOQUE 15B: DOCUMENTACIÓN DE FIDEICOMISO ----
+    // ---- SUB-BLOQUE 15B: DOCUMENTACIÓN (ESCRITURA O FIDEICOMISO) ----
     {
       id: 'doc_fideicomiso',
       condicional: true,
       default: true,
       despues_de: 'inspeccion',
       sub_clausula: 'B',
-      etiqueta: 'Entrega de documentación del fideicomiso',
-      etiqueta_en: 'Trust documentation delivery',
-      render: (ctx) => ({
-        es: `${ctx._inciso}) Que ${ctx.propietario.referencia} envíe a ${ctx.ofertante.referencia_negrita} copia completa de EL FIDEICOMISO original a que hace referencia el punto 3 de la presente oferta, así como copia simple de las dos últimas actas de asambleas del condominio y sus estados financieros, dentro de los ${ctx.doc_fideicomiso?.dias_entregar_letras || 'cinco'} (${ctx.doc_fideicomiso?.dias_entregar || 5}) días ${ctx.doc_fideicomiso?.tipo_entregar?.es || 'hábiles'} siguientes a la aceptación de la presente oferta. ${ctx.ofertante.referencia} tendrá ${ctx.doc_fideicomiso?.dias_revisar_letras || 'diez'} (${ctx.doc_fideicomiso?.dias_revisar || 10}) días ${ctx.doc_fideicomiso?.tipo_revisar?.es || 'naturales'} adicionales para revisar la documentación. En caso de identificar condiciones inaceptables, la oferta quedará sin efecto y el depósito será reembolsado íntegramente a ${ctx.ofertante.referencia}.`,
-        en: `${ctx._inciso}) That ${ctx.propietario.en.referencia} send ${ctx.ofertante.en.referencia_negrita} a complete copy of THE ORIGINAL TRUST referred to in point 3 of this offer, as well as a simple copy of the last two condominium assembly minutes and their financial statements, within ${ctx.doc_fideicomiso?.dias_entregar_letras_en || 'five'} (${ctx.doc_fideicomiso?.dias_entregar || 5}) ${ctx.doc_fideicomiso?.tipo_entregar?.en || 'business'} days following acceptance of this offer. ${ctx.ofertante.en.referencia} shall have ${ctx.doc_fideicomiso?.dias_revisar_letras_en || 'ten'} (${ctx.doc_fideicomiso?.dias_revisar || 10}) additional ${ctx.doc_fideicomiso?.tipo_revisar?.en || 'calendar'} days to review the documentation. If unacceptable conditions are identified, the offer shall be null and void and the deposit shall be refunded in full to ${ctx.ofertante.en.referencia}.`,
-      }),
+      etiqueta: 'Entrega de documentación (escritura/fideicomiso)',
+      etiqueta_en: 'Documentation delivery (deed/trust)',
+      render: (ctx) => {
+        // Si el vendedor es mexicano, pedir ESCRITURA; si es extranjero, pedir FIDEICOMISO
+        const esMexicano = ctx.propietario?.esMexicano;
+        const diasEnt = ctx.doc_fideicomiso?.dias_entregar_letras || 'cinco';
+        const diasEntNum = ctx.doc_fideicomiso?.dias_entregar || 5;
+        const tipoEnt = ctx.doc_fideicomiso?.tipo_entregar?.es || 'hábiles';
+        const diasRev = ctx.doc_fideicomiso?.dias_revisar_letras || 'diez';
+        const diasRevNum = ctx.doc_fideicomiso?.dias_revisar || 10;
+        const tipoRev = ctx.doc_fideicomiso?.tipo_revisar?.es || 'naturales';
+        
+        const diasEntEn = ctx.doc_fideicomiso?.dias_entregar_letras_en || 'five';
+        const tipoEntEn = ctx.doc_fideicomiso?.tipo_entregar?.en || 'business';
+        const diasRevEn = ctx.doc_fideicomiso?.dias_revisar_letras_en || 'ten';
+        const tipoRevEn = ctx.doc_fideicomiso?.tipo_revisar?.en || 'calendar';
+        
+        if (esMexicano) {
+          // Vendedor MEXICANO → pedir ESCRITURA
+          return {
+            es: `${ctx._inciso}) Que ${ctx.propietario.referencia} envíe a ${ctx.ofertante.referencia_negrita} copia completa de LA ESCRITURA PÚBLICA que ampara su propiedad sobre EL INMUEBLE a que hace referencia el punto 3 de la presente oferta, así como copia simple de las dos últimas actas de asambleas del condominio y sus estados financieros, dentro de los ${diasEnt} (${diasEntNum}) días ${tipoEnt} siguientes a la aceptación de la presente oferta. ${ctx.ofertante.referencia} tendrá ${diasRev} (${diasRevNum}) días ${tipoRev} adicionales para revisar la documentación. En caso de identificar condiciones inaceptables, la oferta quedará sin efecto y el depósito será reembolsado íntegramente a ${ctx.ofertante.referencia}.`,
+            en: `${ctx._inciso}) That ${ctx.propietario.en.referencia} send ${ctx.ofertante.en.referencia_negrita} a complete copy of THE PUBLIC DEED evidencing ownership of THE PROPERTY referred to in point 3 of this offer, as well as a simple copy of the last two condominium assembly minutes and their financial statements, within ${diasEntEn} (${diasEntNum}) ${tipoEntEn} days following acceptance of this offer. ${ctx.ofertante.en.referencia} shall have ${diasRevEn} (${diasRevNum}) additional ${tipoRevEn} days to review the documentation. If unacceptable conditions are identified, the offer shall be null and void and the deposit shall be refunded in full to ${ctx.ofertante.en.referencia}.`,
+          };
+        } else {
+          // Vendedor EXTRANJERO → pedir FIDEICOMISO
+          return {
+            es: `${ctx._inciso}) Que ${ctx.propietario.referencia} envíe a ${ctx.ofertante.referencia_negrita} copia completa de EL FIDEICOMISO original a que hace referencia el punto 3 de la presente oferta, así como copia simple de las dos últimas actas de asambleas del condominio y sus estados financieros, dentro de los ${diasEnt} (${diasEntNum}) días ${tipoEnt} siguientes a la aceptación de la presente oferta. ${ctx.ofertante.referencia} tendrá ${diasRev} (${diasRevNum}) días ${tipoRev} adicionales para revisar la documentación. En caso de identificar condiciones inaceptables, la oferta quedará sin efecto y el depósito será reembolsado íntegramente a ${ctx.ofertante.referencia}.`,
+            en: `${ctx._inciso}) That ${ctx.propietario.en.referencia} send ${ctx.ofertante.en.referencia_negrita} a complete copy of THE ORIGINAL TRUST referred to in point 3 of this offer, as well as a simple copy of the last two condominium assembly minutes and their financial statements, within ${diasEntEn} (${diasEntNum}) ${tipoEntEn} days following acceptance of this offer. ${ctx.ofertante.en.referencia} shall have ${diasRevEn} (${diasRevNum}) additional ${tipoRevEn} days to review the documentation. If unacceptable conditions are identified, the offer shall be null and void and the deposit shall be refunded in full to ${ctx.ofertante.en.referencia}.`,
+          };
+        }
+      },
     },
 
     // ---- SUB-BLOQUE: SUJETO A FINANCIAMIENTO ----

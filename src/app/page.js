@@ -202,7 +202,7 @@ const UI = {
       plazo_evaluar: "Plazo para evaluar",
       plazo_aprobacion: "Plazo para aprobación",
       inspeccion: { label: "Inspección física del inmueble", sub: "Inspección profesional y revisión del reporte" },
-      doc_fideicomiso: { label: "Documentación del fideicomiso", sub: "Escritura, régimen de condominio, actas de asamblea" },
+      doc_fideicomiso: { label: "Documentación de propiedad", sub: "Escritura o fideicomiso, régimen de condominio, actas de asamblea" },
       financiamiento: { label: "Sujeto a financiamiento", sub: "Aprobación de crédito hipotecario" },
       inventario: { label: "Inventario detallado", sub: "Lista de muebles y electrodomésticos incluidos" },
       arrendamientos: { label: "Arrendamientos vigentes", sub: "Contratos de renta existentes" },
@@ -313,7 +313,7 @@ const UI = {
       plazo_evaluar: "Plazo para evaluar",
       plazo_aprobacion: "Plazo para aprobación",
       inspeccion: { label: "Inspección física del inmueble", sub: "Inspección profesional y revisión del reporte" },
-      doc_fideicomiso: { label: "Documentación del fideicomiso", sub: "Escritura, régimen de condominio, actas de asamblea" },
+      doc_fideicomiso: { label: "Documentación de propiedad", sub: "Escritura o fideicomiso, régimen de condominio, actas de asamblea" },
       financiamiento: { label: "Sujeto a financiamiento", sub: "Aprobación de crédito hipotecario" },
       inventario: { label: "Inventario detallado", sub: "Lista de muebles y electrodomésticos incluidos" },
       arrendamientos: { label: "Arrendamientos vigentes", sub: "Contratos de renta existentes" },
@@ -405,7 +405,7 @@ const UI = {
       plazo_evaluar: "Deadline to evaluate",
       plazo_aprobacion: "Deadline for approval",
       inspeccion: { label: "Physical property inspection", sub: "Professional inspection and report review" },
-      doc_fideicomiso: { label: "Trust documentation", sub: "Deed, condo regime, assembly minutes" },
+      doc_fideicomiso: { label: "Property documentation", sub: "Deed or trust, condo regime, assembly minutes" },
       financiamiento: { label: "Subject to financing", sub: "Mortgage approval" },
       inventario: { label: "Detailed inventory", sub: "List of included furniture and appliances" },
       arrendamientos: { label: "Existing leases", sub: "Current rental agreements" },
@@ -505,7 +505,7 @@ const UI = {
       plazo_evaluar: "Délai pour évaluer",
       plazo_aprobacion: "Délai pour approbation",
       inspeccion: { label: "Inspection physique du bien", sub: "Inspection professionnelle et révision du rapport" },
-      doc_fideicomiso: { label: "Documentation du fidéicommis", sub: "Acte, régime de copropriété, procès-verbaux" },
+      doc_fideicomiso: { label: "Documentation de propriété", sub: "Acte ou fidéicommis, régime de copropriété, procès-verbaux" },
       financiamiento: { label: "Sous réserve de financement", sub: "Approbation hypothécaire" },
       inventario: { label: "Inventaire détaillé", sub: "Liste des meubles et appareils inclus" },
       arrendamientos: { label: "Baux en cours", sub: "Contrats de location existants" },
@@ -1277,7 +1277,7 @@ export default function OfertaGenPage() {
               />
               <CondicionItem 
                 id="doc_fideicomiso"
-                label={t.condiciones?.doc_fideicomiso?.label || "Documentación del fideicomiso"}
+                label={t.condiciones?.doc_fideicomiso?.label || "Documentación de propiedad"}
                 sub={t.condiciones?.doc_fideicomiso?.sub || "Escritura, régimen de condominio, actas de asamblea"}
                 checked={data.bloques.doc_fideicomiso}
                 onChange={() => togBloque("doc_fideicomiso")}
