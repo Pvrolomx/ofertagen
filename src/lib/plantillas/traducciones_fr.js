@@ -15,6 +15,7 @@ export const TITULOS_FR = {
   'cl_escrituracion': 'FRAIS DE NOTAIRE',
   'cl_formalizacion': 'DATE DE FORMALISATION',
   'cl_vigencia': 'DURÉE DE VALIDITÉ',
+  'cl_condiciones': 'CONDITIONS INDISPENSABLES À LA VALIDITÉ DE LA PRÉSENTE OFFRE',
   'cl_incumplimiento': 'INEXÉCUTION ET PÉNALITÉ',
   'cl_jurisdiccion': 'JURIDICTION',
   'cl_email': 'COMMUNICATIONS ÉLECTRONIQUES',
@@ -65,6 +66,24 @@ export const BLOQUES_FR = {
   // ---- ESCROW ----
   'cl_escrow': (ctx) =>
     `Les parties désignent ${ctx.escrow.empresa_escrow} comme dépositaire pour recevoir et administrer les fonds selon le contrat de dépôt en garantie (Escrow Agreement) qui sera signé à cet effet. Les instructions de virement seront fournies par la société de dépôt directement à ${ctx.ofertante.fr?.referencia || "L'OFFRANT"}.`,
+
+  // ---- CONDICIONES INDISPENSABLES ----
+  'cl_condiciones': (ctx) => {
+    const condicionesActivas = [
+      ctx.bloques.inspeccion,
+      ctx.bloques.doc_fideicomiso,
+      ctx.bloques.financiamiento,
+      ctx.bloques.inventario,
+      ctx.bloques.arrendamientos,
+      ctx.bloques.zona_federal,
+      ctx.bloques.litigios_pendientes,
+      ctx.bloques.empleados_condicion,
+    ].filter(Boolean).length;
+    
+    return condicionesActivas > 1
+      ? `La présente offre, pour sa validité, est soumise aux conditions suivantes:`
+      : `La présente offre, pour sa validité, est soumise à la condition suivante:`;
+  },
 
   // ---- DOC FIDEICOMISO ----
   'doc_fideicomiso': (ctx) =>

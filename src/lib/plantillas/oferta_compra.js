@@ -702,10 +702,29 @@ const PLANTILLA_OFERTA_COMPRA = {
       numero: 15,
       siempre: true,
       titulo: { es: 'CONDICIONES INDISPENSABLES PARA LA VALIDEZ DE LA PRESENTE OFERTA', en: 'INDISPENSABLE CONDITIONS FOR THE VALIDITY OF THE PRESENT OFFER' },
-      render: (ctx) => ({
-        es: `Esta oferta, para su validez, está sujeta a la siguiente condición:`,
-        en: `This offer, for its validity, is subject to the following condition:`,
-      }),
+      render: (ctx) => {
+        // Contar cuántas condiciones están activas
+        const condicionesActivas = [
+          ctx.bloques.inspeccion,
+          ctx.bloques.doc_fideicomiso,
+          ctx.bloques.financiamiento,
+          ctx.bloques.inventario,
+          ctx.bloques.arrendamientos,
+          ctx.bloques.zona_federal,
+          ctx.bloques.litigios_pendientes,
+          ctx.bloques.empleados_condicion,
+        ].filter(Boolean).length;
+        
+        const plural = condicionesActivas > 1;
+        return {
+          es: plural 
+            ? `Esta oferta, para su validez, está sujeta a las siguientes condiciones:`
+            : `Esta oferta, para su validez, está sujeta a la siguiente condición:`,
+          en: plural
+            ? `This offer, for its validity, is subject to the following conditions:`
+            : `This offer, for its validity, is subject to the following condition:`,
+        };
+      },
     },
 
     // ---- SUB-BLOQUE 15A: INSPECCIÓN ----
