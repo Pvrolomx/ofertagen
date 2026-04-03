@@ -262,7 +262,16 @@ export function ensamblarContexto(plantilla, datos) {
 
   ctx.escrow = { ...ctx.escrow, ...(datos.campos?.escrow || {}) };
   ctx.comision = datos.campos?.comision || {};
-  ctx.jurisdiccion = datos.campos?.jurisdiccion || {};
+  
+  // Jurisdicción: manejar caso "otro"
+  const jurisdiccionData = datos.campos?.jurisdiccion || {};
+  ctx.jurisdiccion = {
+    ...jurisdiccionData,
+    ciudad_jurisdiccion: jurisdiccionData.ciudad_jurisdiccion === 'otro' 
+      ? (jurisdiccionData.ciudad_jurisdiccion_custom || 'Bucerías, Nayarit, México')
+      : (jurisdiccionData.ciudad_jurisdiccion || 'Bucerías, Nayarit, México'),
+  };
+  
   ctx.coordinador = datos.campos?.coordinador || {};
 
   // Inspección con letras

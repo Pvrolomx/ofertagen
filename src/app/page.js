@@ -179,8 +179,8 @@ const UI = {
       // Fechas
       fecha_presentacion: "Fecha presentación", ciudad_presentacion: "Ciudad",
       fecha_vigencia: "Fecha de vencimiento", hora_vigencia: "Hora de vencimiento",
-      formalizacion_es: "Formalización (ES)", formalizacion_en: "Formalización (EN)",
-      extension_es: "Extensión (ES)", extension_en: "Extensión (EN)",
+      formalizacion: "Fecha de formalización",
+      extension: "Extensión (si aplica)",
       // Notario
       nombre_notario: "Nombre del notario", no_notaria_dest: "No. notaría",
       ciudad_notaria: "Ciudad",
@@ -189,6 +189,7 @@ const UI = {
       agencia2: "Agencia 2", pct_ag2: "% Ag. 2",
       // Penalidad
       pct_penalidad: "% penalidad", jurisdiccion: "Jurisdicción",
+      jurisdiccion_otro: "Especificar jurisdicción",
       pct_parte_afectada: "% parte afectada", pct_agencia: "% agencia",
       // Coordinador
       nombre_coord: "Nombre", empresa_coord: "Empresa",
@@ -261,13 +262,14 @@ const UI = {
       honorarios_escrow: "Honorarios escrow (USD)",
       fecha_presentacion: "Fecha presentación", ciudad_presentacion: "Ciudad",
       fecha_vigencia: "Fecha de vencimiento", hora_vigencia: "Hora de vencimiento",
-      formalizacion_es: "Formalización (ES)", formalizacion_en: "Formalización (EN)",
-      extension_es: "Extensión (ES)", extension_en: "Extensión (EN)",
+      formalizacion: "Fecha de formalización",
+      extension: "Extensión (si aplica)",
       nombre_notario: "Nombre del notario", no_notaria_dest: "No. notaría",
       ciudad_notaria: "Ciudad",
       pct_total: "% total", agencia1: "Agencia 1", pct_ag1: "% Ag. 1",
       agencia2: "Agencia 2", pct_ag2: "% Ag. 2",
       pct_penalidad: "% penalidad", jurisdiccion: "Jurisdicción",
+      jurisdiccion_otro: "Especificar jurisdicción",
       pct_parte_afectada: "% parte afectada", pct_agencia: "% agencia",
       nombre_coord: "Nombre", empresa_coord: "Empresa",
       nombre_lender: "Nombre del prestamista / lender",
@@ -335,13 +337,14 @@ const UI = {
       honorarios_escrow: "Escrow fees (USD)",
       fecha_presentacion: "Presentation date", ciudad_presentacion: "City",
       fecha_vigencia: "Expiration date", hora_vigencia: "Expiration time",
-      formalizacion_es: "Closing date (ES)", formalizacion_en: "Closing date (EN)",
-      extension_es: "Extension (ES)", extension_en: "Extension (EN)",
+      formalizacion: "Closing date",
+      extension: "Extension (if applicable)",
       nombre_notario: "Notary name", no_notaria_dest: "Notary no.",
       ciudad_notaria: "City",
       pct_total: "Total %", agencia1: "Agency 1", pct_ag1: "% Ag. 1",
       agencia2: "Agency 2", pct_ag2: "% Ag. 2",
       pct_penalidad: "Penalty %", jurisdiccion: "Jurisdiction",
+      jurisdiccion_otro: "Specify jurisdiction",
       pct_parte_afectada: "% injured party", pct_agencia: "% agency",
       nombre_coord: "Name", empresa_coord: "Company",
       nombre_lender: "Lender name",
@@ -414,13 +417,14 @@ const UI = {
       honorarios_escrow: "Honoraires séquestre (USD)",
       fecha_presentacion: "Date de présentation", ciudad_presentacion: "Ville",
       fecha_vigencia: "Date d'expiration", hora_vigencia: "Heure d'expiration",
-      formalizacion_es: "Date de clôture (ES)", formalizacion_en: "Date de clôture (EN)",
-      extension_es: "Extension (ES)", extension_en: "Extension (EN)",
+      formalizacion: "Date de clôture",
+      extension: "Extension (le cas échéant)",
       nombre_notario: "Nom du notaire", no_notaria_dest: "No. étude",
       ciudad_notaria: "Ville",
       pct_total: "% total", agencia1: "Agence 1", pct_ag1: "% Ag. 1",
       agencia2: "Agence 2", pct_ag2: "% Ag. 2",
       pct_penalidad: "% pénalité", jurisdiccion: "Juridiction",
+      jurisdiccion_otro: "Préciser la juridiction",
       pct_parte_afectada: "% partie lésée", pct_agencia: "% agence",
       nombre_coord: "Nom", empresa_coord: "Entreprise",
       nombre_lender: "Nom du prêteur",
@@ -997,10 +1001,8 @@ export default function OfertaGenPage() {
             <Input label={t.fields.ciudad} value={data.campos.fechas?.ciudad_presentacion} onChange={v=>upCampo("fechas","ciudad_presentacion",v)} required />
             <Input label={t.fields.fecha_vigencia} value={data.campos.fechas?.fecha_vigencia} onChange={v=>upCampo("fechas","fecha_vigencia",v)} type="date" required />
             <Input label={t.fields.hora_vigencia} value={data.campos.fechas?.hora_vigencia||"medianoche"} onChange={v=>upCampo("fechas","hora_vigencia",v)} placeholder="medianoche, 17:00 horas..." />
-            <Input label={t.fields.formalizacion_es} value={data.campos.fechas?.fecha_formalizacion} onChange={v=>upCampo("fechas","fecha_formalizacion",v)} wide />
-            <Input label={t.fields.formalizacion_en} value={data.campos.fechas?.fecha_formalizacion_en} onChange={v=>upCampo("fechas","fecha_formalizacion_en",v)} wide />
-            <Input label={t.fields.extension_es} value={data.campos.fechas?.fecha_extension} onChange={v=>upCampo("fechas","fecha_extension",v)} />
-            <Input label={t.fields.extension_en} value={data.campos.fechas?.fecha_extension_en} onChange={v=>upCampo("fechas","fecha_extension_en",v)} />
+            <Input label={t.fields.formalizacion} value={data.campos.fechas?.fecha_formalizacion} onChange={v=>upCampo("fechas","fecha_formalizacion",v)} wide placeholder="cualquier día hábil dentro de las primeras dos semanas del mes de Mayo de 2023" />
+            <Input label={t.fields.extension} value={data.campos.fechas?.fecha_extension} onChange={v=>upCampo("fechas","fecha_extension",v)} wide placeholder="las primeras dos semanas del mes de Junio 2023" />
           </Section>
           <Section title={t.sections.notario}>
             <div className="flex flex-col gap-1 col-span-2">
@@ -1076,7 +1078,18 @@ export default function OfertaGenPage() {
           </Section>
           <Section title={t.sections.penalidad}>
             <Input label={t.fields.pct_penalidad} value={data.campos.penalidad?.porcentaje_penalidad} onChange={v=>upCampo("penalidad","porcentaje_penalidad",v)} />
-            <Input label={t.fields.jurisdiccion} value={data.campos.jurisdiccion?.ciudad_jurisdiccion} onChange={v=>upCampo("jurisdiccion","ciudad_jurisdiccion",v)} />
+            <div className="flex flex-col gap-1">
+              <label className="text-xs font-medium" style={{color:"var(--og-secondary)"}}>{t.fields.jurisdiccion}</label>
+              <select value={data.campos.jurisdiccion?.ciudad_jurisdiccion||""} onChange={e=>upCampo("jurisdiccion","ciudad_jurisdiccion",e.target.value)} className="border border-gray-200 rounded-lg px-3 py-2 text-sm bg-white">
+                <option value="">— Seleccionar —</option>
+                <option value="Puerto Vallarta, Jalisco, México">Puerto Vallarta, Jalisco</option>
+                <option value="Bucerías, Nayarit, México">Bucerías, Nayarit</option>
+                <option value="otro">Otro</option>
+              </select>
+            </div>
+            {data.campos.jurisdiccion?.ciudad_jurisdiccion === "otro" && (
+              <Input label={t.fields.jurisdiccion_otro || "Especificar jurisdicción"} value={data.campos.jurisdiccion?.ciudad_jurisdiccion_custom} onChange={v=>upCampo("jurisdiccion","ciudad_jurisdiccion_custom",v)} placeholder="Ciudad, Estado, México" />
+            )}
             <div className="col-span-2 flex items-center gap-3 p-3 rounded-lg" style={{background:"var(--og-surface)",border:"1px solid var(--og-border)"}}>
               <input type="checkbox" checked={!!data.campos.penalidad?.distribuir_agencia} onChange={e=>upCampo("penalidad","distribuir_agencia",e.target.checked)} className="rounded" />
               <div>
