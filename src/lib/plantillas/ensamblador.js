@@ -101,6 +101,10 @@ export function ensamblarContexto(plantilla, datos) {
     // Comparecencia en inglés (simplificada)
     ctxParte.comparecencia_en = buildComparecenciaEn(ctxParte, datoParte);
     ctxParte.quien_en = 'who';
+    
+    // Helper: ¿es mexicano? (para lógica de fideicomiso)
+    const nacLower = (datoParte.nacionalidad || '').toLowerCase().trim();
+    ctxParte.esMexicano = nacLower === 'mexicano' || nacLower === 'mexicana' || nacLower === 'mexican';
 
     ctx[parteDef.id] = ctxParte;
   }

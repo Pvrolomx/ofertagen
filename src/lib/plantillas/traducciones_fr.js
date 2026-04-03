@@ -50,8 +50,17 @@ export const BLOQUES_FR = {
     `Les parties conviennent expressément que la présente opération est réalisée "AD CORPUS" (par corps certain), ce qui signifie que les surfaces et mesures indiquées sont approximatives et qu'aucune différence en plus ou en moins ne donnera lieu à un ajustement du prix convenu.\n\nDe même, l'IMMEUBLE est vendu dans son état actuel "AS-IS" (tel quel), L'OFFRANT déclarant avoir inspecté l'immeuble et l'accepter avec l'usure normale correspondant à son âge et à son utilisation.`,
 
   // ---- PRECIO ----
-  'cl_precio': (ctx) =>
-    `${ctx.ofertante.fr?.referencia || "L'OFFRANT"} offre d'acheter L'IMMEUBLE pour la somme de ${ctx.precio.precio_formateado} ${ctx.precio.moneda} (${ctx.precio.precio_letras} ${ctx.precio.moneda_letras}), payable comme suit:\n\n${ctx.precio.deposito_formateado} ${ctx.precio.moneda} (${ctx.precio.deposito_letras} ${ctx.precio.moneda_letras}), qui sera déposé dans les ${ctx.precio.dias_deposito} jours suivant l'acceptation de cette offre sur le COMPTE SÉQUESTRE.\n\nLe solde de ${ctx.precio.saldo_formateado} ${ctx.precio.moneda} (${ctx.precio.saldo_letras} ${ctx.precio.moneda_letras}) sera déposé avant la DATE DE FORMALISATION sur le COMPTE SÉQUESTRE.`,
+  'cl_precio': (ctx) => {
+    const esMexicano = ctx.propietario.esMexicano;
+    const refOfertante = ctx.ofertante.fr?.referencia || "L'OFFRANT";
+    const refPropietario = ctx.propietario.fr?.referencia || 'LE PROPRIÉTAIRE';
+    
+    if (esMexicano) {
+      return `${refOfertante} offre par la présente à ${refPropietario} de conclure un Contrat de Constitution de Fidéicommis de Transfert de Propriété Irrévocable en Zone Restreinte concernant les droits de propriété sur L'IMMEUBLE décrit ci-dessus pour la somme totale de ${ctx.precio.completo}. Ce prix sera payé comme suit:`;
+    } else {
+      return `${refOfertante} offre par la présente à ${refPropietario} de conclure un Contrat de Transfert de Propriété Irrévocable concernant les droits fiduciaires sur L'IMMEUBLE décrit ci-dessus pour la somme totale de ${ctx.precio.completo}. Ce prix sera payé comme suit:`;
+    }
+  },
 
   // ---- ESCROW ----
   'cl_escrow': (ctx) =>

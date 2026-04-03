@@ -42,7 +42,7 @@ html = fetch(BASE)
 log("Site: HTTP 200 + HTML carga", len(html) > 5000, f"{len(html)} bytes")
 log("Site: Title 'OfertaGen'", "OfertaGen" in html)
 log("Site: Subtitle 'Expat Advisor MX'", "Expat Advisor MX" in html)
-log("Site: Footer 'Hecho por duendes.app 2026'", "duendes.app 2026" in html)
+log("Site: Footer 'Hecho por Colmena 2026'", "Colmena" in html and "2026" in html)
 
 # Wizard steps
 # Sprint V-b: steps son dinámicos via i18n — verificar en fuente local
@@ -50,8 +50,8 @@ _pjs_early = open(f"{REPO}/src/app/page.js", encoding="utf-8").read()
 for step in ["Partes", "Inmueble", "Operación", "Cláusulas", "Preview"]:
     log(f"Site: Step '{step}' en fuente i18n", step in _pjs_early)
 
-# Buttons
-log("Site: Botón 'Demo'", ">Demo<" in html)
+# Buttons - Demo es easter egg via loadDemo, no texto visible
+log("Site: Función loadDemo en fuente", "loadDemo" in _pjs_early)
 log("Site: Botón 'Limpiar' en fuente i18n", "t.header.limpiar" in _pjs_early)
 log("Site: Botón 'Siguiente' en fuente i18n", "t.nav.siguiente" in _pjs_early)
 

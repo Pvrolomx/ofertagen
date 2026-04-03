@@ -452,10 +452,21 @@ const PLANTILLA_OFERTA_COMPRA = {
       numero: 4,
       siempre: true,
       titulo: { es: 'PRECIO Y CONDICIONES DE PAGO', en: 'PRICE AND PAYMENT TERMS' },
-      render: (ctx) => ({
-        es: `${ctx.ofertante.referencia_negrita} por medio de la presente ofrece a ${ctx.propietario.referencia_negrita} celebrar Contrato Traslativo de Dominio Irrevocable en relación a los derechos de propiedad sobre el INMUEBLE arriba descrito en la cantidad total de ${ctx.precio.completo}. Precio este que será liquidado de la siguiente manera:`,
-        en: `${ctx.ofertante.en.referencia_negrita} herein offers to ${ctx.propietario.en.referencia_negrita} to celebrate an Irrevocable Transfer of Domain Contract with regard to the ownership rights entailed to THE PROPERTY above described in the total amount of ${ctx.precio.completo}. Said price will be paid in the following manner:`,
-      }),
+      render: (ctx) => {
+        // Si el vendedor es mexicano → el comprador extranjero necesita CONSTITUIR fideicomiso
+        // Si el vendedor es extranjero → ya tiene fideicomiso, se transfieren derechos fideicomisarios
+        const esMexicano = ctx.propietario.esMexicano;
+        
+        const textoEs = esMexicano
+          ? `${ctx.ofertante.referencia_negrita} por medio de la presente ofrece a ${ctx.propietario.referencia_negrita} celebrar Contrato de Constitución de Fideicomiso Traslativo de Dominio Irrevocable en Zona Restringida en relación a los derechos de propiedad sobre el INMUEBLE arriba descrito en la cantidad total de ${ctx.precio.completo}. Precio este que será liquidado de la siguiente manera:`
+          : `${ctx.ofertante.referencia_negrita} por medio de la presente ofrece a ${ctx.propietario.referencia_negrita} celebrar Contrato Traslativo de Dominio Irrevocable en relación a los derechos fideicomisarios sobre el INMUEBLE arriba descrito en la cantidad total de ${ctx.precio.completo}. Precio este que será liquidado de la siguiente manera:`;
+        
+        const textoEn = esMexicano
+          ? `${ctx.ofertante.en.referencia_negrita} herein offers to ${ctx.propietario.en.referencia_negrita} to celebrate an Irrevocable Trust Constitution Contract in Restricted Zone with regard to the property rights over THE PROPERTY above described in the total amount of ${ctx.precio.completo}. Said price will be paid in the following manner:`
+          : `${ctx.ofertante.en.referencia_negrita} herein offers to ${ctx.propietario.en.referencia_negrita} to celebrate an Irrevocable Transfer of Domain Contract with regard to the trust rights over THE PROPERTY above described in the total amount of ${ctx.precio.completo}. Said price will be paid in the following manner:`;
+        
+        return { es: textoEs, en: textoEn };
+      },
     },
 
     // ---- SUB-BLOQUE 4A: ESCROW ----
