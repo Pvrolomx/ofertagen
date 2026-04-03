@@ -209,6 +209,9 @@ const UI = {
       zona_federal: { label: "Zona Federal", sub: "Concesión marítima para propiedades frente al mar" },
       litigios_pendientes: { label: "Litigios pendientes", sub: "Verificación de litigios judiciales o administrativos" },
       empleados_condicion: { label: "Relaciones laborales", sub: "Verificación de empleados y litigios laborales" },
+      condicion_libre: { label: "Condición libre", sub: "Permiso de remodelación, autorización de consejo, etc." },
+      texto_es: "Texto en español",
+      texto_en: "Texto en inglés",
     },
     header: {
       cargar: "Cargar", guardar: "Guardar", limpiar: "Limpiar",
@@ -320,6 +323,9 @@ const UI = {
       zona_federal: { label: "Zona Federal", sub: "Concesión marítima para propiedades frente al mar" },
       litigios_pendientes: { label: "Litigios pendientes", sub: "Verificación de litigios judiciales o administrativos" },
       empleados_condicion: { label: "Relaciones laborales", sub: "Verificación de empleados y litigios laborales" },
+      condicion_libre: { label: "Condición libre", sub: "Permiso de remodelación, autorización de consejo, etc." },
+      texto_es: "Texto en español",
+      texto_en: "Texto en inglés",
     },
     header: { cargar: "Cargar", guardar: "Guardar", limpiar: "Limpiar" },
     preview: { title: "Vista previa bilingüe", descargar: "Descargar .docx", generando: "Generando..." },
@@ -412,6 +418,9 @@ const UI = {
       zona_federal: { label: "Federal Zone", sub: "Maritime concession for beachfront properties" },
       litigios_pendientes: { label: "Pending litigation", sub: "Verification of legal or administrative disputes" },
       empleados_condicion: { label: "Labor relations", sub: "Employee and labor dispute verification" },
+      condicion_libre: { label: "Custom condition", sub: "Remodeling permit, board authorization, etc." },
+      texto_es: "Text in Spanish",
+      texto_en: "Text in English",
     },
     header: {
       cargar: "Load", guardar: "Save", limpiar: "Clear",
@@ -512,6 +521,9 @@ const UI = {
       zona_federal: { label: "Zone fédérale", sub: "Concession maritime pour propriétés en bord de mer" },
       litigios_pendientes: { label: "Litiges en cours", sub: "Vérification des litiges juridiques ou administratifs" },
       empleados_condicion: { label: "Relations de travail", sub: "Vérification des employés et litiges du travail" },
+      condicion_libre: { label: "Condition libre", sub: "Permis de rénovation, autorisation du conseil, etc." },
+      texto_es: "Texte en espagnol",
+      texto_en: "Texte en anglais",
     },
     header: {
       cargar: "Charger", guardar: "Sauvegarder", limpiar: "Effacer",
@@ -1365,6 +1377,49 @@ export default function OfertaGenPage() {
                 onPlazoChange={(campo, valor) => upCampo("condiciones_plazos", campo, valor)}
                 t={t.condiciones}
               />
+              {/* CONDICIÓN LIBRE */}
+              <div className="rounded-xl transition-all overflow-hidden" style={{background: data.bloques.condicion_libre ? "rgba(29,107,184,0.12)" : "var(--og-surface)", border: data.bloques.condicion_libre ? "1px solid var(--og-border-hi)" : "1px solid var(--og-border)"}}>
+                <div onClick={() => togBloque("condicion_libre")} className="flex items-center gap-3 p-3 cursor-pointer">
+                  <div className="w-10 h-5 rounded-full relative transition-colors flex-shrink-0" style={{background: data.bloques.condicion_libre ? "var(--og-accent)" : "var(--og-muted)"}}>
+                    <div className={`w-4 h-4 rounded-full bg-white absolute top-0.5 transition-all ${data.bloques.condicion_libre ? "left-5" : "left-0.5"}`} />
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <div className="text-sm font-medium" style={{color:"var(--og-primary)"}}>{t.condiciones?.condicion_libre?.label || "Condición libre"}</div>
+                    <div className="text-xs text-gray-500">{t.condiciones?.condicion_libre?.sub || "Permiso de remodelación, autorización de consejo, etc."}</div>
+                  </div>
+                  {data.bloques.condicion_libre && <span className="text-xs" style={{color:"var(--og-accent)"}}>▼</span>}
+                </div>
+                {data.bloques.condicion_libre && (
+                  <div className="px-3 pb-3 pt-1 border-t" style={{borderColor:"var(--og-border)",background:"rgba(255,255,255,0.5)"}}>
+                    <div className="space-y-2">
+                      <div>
+                        <label className="text-xs" style={{color:"var(--og-secondary)"}}>{t.condiciones?.texto_es || "Texto en español"}</label>
+                        <textarea 
+                          value={data.campos.condicion_libre?.texto_es || ""} 
+                          onChange={e => { e.stopPropagation(); upCampo("condicion_libre", "texto_es", e.target.value); }}
+                          onClick={e => e.stopPropagation()}
+                          placeholder="Ej: Que el comprador obtenga autorización de remodelación por parte del Consejo de Administración del Condominio dentro de los 15 días naturales siguientes a la aceptación..."
+                          rows={3}
+                          className="w-full px-2 py-1.5 text-xs border rounded resize-y" 
+                          style={{borderColor:"var(--og-border)"}}
+                        />
+                      </div>
+                      <div>
+                        <label className="text-xs" style={{color:"var(--og-secondary)"}}>{t.condiciones?.texto_en || "Text in English"}</label>
+                        <textarea 
+                          value={data.campos.condicion_libre?.texto_en || ""} 
+                          onChange={e => { e.stopPropagation(); upCampo("condicion_libre", "texto_en", e.target.value); }}
+                          onClick={e => e.stopPropagation()}
+                          placeholder="E.g.: That the buyer obtains remodeling authorization from the Condo Board within 15 calendar days following acceptance..."
+                          rows={3}
+                          className="w-full px-2 py-1.5 text-xs border rounded resize-y" 
+                          style={{borderColor:"var(--og-border)"}}
+                        />
+                      </div>
+                    </div>
+                  </div>
+                )}
+              </div>
             </div>
           </div>
 

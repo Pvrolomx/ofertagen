@@ -403,6 +403,9 @@ export function ensamblarContexto(plantilla, datos) {
     tipo_evaluar: tipoDias(empEvTipo),
   };
 
+  // Condición libre (texto personalizado)
+  ctx.condicion_libre = datos.campos?.condicion_libre || {};
+
   // Confidencialidad
   ctx.confidencialidad = datos.campos?.confidencialidad || { meses: 6 };
 

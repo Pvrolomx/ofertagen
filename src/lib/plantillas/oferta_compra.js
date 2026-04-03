@@ -713,6 +713,7 @@ const PLANTILLA_OFERTA_COMPRA = {
           ctx.bloques.zona_federal,
           ctx.bloques.litigios_pendientes,
           ctx.bloques.empleados_condicion,
+          ctx.bloques.condicion_libre,
         ].filter(Boolean).length;
         
         const plural = condicionesActivas > 1;
@@ -886,6 +887,25 @@ const PLANTILLA_OFERTA_COMPRA = {
         es: `${ctx._inciso}) Que ${ctx.propietario.referencia} informe a ${ctx.ofertante.referencia}, por escrito, de cualquier relación laboral vigente, así como de cualquier litigio, demanda o procedimiento de naturaleza laboral, actual o anterior, que se relacione con EL INMUEBLE o con empleados que presten o hayan prestado servicios en el mismo, proporcionando la documentación relevante dentro de los ${ctx.empleados?.dias_informar_letras || 'tres'} (${ctx.empleados?.dias_informar || 3}) días ${ctx.empleados?.tipo_informar?.es || 'hábiles'} posteriores a la aceptación de la presente oferta.\n\n${ctx.ofertante.referencia} tendrá ${ctx.empleados?.dias_evaluar_letras || 'cinco'} (${ctx.empleados?.dias_evaluar || 5}) días ${ctx.empleados?.tipo_evaluar?.es || 'naturales'} a partir de la recepción de dicha información para evaluar la situación laboral reportada y notificar a ${ctx.propietario.referencia} si la acepta o rechaza. En caso de rechazo, la presente oferta quedará sin efecto alguno y cualquier cantidad depositada le será reembolsada a ${ctx.ofertante.referencia} en su totalidad.`,
         en: `${ctx._inciso}) That ${ctx.propietario.en.referencia} inform ${ctx.ofertante.en.referencia}, in writing, of any current labor relationship, as well as any current or previous labor litigation, claim or proceeding related to THE PROPERTY or to employees who render or have rendered services therein, providing the relevant documentation within ${ctx.empleados?.dias_informar_letras_en || 'three'} (${ctx.empleados?.dias_informar || 3}) ${ctx.empleados?.tipo_informar?.en || 'business'} days after acceptance of the present offer.\n\n${ctx.ofertante.en.referencia} shall have ${ctx.empleados?.dias_evaluar_letras_en || 'five'} (${ctx.empleados?.dias_evaluar || 5}) ${ctx.empleados?.tipo_evaluar?.en || 'calendar'} days from receipt of such information to evaluate the reported labor situation and notify ${ctx.propietario.en.referencia} whether it is accepted or rejected. In case of rejection, the present offer shall be null and void and any amounts deposited shall be refunded to ${ctx.ofertante.en.referencia} in full.`,
       }),
+    },
+
+    // ---- SUB-BLOQUE: CONDICIÓN LIBRE ----
+    {
+      id: 'condicion_libre',
+      condicional: true,
+      default: false,
+      despues_de: 'empleados_condicion',
+      etiqueta: 'Condición libre (texto personalizado)',
+      etiqueta_en: 'Custom condition (free text)',
+      render: (ctx) => {
+        const textoEs = ctx.condicion_libre?.texto_es?.trim();
+        const textoEn = ctx.condicion_libre?.texto_en?.trim();
+        if (!textoEs && !textoEn) return null;
+        return {
+          es: textoEs ? `${ctx._inciso}) ${textoEs}` : null,
+          en: textoEn ? `${ctx._inciso}) ${textoEn}` : null,
+        };
+      },
     },
 
     // ---- CLÁUSULA 16: COMISIÓN ----
