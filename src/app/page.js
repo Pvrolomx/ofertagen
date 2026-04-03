@@ -386,6 +386,8 @@ const UI = {
       pct_parte_afectada: "% parte afectada", pct_agencia: "% agencia",
       // Coordinador
       nombre_coord: "Nombre", empresa_coord: "Empresa",
+      sin_costo_label: "Sin costo adicional a las partes",
+      sin_costo_sub: "El servicio de coordinación no genera honorarios adicionales",
       // Inventario
       inventario_titulo: "Inventario / Lista de inclusiones",
       exclusiones: "Exclusiones",
@@ -488,6 +490,8 @@ const UI = {
       jurisdiccion_otro: "Especificar jurisdicción",
       pct_parte_afectada: "% parte afectada", pct_agencia: "% agencia",
       nombre_coord: "Nombre", empresa_coord: "Empresa",
+      sin_costo_label: "Sin costo adicional a las partes",
+      sin_costo_sub: "El servicio de coordinación no genera honorarios adicionales",
       inventario_titulo: "Inventario / Lista de inclusiones",
       exclusiones: "Exclusiones",
       "moneda": "Moneda",
@@ -587,6 +591,8 @@ const UI = {
       jurisdiccion_otro: "Specify jurisdiction",
       pct_parte_afectada: "% injured party", pct_agencia: "% agency",
       nombre_coord: "Name", empresa_coord: "Company",
+      sin_costo_label: "No additional cost to the parties",
+      sin_costo_sub: "Coordination services do not generate additional fees",
       inventario_titulo: "Inventory / Inclusion list",
       exclusiones: "Exclusions",
       "moneda": "Currency",
@@ -691,6 +697,8 @@ const UI = {
       jurisdiccion_otro: "Préciser la juridiction",
       pct_parte_afectada: "% partie lésée", pct_agencia: "% agence",
       nombre_coord: "Nom", empresa_coord: "Entreprise",
+      sin_costo_label: "Sans frais supplémentaires pour les parties",
+      sin_costo_sub: "Les services de coordination ne génèrent pas d'honoraires supplémentaires",
       inventario_titulo: "Inventaire / Liste d'inclusions",
       exclusiones: "Exclusions",
       "moneda": "Devise",
@@ -1395,6 +1403,13 @@ export default function OfertaGenPage() {
             <Input label={t.fields.empresa_coord} value={data.campos.coordinador?.empresa_coordinador} onChange={v=>upCampo("coordinador","empresa_coordinador",v)} placeholder="Expat Advisor MX" />
             <Input label={t.fields.celular} value={data.campos.coordinador?.celular_coordinador} onChange={v=>upCampo("coordinador","celular_coordinador",v)} type="tel" />
             <Input label={t.fields.email} value={data.campos.coordinador?.email_coordinador} onChange={v=>upCampo("coordinador","email_coordinador",v)} type="email" />
+            <div className="col-span-2 flex items-center gap-3 p-3 rounded-lg" style={{background:"var(--og-surface)",border:"1px solid var(--og-border)"}}>
+              <input type="checkbox" checked={!!data.campos.coordinador?.sin_costo} onChange={e=>upCampo("coordinador","sin_costo",e.target.checked)} className="rounded" />
+              <div>
+                <label className="text-sm font-medium" style={{color:"var(--og-primary)"}}>{t.fields.sin_costo_label || "Sin costo adicional a las partes"}</label>
+                <p className="text-xs" style={{color:"var(--og-secondary)"}}>{t.fields.sin_costo_sub || "El servicio de coordinación no genera honorarios adicionales"}</p>
+              </div>
+            </div>
           </Section>
         </>}
 

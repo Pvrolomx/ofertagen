@@ -950,11 +950,13 @@ const PLANTILLA_OFERTA_COMPRA = {
       siempre: true,
       titulo: { es: 'COMUNICACIONES POR CORREO ELECTRÓNICO (EMAIL)', en: 'ELECTRONIC MAIL COMMUNICATION (EMAIL)' },
       render: (ctx) => {
+        const sinCosto = ctx.coordinador?.sin_costo ? ' (sin costo adicional a las partes)' : '';
+        const sinCostoEn = ctx.coordinador?.sin_costo ? ' (no additional cost to the parties)' : '';
         const coord = ctx.coordinador?.nombre_coordinador
-          ? `\n\nCOORDINADOR DE CIERRE / CLOSING COORDINATOR: ${ctx.coordinador.nombre_coordinador}${ctx.coordinador.empresa_coordinador ? ' — ' + ctx.coordinador.empresa_coordinador : ''}; Celular/Whatsapp: ${ctx.coordinador.celular_coordinador || ''}; Email: ${ctx.coordinador.email_coordinador || ''}`
+          ? `\n\nCOORDINADOR DE CIERRE${sinCosto} / CLOSING COORDINATOR${sinCostoEn}: ${ctx.coordinador.nombre_coordinador}${ctx.coordinador.empresa_coordinador ? ' — ' + ctx.coordinador.empresa_coordinador : ''}; Celular/Whatsapp: ${ctx.coordinador.celular_coordinador || ''}; Email: ${ctx.coordinador.email_coordinador || ''}`
           : '';
         const coordEn = ctx.coordinador?.nombre_coordinador
-          ? `\n\nCLOSING COORDINATOR: ${ctx.coordinador.nombre_coordinador}${ctx.coordinador.empresa_coordinador ? ' — ' + ctx.coordinador.empresa_coordinador : ''}; Phone/Whatsapp: ${ctx.coordinador.celular_coordinador || ''}; Email: ${ctx.coordinador.email_coordinador || ''}`
+          ? `\n\nCLOSING COORDINATOR${sinCostoEn}: ${ctx.coordinador.nombre_coordinador}${ctx.coordinador.empresa_coordinador ? ' — ' + ctx.coordinador.empresa_coordinador : ''}; Phone/Whatsapp: ${ctx.coordinador.celular_coordinador || ''}; Email: ${ctx.coordinador.email_coordinador || ''}`
           : '';
         return {
           es: `Las comunicaciones entre las partes relacionadas con la presente oferta por email y whatsapp serán consideradas como documental privada siempre y cuando éstas indiquen la fecha y la hora que fueron enviadas y contengan el nombre y firma del remitente. Así mismo, las partes reconocen la validez de los documentos firmados mediante plataformas de firma electrónica tales como DocuSign, Adobe Sign u otros medios de firma electrónica análogos.\n\nPara este efecto, las partes señalan las siguientes direcciones electrónicas:\n\n${ctx.ofertante.referencia_negrita}: Celular/Whatsapp: ${ctx.ofertante.celular}; Email: ${ctx.ofertante.email}\n\n${ctx.propietario.referencia_negrita}: Celular/Whatsapp: ${ctx.propietario.celular}; Email: ${ctx.propietario.email}${coord}\n\nNo obstante, los contratos deberán ser remitidos a las partes con firma original en el plazo no mayor a 15 días naturales siguientes a la fecha en que se suscriban vía correo electrónico o plataforma de firma electrónica.`,
