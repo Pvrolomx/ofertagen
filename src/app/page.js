@@ -354,6 +354,8 @@ const UI = {
       notas_uso_exclusivo_es: "Notas uso exclusivo (ES)", notas_uso_exclusivo_en: "Notas uso exclusivo (EN)",
       uso_exclusivo_label: "Incluir notas de uso exclusivo",
       uso_exclusivo_sub: "Estacionamiento, bodega, servidumbre, terraza privada...",
+      es_condominio_label: "Régimen de condominio",
+      es_condominio_sub: "Incluye actas de asamblea, estados financieros, carta no adeudo del administrador",
       // Antecedente
       fecha_escritura: "Fecha escritura", no_escritura: "No. escritura",
       notario_ant: "Notario", no_notaria: "No. notaría", ciudad: "Ciudad",
@@ -463,6 +465,8 @@ const UI = {
       notas_uso_exclusivo_es: "Notas uso exclusivo (ES)", notas_uso_exclusivo_en: "Notas uso exclusivo (EN)",
       uso_exclusivo_label: "Incluir notas de uso exclusivo",
       uso_exclusivo_sub: "Estacionamiento, bodega, servidumbre, terraza privada...",
+      es_condominio_label: "Régimen de condominio",
+      es_condominio_sub: "Incluye actas de asamblea, estados financieros, carta no adeudo del administrador",
       fecha_escritura: "Fecha escritura", no_escritura: "No. escritura",
       notario_ant: "Notario", no_notaria: "No. notaría", ciudad: "Ciudad",
       folio_real_electronico: "Folio Real Electrónico", folio_real: "Folio Real",
@@ -561,6 +565,8 @@ const UI = {
       notas_uso_exclusivo_es: "Exclusive use notes (ES)", notas_uso_exclusivo_en: "Exclusive use notes (EN)",
       uso_exclusivo_label: "Include exclusive use notes",
       uso_exclusivo_sub: "Parking, storage, easement, private terrace...",
+      es_condominio_label: "Condominium regime",
+      es_condominio_sub: "Includes assembly minutes, financial statements, no-debt letter from administrator",
       fecha_escritura: "Deed date", no_escritura: "Deed no.",
       notario_ant: "Notary", no_notaria: "Notary no.", ciudad: "City",
       folio_real_electronico: "Electronic Land Registry Folio", folio_real: "Land Registry Folio",
@@ -664,6 +670,8 @@ const UI = {
       notas_uso_exclusivo_es: "Notes usage exclusif (ES)", notas_uso_exclusivo_en: "Notes usage exclusif (EN)",
       uso_exclusivo_label: "Inclure notes d'usage exclusif",
       uso_exclusivo_sub: "Stationnement, rangement, servitude, terrasse privée...",
+      es_condominio_label: "Régime de copropriété",
+      es_condominio_sub: "Inclut procès-verbaux d'assemblée, états financiers, lettre de non-dette de l'administrateur",
       fecha_escritura: "Date de l'acte", no_escritura: "No. acte",
       notario_ant: "Notaire", no_notaria: "No. étude", ciudad: "Ville",
       folio_real_electronico: "Folio foncier électronique", folio_real: "Folio foncier",
@@ -1169,6 +1177,13 @@ export default function OfertaGenPage() {
               <Input label={t.fields.notas_uso_exclusivo_es} value={data.campos.inmueble?.notas_uso_exclusivo} onChange={v=>upCampo("inmueble","notas_uso_exclusivo",v)} wide rows={2} placeholder="un estacionamiento con superficie descubierta de 14.40 m² y una bodega de 2.80 m²" />
               <Input label={t.fields.notas_uso_exclusivo_en} value={data.campos.inmueble?.notas_uso_exclusivo_en} onChange={v=>upCampo("inmueble","notas_uso_exclusivo_en",v)} wide rows={2} placeholder="a parking space of 14.40 sq m and a storage room of 2.80 sq m" />
             </>}
+            <div className="col-span-2 flex items-center gap-3 p-3 rounded-lg" style={{background:"var(--og-surface)",border:"1px solid var(--og-border)"}}>
+              <input type="checkbox" checked={data.campos.inmueble?.es_condominio !== false} onChange={e=>upCampo("inmueble","es_condominio",e.target.checked)} className="rounded" />
+              <div>
+                <label className="text-sm font-medium" style={{color:"var(--og-primary)"}}>{t.fields.es_condominio_label || "Régimen de condominio"}</label>
+                <p className="text-xs" style={{color:"var(--og-secondary)"}}>{t.fields.es_condominio_sub || "Incluye actas de asamblea, estados financieros, carta no adeudo del administrador"}</p>
+              </div>
+            </div>
           </Section>
           <Section title={t.sections.antecedente}>
             <Input label={t.fields.fecha_escritura} value={data.campos.antecedente?.fecha_escritura} onChange={v=>upCampo("antecedente","fecha_escritura",v)} type="date" required />
