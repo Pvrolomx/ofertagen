@@ -386,11 +386,9 @@ const UI = {
       pct_parte_afectada: "% parte afectada", pct_agencia: "% agencia",
       // Coordinador
       nombre_coord: "Nombre", empresa_coord: "Empresa",
-      // Financiamiento
-      nombre_lender: "Nombre del prestamista / lender",
-      dias_due_diligence: "Días due diligence del lender",
       // Inventario
-      exclusiones_es: "Exclusiones (ES)", exclusiones_en: "Exclusiones (EN)",
+      inventario_titulo: "Inventario / Lista de inclusiones",
+      exclusiones: "Exclusiones",
       "moneda": "Moneda",
       "anticipo_gastos": "Anticipo gastos de escrituración",
       "empresa_escrow_label": "Empresa escrow",
@@ -490,9 +488,8 @@ const UI = {
       jurisdiccion_otro: "Especificar jurisdicción",
       pct_parte_afectada: "% parte afectada", pct_agencia: "% agencia",
       nombre_coord: "Nombre", empresa_coord: "Empresa",
-      nombre_lender: "Nombre del prestamista / lender",
-      dias_due_diligence: "Días due diligence del lender",
-      exclusiones_es: "Exclusiones (ES)", exclusiones_en: "Exclusiones (EN)",
+      inventario_titulo: "Inventario / Lista de inclusiones",
+      exclusiones: "Exclusiones",
       "moneda": "Moneda",
       "anticipo_gastos": "Anticipo gastos de escrituración",
       "empresa_escrow_label": "Empresa escrow",
@@ -590,9 +587,8 @@ const UI = {
       jurisdiccion_otro: "Specify jurisdiction",
       pct_parte_afectada: "% injured party", pct_agencia: "% agency",
       nombre_coord: "Name", empresa_coord: "Company",
-      nombre_lender: "Lender name",
-      dias_due_diligence: "Lender due diligence days",
-      exclusiones_es: "Exclusions (ES)", exclusiones_en: "Exclusions (EN)",
+      inventario_titulo: "Inventory / Inclusion list",
+      exclusiones: "Exclusions",
       "moneda": "Currency",
       "anticipo_gastos": "Closing cost advance",
       "empresa_escrow_label": "Escrow company",
@@ -695,9 +691,8 @@ const UI = {
       jurisdiccion_otro: "Préciser la juridiction",
       pct_parte_afectada: "% partie lésée", pct_agencia: "% agence",
       nombre_coord: "Nom", empresa_coord: "Entreprise",
-      nombre_lender: "Nom du prêteur",
-      dias_due_diligence: "Jours due diligence prêteur",
-      exclusiones_es: "Exclusions (ES)", exclusiones_en: "Exclusions (EN)",
+      inventario_titulo: "Inventaire / Liste d'inclusions",
+      exclusiones: "Exclusions",
       "moneda": "Devise",
       "anticipo_gastos": "Avance frais de clôture",
       "empresa_escrow_label": "Société de séquestre",
@@ -1322,13 +1317,15 @@ export default function OfertaGenPage() {
               <Input label={t.fields.ciudad} value={data.campos.notario?.ciudad_notaria} onChange={v=>upCampo("notario","ciudad_notaria",v)} required />
             </>}
           </Section>
-          {data.bloques.financiamiento && <Section title="Sujeto a financiamiento">
-            <Input label={t.fields.nombre_lender} value={data.campos.financiamiento?.nombre_lender} onChange={v=>upCampo("financiamiento","nombre_lender",v)} placeholder="MXMORTGAGE, Intercam..." />
-            <Input label={t.fields.dias_due_diligence} value={data.campos.financiamiento?.dias_due_diligence||30} onChange={v=>upCampo("financiamiento","dias_due_diligence",v)} type="number" />
-          </Section>}
-          {data.bloques.inventario && <Section title="Inventario / Inclusion list">
-            <Input label={t.fields.exclusiones_es} value={data.campos.inventario?.exclusiones} onChange={v=>upCampo("inventario","exclusiones",v)} wide rows={2} placeholder="obras de arte, artículos personales del vendedor" />
-            <Input label={t.fields.exclusiones_en} value={data.campos.inventario?.exclusiones_en} onChange={v=>upCampo("inventario","exclusiones_en",v)} wide rows={2} placeholder="artwork, seller personal items" />
+          {data.bloques.inventario && <Section title={t.fields.inventario_titulo || "Inventario / Inclusion list"}>
+            <Input 
+              label={t.fields.exclusiones || "Exclusiones"} 
+              value={data.campos.inventario?.exclusiones || ""} 
+              onChange={v=>upCampo("inventario","exclusiones",v)} 
+              wide 
+              rows={2} 
+              placeholder={idiomaSecundario === 'es' ? "obras de arte, artículos personales del vendedor" : idiomaSecundario === 'fr' ? "œuvres d'art, effets personnels du vendeur" : "artwork, seller personal items"} 
+            />
           </Section>}
           {data.bloques.arrendamientos && <Section title="Arrendamientos vigentes">
             <div className="flex flex-col gap-1 col-span-2">
