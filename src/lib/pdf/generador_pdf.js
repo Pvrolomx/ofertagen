@@ -56,7 +56,7 @@ export async function generarPdfBlob(bloques, meta = {}, opciones = {}) {
       }
     };
     
-    const { idiomaSecundario = 'en' } = opciones;
+    const { idiomaSecundario = 'en', logoBase64 } = opciones;
   const lang2 = idiomaSecundario;
   
   const bloquesNormales = bloques.filter(b => b.tipo !== 'firmas');
@@ -69,6 +69,9 @@ export async function generarPdfBlob(bloques, meta = {}, opciones = {}) {
     const ini = extraerIniciales(f.nombre);
     return `${ini} _____`;
   }).join('          ') || '';
+  
+  // Preparar logo si existe
+  const tieneLogoReal = logoBase64 && logoBase64.length > 100;
   
   // Construir filas de la tabla
   const tableBody = [];
@@ -144,16 +147,40 @@ export async function generarPdfBlob(bloques, meta = {}, opciones = {}) {
   
   const docDefinition = {
     pageSize: 'LETTER',
-    pageMargins: [40, 50, 40, 50],
+    pageMargins: [40, tieneLogoReal ? 70 : 50, 40, 50],
     
     header: function(currentPage, pageCount) {
-      return {
-        text: `Página ${currentPage} de ${pageCount}  |  ${paginaLang2} ${currentPage} ${deLang2} ${pageCount}`,
-        alignment: 'right',
-        fontSize: 7,
-        color: '#555555',
-        margin: [0, 20, 40, 0]
-      };
+      const headerContent = [];
+      
+      // Logo a la izquierda si existe
+      if (tieneLogoReal) {
+        headerContent.push({
+          columns: [
+            {
+              image: `data:image/png;base64,${logoBase64}`,
+              width: 60,
+              margin: [40, 15, 0, 0]
+            },
+            {
+              text: `Página ${currentPage} de ${pageCount}  |  ${paginaLang2} ${currentPage} ${deLang2} ${pageCount}`,
+              alignment: 'right',
+              fontSize: 7,
+              color: '#555555',
+              margin: [0, 25, 40, 0]
+            }
+          ]
+        });
+      } else {
+        headerContent.push({
+          text: `Página ${currentPage} de ${pageCount}  |  ${paginaLang2} ${currentPage} ${deLang2} ${pageCount}`,
+          alignment: 'right',
+          fontSize: 7,
+          color: '#555555',
+          margin: [0, 20, 40, 0]
+        });
+      }
+      
+      return headerContent;
     },
     
     footer: function(currentPage, pageCount) {
@@ -184,14 +211,7 @@ export async function generarPdfBlob(bloques, meta = {}, opciones = {}) {
           paddingBottom: function() { return 4; }
         }
       },
-      ...firmasContent,
-      {
-        text: 'Hecho por Colmena 2026',
-        alignment: 'center',
-        fontSize: 7,
-        color: '#555555',
-        margin: [0, 40, 0, 0]
-      }
+      ...firmasContent
     ],
     
     defaultStyle: {

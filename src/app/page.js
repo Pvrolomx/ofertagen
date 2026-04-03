@@ -650,6 +650,7 @@ export default function OfertaGenPage() {
     try {
       await generarPdfBlob(bloques, PLANTILLA.meta, { 
         idiomaSecundario: lang2,
+        logoBase64,
         nombre: data.partes.ofertante.personas[0]?.nombre?.replace(/\s+/g, "_") || "OFERTA"
       });
     } catch (err) {
@@ -657,7 +658,7 @@ export default function OfertaGenPage() {
       alert("Error al generar el PDF. Revisa la consola.");
     }
     setGenerating(false);
-  }, [bloques, data.partes.ofertante.personas, lang2]);
+  }, [bloques, data.partes.ofertante.personas, lang2, logoBase64]);
 
   const handleGenerate = useCallback(async () => {
     if (!bloques.length) return;
