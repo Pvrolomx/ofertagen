@@ -68,6 +68,56 @@ function Section({ title, children }) {
   );
 }
 
+// Componente para cada condición indispensable con plazos configurables
+function CondicionItem({ id, label, sub, checked, onChange, plazos, onPlazoChange, t }) {
+  return (
+    <div className="rounded-xl transition-all overflow-hidden" style={{background: checked ? "rgba(29,107,184,0.12)" : "var(--og-surface)", border: checked ? "1px solid var(--og-border-hi)" : "1px solid var(--og-border)"}}>
+      <div onClick={() => onChange(!checked)} className="flex items-center gap-3 p-3 cursor-pointer">
+        <div className="w-10 h-5 rounded-full relative transition-colors flex-shrink-0" style={{background: checked ? "var(--og-accent)" : "var(--og-muted)"}}>
+          <div className={`w-4 h-4 rounded-full bg-white absolute top-0.5 transition-all ${checked ? "left-5" : "left-0.5"}`} />
+        </div>
+        <div className="flex-1 min-w-0">
+          <div className="text-sm font-medium" style={{color:"var(--og-primary)"}}>{label}</div>
+          {sub && <div className="text-xs text-gray-500">{sub}</div>}
+        </div>
+        {checked && <span className="text-xs" style={{color:"var(--og-accent)"}}>▼</span>}
+      </div>
+      {checked && plazos && (
+        <div className="px-3 pb-3 pt-1 border-t" style={{borderColor:"var(--og-border)",background:"rgba(255,255,255,0.5)"}}>
+          <div className="grid grid-cols-1 gap-2">
+            {plazos.map((plazo, idx) => (
+              <div key={idx} className="flex items-center gap-2 flex-wrap">
+                <span className="text-xs" style={{color:"var(--og-secondary)"}}>{plazo.label}:</span>
+                <input 
+                  type="number" 
+                  min="1" 
+                  max="90"
+                  value={plazo.dias} 
+                  onChange={e => onPlazoChange(plazo.campo + '_dias', parseInt(e.target.value) || plazo.default)}
+                  onClick={e => e.stopPropagation()}
+                  className="w-12 px-2 py-1 text-xs border rounded text-center" 
+                  style={{borderColor:"var(--og-border)"}}
+                />
+                <span className="text-xs" style={{color:"var(--og-secondary)"}}>días</span>
+                <select 
+                  value={plazo.tipo} 
+                  onChange={e => { e.stopPropagation(); onPlazoChange(plazo.campo + '_tipo', e.target.value); }}
+                  onClick={e => e.stopPropagation()}
+                  className="px-2 py-1 text-xs border rounded" 
+                  style={{borderColor:"var(--og-border)"}}
+                >
+                  <option value="naturales">{t?.naturales || 'naturales'}</option>
+                  <option value="habiles">{t?.habiles || 'hábiles'}</option>
+                </select>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
+
 function PartePanel({ data, pid, label, upParte, upPersona, addPersona, rmPersona, t }) {
   const p = data.partes[pid];
   return (
@@ -139,6 +189,26 @@ const UI = {
       coordinador: "Coordinador de cierre",
       clausulas: "Cláusulas opcionales",
       clausulas_adicionales: "Cláusulas adicionales",
+      condiciones_indispensables: "Condiciones indispensables",
+      condiciones_sub: "Selecciona las condiciones que aplican y configura los plazos",
+    },
+    condiciones: {
+      naturales: "naturales",
+      habiles: "hábiles",
+      plazo_entregar: "Plazo para entregar",
+      plazo_revisar: "Plazo para revisar",
+      plazo_inspeccionar: "Plazo para inspeccionar",
+      plazo_informar: "Plazo para informar",
+      plazo_evaluar: "Plazo para evaluar",
+      plazo_aprobacion: "Plazo para aprobación",
+      inspeccion: { label: "Inspección física del inmueble", sub: "Inspección profesional y revisión del reporte" },
+      doc_fideicomiso: { label: "Documentación del fideicomiso", sub: "Escritura, régimen de condominio, actas de asamblea" },
+      financiamiento: { label: "Sujeto a financiamiento", sub: "Aprobación de crédito hipotecario" },
+      inventario: { label: "Inventario detallado", sub: "Lista de muebles y electrodomésticos incluidos" },
+      arrendamientos: { label: "Arrendamientos vigentes", sub: "Contratos de renta existentes" },
+      zona_federal: { label: "Zona Federal", sub: "Concesión marítima para propiedades frente al mar" },
+      litigios_pendientes: { label: "Litigios pendientes", sub: "Verificación de litigios judiciales o administrativos" },
+      empleados_condicion: { label: "Relaciones laborales", sub: "Verificación de empleados y litigios laborales" },
     },
     header: {
       cargar: "Cargar", guardar: "Guardar", limpiar: "Limpiar",
@@ -230,6 +300,26 @@ const UI = {
       coordinador: "Coordinador de cierre",
       clausulas: "Cláusulas opcionales",
       clausulas_adicionales: "Cláusulas adicionales",
+      condiciones_indispensables: "Condiciones indispensables",
+      condiciones_sub: "Selecciona las condiciones que aplican y configura los plazos",
+    },
+    condiciones: {
+      naturales: "naturales",
+      habiles: "hábiles",
+      plazo_entregar: "Plazo para entregar",
+      plazo_revisar: "Plazo para revisar",
+      plazo_inspeccionar: "Plazo para inspeccionar",
+      plazo_informar: "Plazo para informar",
+      plazo_evaluar: "Plazo para evaluar",
+      plazo_aprobacion: "Plazo para aprobación",
+      inspeccion: { label: "Inspección física del inmueble", sub: "Inspección profesional y revisión del reporte" },
+      doc_fideicomiso: { label: "Documentación del fideicomiso", sub: "Escritura, régimen de condominio, actas de asamblea" },
+      financiamiento: { label: "Sujeto a financiamiento", sub: "Aprobación de crédito hipotecario" },
+      inventario: { label: "Inventario detallado", sub: "Lista de muebles y electrodomésticos incluidos" },
+      arrendamientos: { label: "Arrendamientos vigentes", sub: "Contratos de renta existentes" },
+      zona_federal: { label: "Zona Federal", sub: "Concesión marítima para propiedades frente al mar" },
+      litigios_pendientes: { label: "Litigios pendientes", sub: "Verificación de litigios judiciales o administrativos" },
+      empleados_condicion: { label: "Relaciones laborales", sub: "Verificación de empleados y litigios laborales" },
     },
     header: { cargar: "Cargar", guardar: "Guardar", limpiar: "Limpiar" },
     preview: { title: "Vista previa bilingüe", descargar: "Descargar .docx", generando: "Generando..." },
@@ -302,6 +392,26 @@ const UI = {
       coordinador: "Closing coordinator",
       clausulas: "Optional clauses",
       clausulas_adicionales: "Additional clauses",
+      condiciones_indispensables: "Indispensable conditions",
+      condiciones_sub: "Select applicable conditions and configure deadlines",
+    },
+    condiciones: {
+      naturales: "calendar",
+      habiles: "business",
+      plazo_entregar: "Deadline to deliver",
+      plazo_revisar: "Deadline to review",
+      plazo_inspeccionar: "Deadline to inspect",
+      plazo_informar: "Deadline to inform",
+      plazo_evaluar: "Deadline to evaluate",
+      plazo_aprobacion: "Deadline for approval",
+      inspeccion: { label: "Physical property inspection", sub: "Professional inspection and report review" },
+      doc_fideicomiso: { label: "Trust documentation", sub: "Deed, condo regime, assembly minutes" },
+      financiamiento: { label: "Subject to financing", sub: "Mortgage approval" },
+      inventario: { label: "Detailed inventory", sub: "List of included furniture and appliances" },
+      arrendamientos: { label: "Existing leases", sub: "Current rental agreements" },
+      zona_federal: { label: "Federal Zone", sub: "Maritime concession for beachfront properties" },
+      litigios_pendientes: { label: "Pending litigation", sub: "Verification of legal or administrative disputes" },
+      empleados_condicion: { label: "Labor relations", sub: "Employee and labor dispute verification" },
     },
     header: {
       cargar: "Load", guardar: "Save", limpiar: "Clear",
@@ -382,6 +492,26 @@ const UI = {
       coordinador: "Coordinateur de clôture",
       clausulas: "Clauses optionnelles",
       clausulas_adicionales: "Clauses additionnelles",
+      condiciones_indispensables: "Conditions indispensables",
+      condiciones_sub: "Sélectionnez les conditions applicables et configurez les délais",
+    },
+    condiciones: {
+      naturales: "calendaires",
+      habiles: "ouvrables",
+      plazo_entregar: "Délai pour livrer",
+      plazo_revisar: "Délai pour réviser",
+      plazo_inspeccionar: "Délai pour inspecter",
+      plazo_informar: "Délai pour informer",
+      plazo_evaluar: "Délai pour évaluer",
+      plazo_aprobacion: "Délai pour approbation",
+      inspeccion: { label: "Inspection physique du bien", sub: "Inspection professionnelle et révision du rapport" },
+      doc_fideicomiso: { label: "Documentation du fidéicommis", sub: "Acte, régime de copropriété, procès-verbaux" },
+      financiamiento: { label: "Sous réserve de financement", sub: "Approbation hypothécaire" },
+      inventario: { label: "Inventaire détaillé", sub: "Liste des meubles et appareils inclus" },
+      arrendamientos: { label: "Baux en cours", sub: "Contrats de location existants" },
+      zona_federal: { label: "Zone fédérale", sub: "Concession maritime pour propriétés en bord de mer" },
+      litigios_pendientes: { label: "Litiges en cours", sub: "Vérification des litiges juridiques ou administratifs" },
+      empleados_condicion: { label: "Relations de travail", sub: "Vérification des employés et litiges du travail" },
     },
     header: {
       cargar: "Charger", guardar: "Sauvegarder", limpiar: "Effacer",
@@ -1127,19 +1257,123 @@ export default function OfertaGenPage() {
         </>}
 
         {step === 3 && <div className="space-y-3">
+          {/* CONDICIONES INDISPENSABLES */}
+          <div className="mb-6">
+            <h2 className="text-lg font-semibold mb-1" style={{color:"var(--og-primary)"}}>{t.sections.condiciones_indispensables}</h2>
+            <p className="text-xs text-gray-500 mb-4">{t.sections.condiciones_sub}</p>
+            <div className="space-y-2">
+              <CondicionItem 
+                id="inspeccion"
+                label={t.condiciones?.inspeccion?.label || "Inspección física del inmueble"}
+                sub={t.condiciones?.inspeccion?.sub || "Inspección profesional y revisión del reporte"}
+                checked={data.bloques.inspeccion}
+                onChange={() => togBloque("inspeccion")}
+                plazos={[
+                  { label: t.condiciones?.plazo_inspeccionar || "Plazo para inspeccionar", campo: "inspeccion_inspeccionar", dias: data.campos.condiciones_plazos?.inspeccion_inspeccionar_dias || 4, tipo: data.campos.condiciones_plazos?.inspeccion_inspeccionar_tipo || "naturales", default: 4 },
+                  { label: t.condiciones?.plazo_revisar || "Plazo para revisar", campo: "inspeccion_revisar", dias: data.campos.condiciones_plazos?.inspeccion_revisar_dias || 5, tipo: data.campos.condiciones_plazos?.inspeccion_revisar_tipo || "naturales", default: 5 },
+                ]}
+                onPlazoChange={(campo, valor) => upCampo("condiciones_plazos", campo, valor)}
+                t={t.condiciones}
+              />
+              <CondicionItem 
+                id="doc_fideicomiso"
+                label={t.condiciones?.doc_fideicomiso?.label || "Documentación del fideicomiso"}
+                sub={t.condiciones?.doc_fideicomiso?.sub || "Escritura, régimen de condominio, actas de asamblea"}
+                checked={data.bloques.doc_fideicomiso}
+                onChange={() => togBloque("doc_fideicomiso")}
+                plazos={[
+                  { label: t.condiciones?.plazo_entregar || "Plazo para entregar", campo: "doc_fideicomiso_entregar", dias: data.campos.condiciones_plazos?.doc_fideicomiso_entregar_dias || 5, tipo: data.campos.condiciones_plazos?.doc_fideicomiso_entregar_tipo || "habiles", default: 5 },
+                  { label: t.condiciones?.plazo_revisar || "Plazo para revisar", campo: "doc_fideicomiso_revisar", dias: data.campos.condiciones_plazos?.doc_fideicomiso_revisar_dias || 10, tipo: data.campos.condiciones_plazos?.doc_fideicomiso_revisar_tipo || "naturales", default: 10 },
+                ]}
+                onPlazoChange={(campo, valor) => upCampo("condiciones_plazos", campo, valor)}
+                t={t.condiciones}
+              />
+              <CondicionItem 
+                id="financiamiento"
+                label={t.condiciones?.financiamiento?.label || "Sujeto a financiamiento"}
+                sub={t.condiciones?.financiamiento?.sub || "Aprobación de crédito hipotecario"}
+                checked={data.bloques.financiamiento}
+                onChange={() => togBloque("financiamiento")}
+                plazos={[
+                  { label: t.condiciones?.plazo_aprobacion || "Plazo para aprobación", campo: "financiamiento_aprobacion", dias: data.campos.condiciones_plazos?.financiamiento_aprobacion_dias || 30, tipo: data.campos.condiciones_plazos?.financiamiento_aprobacion_tipo || "naturales", default: 30 },
+                ]}
+                onPlazoChange={(campo, valor) => upCampo("condiciones_plazos", campo, valor)}
+                t={t.condiciones}
+              />
+              <CondicionItem 
+                id="inventario"
+                label={t.condiciones?.inventario?.label || "Inventario detallado"}
+                sub={t.condiciones?.inventario?.sub || "Lista de muebles y electrodomésticos incluidos"}
+                checked={data.bloques.inventario}
+                onChange={() => togBloque("inventario")}
+                plazos={[
+                  { label: t.condiciones?.plazo_entregar || "Plazo para entregar", campo: "inventario_entregar", dias: data.campos.condiciones_plazos?.inventario_entregar_dias || 5, tipo: data.campos.condiciones_plazos?.inventario_entregar_tipo || "habiles", default: 5 },
+                  { label: t.condiciones?.plazo_revisar || "Plazo para revisar", campo: "inventario_revisar", dias: data.campos.condiciones_plazos?.inventario_revisar_dias || 5, tipo: data.campos.condiciones_plazos?.inventario_revisar_tipo || "naturales", default: 5 },
+                ]}
+                onPlazoChange={(campo, valor) => upCampo("condiciones_plazos", campo, valor)}
+                t={t.condiciones}
+              />
+              <CondicionItem 
+                id="arrendamientos"
+                label={t.condiciones?.arrendamientos?.label || "Arrendamientos vigentes"}
+                sub={t.condiciones?.arrendamientos?.sub || "Contratos de renta existentes"}
+                checked={data.bloques.arrendamientos}
+                onChange={() => togBloque("arrendamientos")}
+                plazos={[
+                  { label: t.condiciones?.plazo_informar || "Plazo para informar", campo: "arrendamientos_informar", dias: data.campos.condiciones_plazos?.arrendamientos_informar_dias || 5, tipo: data.campos.condiciones_plazos?.arrendamientos_informar_tipo || "habiles", default: 5 },
+                  { label: t.condiciones?.plazo_revisar || "Plazo para revisar", campo: "arrendamientos_revisar", dias: data.campos.condiciones_plazos?.arrendamientos_revisar_dias || 5, tipo: data.campos.condiciones_plazos?.arrendamientos_revisar_tipo || "naturales", default: 5 },
+                ]}
+                onPlazoChange={(campo, valor) => upCampo("condiciones_plazos", campo, valor)}
+                t={t.condiciones}
+              />
+              <CondicionItem 
+                id="zona_federal"
+                label={t.condiciones?.zona_federal?.label || "Zona Federal"}
+                sub={t.condiciones?.zona_federal?.sub || "Concesión marítima para propiedades frente al mar"}
+                checked={data.bloques.zona_federal}
+                onChange={() => togBloque("zona_federal")}
+                plazos={[
+                  { label: t.condiciones?.plazo_entregar || "Plazo para entregar", campo: "zona_federal_entregar", dias: data.campos.condiciones_plazos?.zona_federal_entregar_dias || 5, tipo: data.campos.condiciones_plazos?.zona_federal_entregar_tipo || "habiles", default: 5 },
+                  { label: t.condiciones?.plazo_revisar || "Plazo para revisar", campo: "zona_federal_revisar", dias: data.campos.condiciones_plazos?.zona_federal_revisar_dias || 5, tipo: data.campos.condiciones_plazos?.zona_federal_revisar_tipo || "naturales", default: 5 },
+                ]}
+                onPlazoChange={(campo, valor) => upCampo("condiciones_plazos", campo, valor)}
+                t={t.condiciones}
+              />
+              <CondicionItem 
+                id="litigios_pendientes"
+                label={t.condiciones?.litigios_pendientes?.label || "Litigios pendientes"}
+                sub={t.condiciones?.litigios_pendientes?.sub || "Verificación de litigios judiciales o administrativos"}
+                checked={data.bloques.litigios_pendientes}
+                onChange={() => togBloque("litigios_pendientes")}
+                plazos={[
+                  { label: t.condiciones?.plazo_informar || "Plazo para informar", campo: "litigios_informar", dias: data.campos.condiciones_plazos?.litigios_informar_dias || 3, tipo: data.campos.condiciones_plazos?.litigios_informar_tipo || "habiles", default: 3 },
+                  { label: t.condiciones?.plazo_evaluar || "Plazo para evaluar", campo: "litigios_evaluar", dias: data.campos.condiciones_plazos?.litigios_evaluar_dias || 5, tipo: data.campos.condiciones_plazos?.litigios_evaluar_tipo || "naturales", default: 5 },
+                ]}
+                onPlazoChange={(campo, valor) => upCampo("condiciones_plazos", campo, valor)}
+                t={t.condiciones}
+              />
+              <CondicionItem 
+                id="empleados_condicion"
+                label={t.condiciones?.empleados_condicion?.label || "Relaciones laborales"}
+                sub={t.condiciones?.empleados_condicion?.sub || "Verificación de empleados y litigios laborales"}
+                checked={data.bloques.empleados_condicion}
+                onChange={() => togBloque("empleados_condicion")}
+                plazos={[
+                  { label: t.condiciones?.plazo_informar || "Plazo para informar", campo: "empleados_informar", dias: data.campos.condiciones_plazos?.empleados_informar_dias || 3, tipo: data.campos.condiciones_plazos?.empleados_informar_tipo || "habiles", default: 3 },
+                  { label: t.condiciones?.plazo_evaluar || "Plazo para evaluar", campo: "empleados_evaluar", dias: data.campos.condiciones_plazos?.empleados_evaluar_dias || 5, tipo: data.campos.condiciones_plazos?.empleados_evaluar_tipo || "naturales", default: 5 },
+                ]}
+                onPlazoChange={(campo, valor) => upCampo("condiciones_plazos", campo, valor)}
+                t={t.condiciones}
+              />
+            </div>
+          </div>
+
+          {/* OTRAS CLÁUSULAS */}
           <h2 className="text-lg font-semibold mb-1" style={{color:"var(--og-primary)"}}>{t.sections.clausulas}</h2>
           <p className="text-xs text-gray-500 mb-4">Activa o desactiva sin romper el contrato.</p>
           <Toggle label="Adjudicación de cónyuge" sub="50% derechos fideicomisarios del esposo fallecido" checked={data.bloques.adjudicacion_conyuge} onChange={()=>togBloque("adjudicacion_conyuge")} />
           <Toggle label="Ad Corpus / As-Is" sub="Compra por cuerpo cierto, superficies aproximadas, estado actual" checked={data.bloques.ad_corpus} onChange={()=>togBloque("ad_corpus")} />
           <Toggle label="Cuenta Escrow" sub="Depósito condicional irrevocable (Stewart Title)" checked={data.bloques.escrow} onChange={()=>togBloque("escrow")} />
-          <Toggle label="Inspección del inmueble" sub="Período de inspección y aprobación del reporte" checked={data.bloques.inspeccion} onChange={()=>togBloque("inspeccion")} />
-          <Toggle label="Documentación fideicomiso" sub="Copia del fideicomiso y actas de asamblea" checked={data.bloques.doc_fideicomiso} onChange={()=>togBloque("doc_fideicomiso")} />
-          <Toggle label="Sujeto a financiamiento" sub="Compra con crédito hipotecario — due diligence del lender" checked={data.bloques.financiamiento} onChange={()=>togBloque("financiamiento")} />
-          <Toggle label="Inventario / Inclusion list" sub="Lista detallada de muebles, electrodomésticos, exclusiones" checked={data.bloques.inventario} onChange={()=>togBloque("inventario")} />
-          <Toggle label="Arrendamientos vigentes" sub="Rentas programadas, cesión de depósitos, decisión al depositar escrow" checked={data.bloques.arrendamientos} onChange={()=>togBloque("arrendamientos")} />
-          <Toggle label="Zona Federal" sub="Propiedades frente al mar — concesión, cesión de derechos" checked={data.bloques.zona_federal} onChange={()=>togBloque("zona_federal")} />
-          <Toggle label="Litigios pendientes" sub="Vendedor informa litigios con copias en 3 días hábiles; comprador acepta o rechaza en 5 días" checked={data.bloques.litigios_pendientes} onChange={()=>togBloque("litigios_pendientes")} />
-          <Toggle label="Litigios laborales" sub="Vendedor informa relaciones y litigios laborales; comprador acepta o rechaza en 5 días" checked={data.bloques.empleados_condicion} onChange={()=>togBloque("empleados_condicion")} />
           <Toggle label="Comisión inmobiliaria" sub="Pago de comisión a agencias de RE" checked={data.bloques.comision} onChange={()=>togBloque("comision")} />
           <div className="mt-4 mb-2"><p className="text-xs font-semibold uppercase tracking-wider" style={{color:"var(--og-muted)"}}>{t.sections.clausulas_adicionales}</p></div>
           <Toggle label="Condición general y estado de uso" sub="Entrega en misma condición que inspección, desgaste normal" checked={data.bloques.condicion_uso} onChange={()=>togBloque("condicion_uso")} />
