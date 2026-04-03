@@ -443,7 +443,7 @@ export function renderizarBloques(plantilla, ctx) {
     try {
       // Si el bloque tiene sub_clausula, calcular el inciso dinámico
       if (bloque.sub_clausula || bloque.despues_de === 'cl_condiciones' || 
-          (bloque.despues_de && ['inspeccion', 'doc_fideicomiso', 'financiamiento', 'inventario', 'arrendamientos', 'zona_federal', 'litigios_pendientes'].includes(bloque.despues_de))) {
+          (bloque.despues_de && ['inspeccion', 'doc_fideicomiso', 'financiamiento', 'inventario', 'arrendamientos', 'zona_federal', 'litigios_pendientes', 'empleados_condicion'].includes(bloque.despues_de))) {
         ctx._inciso = incisos[incisoCounter];
         incisoCounter++;
       } else if (bloque.id === 'cl_condiciones') {
