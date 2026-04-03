@@ -6,7 +6,11 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "eslint"
+    "lint": "eslint",
+    "test": "node qa/test_all.mjs",
+    "test:static": "node qa/test_full.mjs",
+    "test:fideicomiso": "node qa/test_fideicomiso.mjs",
+    "test:integration": "node qa/test_integration.mjs"
   },
   "dependencies": {
     "@react-pdf/renderer": "^4.3.2",
@@ -22,6 +26,8 @@
     "@tailwindcss/postcss": "^4",
     "eslint": "^9",
     "eslint-config-next": "16.2.1",
+    "mammoth": "^1.12.0",
+    "pdf-parse": "^2.4.5",
     "tailwindcss": "^4"
   }
 }
