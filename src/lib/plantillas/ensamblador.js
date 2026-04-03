@@ -274,32 +274,134 @@ export function ensamblarContexto(plantilla, datos) {
   
   ctx.coordinador = datos.campos?.coordinador || {};
 
-  // Inspección con letras
-  const insData = datos.campos?.inspeccion || {};
+  // Plazos de condiciones indispensables
+  const plazos = datos.campos?.condiciones_plazos || {};
+  
+  // Helper para tipo de días
+  const tipoDias = (tipo) => ({
+    es: tipo === 'habiles' ? 'hábiles' : 'naturales',
+    en: tipo === 'habiles' ? 'business' : 'calendar',
+    fr: tipo === 'habiles' ? 'ouvrables' : 'calendaires',
+  });
+
+  // Inspección con plazos configurables
+  const insInspDias = plazos.inspeccion_inspeccionar_dias || 4;
+  const insInspTipo = plazos.inspeccion_inspeccionar_tipo || 'naturales';
+  const insRevDias = plazos.inspeccion_revisar_dias || 5;
+  const insRevTipo = plazos.inspeccion_revisar_tipo || 'naturales';
   ctx.inspeccion = {
-    ...insData,
-    dias_inspeccion: insData.dias_inspeccion || 4,
-    dias_revision: insData.dias_revision || 5,
-    dias_inspeccion_letras: diasALetras(insData.dias_inspeccion || 4),
-    dias_revision_letras: diasALetras(insData.dias_revision || 5),
-    dias_inspeccion_letras_en: diasALetrasEn(insData.dias_inspeccion || 4),
-    dias_revision_letras_en: diasALetrasEn(insData.dias_revision || 5),
+    dias_inspeccion: insInspDias,
+    dias_revision: insRevDias,
+    dias_inspeccion_letras: diasALetras(insInspDias),
+    dias_revision_letras: diasALetras(insRevDias),
+    dias_inspeccion_letras_en: diasALetrasEn(insInspDias),
+    dias_revision_letras_en: diasALetrasEn(insRevDias),
+    dias_inspeccion_letras_fr: diasALetrasFr(insInspDias),
+    dias_revision_letras_fr: diasALetrasFr(insRevDias),
+    tipo_inspeccion: tipoDias(insInspTipo),
+    tipo_revision: tipoDias(insRevTipo),
   };
 
-  // Financiamiento
+  // Doc fideicomiso con plazos configurables
+  const docEntDias = plazos.doc_fideicomiso_entregar_dias || 5;
+  const docEntTipo = plazos.doc_fideicomiso_entregar_tipo || 'habiles';
+  const docRevDias = plazos.doc_fideicomiso_revisar_dias || 10;
+  const docRevTipo = plazos.doc_fideicomiso_revisar_tipo || 'naturales';
+  ctx.doc_fideicomiso = {
+    dias_entregar: docEntDias,
+    dias_revisar: docRevDias,
+    dias_entregar_letras: diasALetras(docEntDias),
+    dias_revisar_letras: diasALetras(docRevDias),
+    dias_entregar_letras_en: diasALetrasEn(docEntDias),
+    dias_revisar_letras_en: diasALetrasEn(docRevDias),
+    tipo_entregar: tipoDias(docEntTipo),
+    tipo_revisar: tipoDias(docRevTipo),
+  };
+
+  // Financiamiento con plazo configurable
   const finData = datos.campos?.financiamiento || {};
+  const finAprobDias = plazos.financiamiento_aprobacion_dias || finData.dias_due_diligence || 30;
+  const finAprobTipo = plazos.financiamiento_aprobacion_tipo || 'naturales';
   ctx.financiamiento = {
     ...finData,
-    dias_due_diligence: finData.dias_due_diligence || 30,
-    dias_due_diligence_letras: diasALetras(finData.dias_due_diligence || 30),
-    dias_due_diligence_letras_en: diasALetrasEn(finData.dias_due_diligence || 30),
+    dias_due_diligence: finAprobDias,
+    dias_due_diligence_letras: diasALetras(finAprobDias),
+    dias_due_diligence_letras_en: diasALetrasEn(finAprobDias),
+    dias_due_diligence_letras_fr: diasALetrasFr(finAprobDias),
+    tipo_due_diligence: tipoDias(finAprobTipo),
   };
 
-  // Inventario
-  ctx.inventario = datos.campos?.inventario || {};
+  // Inventario con plazos configurables
+  const invEntDias = plazos.inventario_entregar_dias || 5;
+  const invEntTipo = plazos.inventario_entregar_tipo || 'habiles';
+  const invRevDias = plazos.inventario_revisar_dias || 5;
+  const invRevTipo = plazos.inventario_revisar_tipo || 'naturales';
+  ctx.inventario = {
+    ...(datos.campos?.inventario || {}),
+    dias_entregar: invEntDias,
+    dias_revisar: invRevDias,
+    dias_entregar_letras: diasALetras(invEntDias),
+    dias_revisar_letras: diasALetras(invRevDias),
+    tipo_entregar: tipoDias(invEntTipo),
+    tipo_revisar: tipoDias(invRevTipo),
+  };
 
-  // Arrendamientos
-  ctx.arrendamientos = datos.campos?.arrendamientos || {};
+  // Arrendamientos con plazos configurables
+  const arrInfDias = plazos.arrendamientos_informar_dias || 5;
+  const arrInfTipo = plazos.arrendamientos_informar_tipo || 'habiles';
+  const arrRevDias = plazos.arrendamientos_revisar_dias || 5;
+  const arrRevTipo = plazos.arrendamientos_revisar_tipo || 'naturales';
+  ctx.arrendamientos = {
+    ...(datos.campos?.arrendamientos || {}),
+    dias_informar: arrInfDias,
+    dias_revisar: arrRevDias,
+    dias_informar_letras: diasALetras(arrInfDias),
+    dias_revisar_letras: diasALetras(arrRevDias),
+    tipo_informar: tipoDias(arrInfTipo),
+    tipo_revisar: tipoDias(arrRevTipo),
+  };
+
+  // Zona Federal con plazos configurables
+  const zfEntDias = plazos.zona_federal_entregar_dias || 5;
+  const zfEntTipo = plazos.zona_federal_entregar_tipo || 'habiles';
+  const zfRevDias = plazos.zona_federal_revisar_dias || 5;
+  const zfRevTipo = plazos.zona_federal_revisar_tipo || 'naturales';
+  ctx.zona_federal = {
+    dias_entregar: zfEntDias,
+    dias_revisar: zfRevDias,
+    dias_entregar_letras: diasALetras(zfEntDias),
+    dias_revisar_letras: diasALetras(zfRevDias),
+    tipo_entregar: tipoDias(zfEntTipo),
+    tipo_revisar: tipoDias(zfRevTipo),
+  };
+
+  // Litigios pendientes con plazos configurables
+  const litInfDias = plazos.litigios_informar_dias || 3;
+  const litInfTipo = plazos.litigios_informar_tipo || 'habiles';
+  const litEvDias = plazos.litigios_evaluar_dias || 5;
+  const litEvTipo = plazos.litigios_evaluar_tipo || 'naturales';
+  ctx.litigios = {
+    dias_informar: litInfDias,
+    dias_evaluar: litEvDias,
+    dias_informar_letras: diasALetras(litInfDias),
+    dias_evaluar_letras: diasALetras(litEvDias),
+    tipo_informar: tipoDias(litInfTipo),
+    tipo_evaluar: tipoDias(litEvTipo),
+  };
+
+  // Empleados/laborales con plazos configurables
+  const empInfDias = plazos.empleados_informar_dias || 3;
+  const empInfTipo = plazos.empleados_informar_tipo || 'habiles';
+  const empEvDias = plazos.empleados_evaluar_dias || 5;
+  const empEvTipo = plazos.empleados_evaluar_tipo || 'naturales';
+  ctx.empleados = {
+    dias_informar: empInfDias,
+    dias_evaluar: empEvDias,
+    dias_informar_letras: diasALetras(empInfDias),
+    dias_evaluar_letras: diasALetras(empEvDias),
+    tipo_informar: tipoDias(empInfTipo),
+    tipo_evaluar: tipoDias(empEvTipo),
+  };
 
   // Confidencialidad
   ctx.confidencialidad = datos.campos?.confidencialidad || { meses: 6 };
