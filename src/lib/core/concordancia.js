@@ -59,6 +59,11 @@ const ROLES = {
     sustantivo_en: { ms: 'BENEFICIARY', fs: 'BENEFICIARY', mp: 'BENEFICIARIES', fp: 'BENEFICIARIES' },
     sustantivo_fr: { ms: 'BÉNÉFICIAIRE', fs: 'BÉNÉFICIAIRE', mp: 'BÉNÉFICIAIRES', fp: 'BÉNÉFICIAIRES' },
   },
+  fideicomisario_vendedor: {
+    sustantivo: { ms: 'FIDEICOMISARIO VENDEDOR', fs: 'FIDEICOMISARIA VENDEDORA', mp: 'FIDEICOMISARIOS VENDEDORES', fp: 'FIDEICOMISARIAS VENDEDORAS' },
+    sustantivo_en: { ms: 'FIDEICOMMISSARY SELLER', fs: 'FIDEICOMMISSARY SELLER', mp: 'FIDEICOMMISSARY SELLERS', fp: 'FIDEICOMMISSARY SELLERS' },
+    sustantivo_fr: { ms: 'FIDUCIAIRE VENDEUR', fs: 'FIDUCIAIRE VENDEUSE', mp: 'FIDUCIAIRES VENDEURS', fp: 'FIDUCIAIRES VENDEUSES' },
+  },
   administrador: {
     sustantivo: { ms: 'ADMINISTRADOR', fs: 'ADMINISTRADORA', mp: 'ADMINISTRADORES', fp: 'ADMINISTRADORAS' },
     sustantivo_en: { ms: 'ADMINISTRATOR', fs: 'ADMINISTRATOR', mp: 'ADMINISTRATORS', fp: 'ADMINISTRATORS' },

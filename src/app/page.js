@@ -11,7 +11,7 @@ import { generarPdfBlob } from "@/lib/pdf/generador_pdf";
 // ============================================================
 const DEMO = {partes:{ofertante:{personas:[{nombre:"DENNIS DREISBACH DOTY",genero:"M"}],tipoPersona:"fisica",domicilio:"Calle Paseo del Arque 59, Fraccionamiento Las Ceibas, Ejido Jarretadera, Bahia de Banderas, Nayarit",nacionalidad:"estadounidense",celular:"322 306 8482",email:"claudia@castlesolutions.biz"},propietario:{personas:[{nombre:"KARIN MARGARETE PALUTKE",genero:"F"}],tipoPersona:"fisica",nacionalidad:"canadiense",celular:"322 101 7810",email:"maru@lionsrealestate.properties"}},bloques:{adjudicacion_conyuge:true,ad_corpus:true,escrow:true,inspeccion:true,doc_fideicomiso:true,comision:true,condicion_uso:true,fuerza_mayor:true,factura_complementaria:false,disclosure:false,financiamiento:false,inventario:false,arrendamientos:false,zona_federal:false,litigios_pendientes:false,empleados_condicion:false,obligaciones_vendedor:true,obligaciones_vendedor_agua:false,derecho_deduccion:true,auditoria_hacienda:false,holdback_escrow:false,documentos_integrales:true,proteccion_datos:false,confidencialidad:false,duplicados:true},campos:{inmueble:{descripcion_corta:"Departamento número 43 del Condominio Orquídeas",ubicacion_completa:"en el lote 4-12, dentro del condominio Coto Los Sauces, Condominio Maestro Flamingos Club Residencial, Km 144 carretera Tepic-Puerto Vallarta, Bahía de Banderas, Nayarit",nivel_torre:"tercer nivel de la Torre A",descripcion_interior:"sala, comedor, cocina, cuarto de lavado, terraza, 1 recámara, 1 recámara con balcón, 1 baño, recámara principal con baño",superficie_m2:129.85,superficie_letras:"ciento veintinueve metros ochenta y cinco centímetros",indiviso:"1.6790%"},antecedente:{fecha_escritura:"2018-07-20",numero_escritura:"34,362",notario_anterior:"Lic. Teodoro Ramírez Valenzuela",numero_notaria_anterior:"2",ciudad_notaria_anterior:"Bucerias, Nayarit",libro_rpp:"1406",seccion_rpp:"I",serie_rpp:"A",partida_rpp:"29",cuenta_predial:"U058152"},precio:{precio_total:220000,moneda:"USD",deposito_escrow:22000,dias_deposito:3},escrow:{empresa_escrow:"ARMOUR SECURE ESCROW, S DE RL DE CV"},fechas:{fecha_presentacion:"2023-03-20",ciudad_presentacion:"Bucerias, Nayarit",fecha_vigencia:"2023-03-22",fecha_formalizacion:"cualquier día hábil dentro de las primeras dos semanas del mes de Mayo de 2023",fecha_formalizacion_en:"any business day within the first two weeks of May 2023",fecha_extension:"las primeras dos semanas del mes de Junio 2023",fecha_extension_en:"the first two weeks of June 2023"},notario:{notario_seleccion:"buc_2"},comision:{porcentaje_total:"6%",incluye_iva:true,agencia1_nombre:"Lion's Real Estate Properties",agencia1_porcentaje:"3%",agencia2_nombre:"Pvcastlemx, SAS, de CV",agencia2_porcentaje:"3%"},penalidad:{porcentaje_penalidad:"10%"},jurisdiccion:{ciudad_jurisdiccion:"Bucerias, Nayarit, México"},inspeccion:{dias_inspeccion:4,dias_revision:5}}};
 
-const INIT = {partes:{ofertante:{personas:[{nombre:"",genero:"M"}],tipoPersona:"fisica",domicilio:"",nacionalidad:"",celular:"",email:""},propietario:{personas:[{nombre:"",genero:"F"}],tipoPersona:"fisica",domicilio:"",nacionalidad:"",celular:"",email:""}},bloques:{adjudicacion_conyuge:false,ad_corpus:true,escrow:true,inspeccion:true,doc_fideicomiso:true,comision:true,condicion_uso:true,fuerza_mayor:true,factura_complementaria:false,disclosure:false,financiamiento:false,inventario:false,arrendamientos:false,zona_federal:false,litigios_pendientes:false,empleados_condicion:false,obligaciones_vendedor:true,obligaciones_vendedor_agua:false,derecho_deduccion:true,auditoria_hacienda:false,holdback_escrow:false,documentos_integrales:true,proteccion_datos:false,confidencialidad:false,duplicados:true},campos:{inmueble:{},antecedente:{},precio:{moneda:"USD",precio_total:0,deposito_escrow:0},escrow:{empresa_escrow:"ARMOUR SECURE ESCROW, S DE RL DE CV"},fechas:{ciudad_presentacion:"Bucerias, Nayarit"},notario:{},comision:{porcentaje_total:"6%",incluye_iva:true},penalidad:{porcentaje_penalidad:"10%"},jurisdiccion:{ciudad_jurisdiccion:"Bucerias, Nayarit, México"},inspeccion:{dias_inspeccion:4,dias_revision:5}}};
+const INIT = {partes:{ofertante:{personas:[{nombre:"",genero:"M"}],tipoPersona:"fisica",domicilio:"",nacionalidad:"",celular:"",email:""},propietario:{personas:[{nombre:"",genero:"F"}],tipoPersona:"fisica",domicilio:"",nacionalidad:"",celular:"",email:"",titulo_vendedor:"propietario"}},bloques:{adjudicacion_conyuge:false,ad_corpus:true,escrow:true,inspeccion:true,doc_fideicomiso:true,comision:true,condicion_uso:true,fuerza_mayor:true,factura_complementaria:false,disclosure:false,financiamiento:false,inventario:false,arrendamientos:false,zona_federal:false,litigios_pendientes:false,empleados_condicion:false,obligaciones_vendedor:true,obligaciones_vendedor_agua:false,derecho_deduccion:true,auditoria_hacienda:false,holdback_escrow:false,documentos_integrales:true,proteccion_datos:false,confidencialidad:false,duplicados:true,rescision_pleno_derecho:false},campos:{inmueble:{},antecedente:{},precio:{moneda:"USD",precio_total:0,deposito_escrow:0},escrow:{empresa_escrow:"ARMOUR SECURE ESCROW, S DE RL DE CV"},fechas:{ciudad_presentacion:"Bucerias, Nayarit"},notario:{},comision:{porcentaje_total:"6%",incluye_iva:true},penalidad:{porcentaje_penalidad:"10%"},jurisdiccion:{ciudad_jurisdiccion:"Bucerias, Nayarit, México"},inspeccion:{dias_inspeccion:4,dias_revision:5}}};
 
 // ============================================================
 // HELPERS
@@ -59,10 +59,11 @@ function Toggle({ label, sub, checked, onChange }) {
   );
 }
 
-function Section({ title, children }) {
+function Section({ title, children, headerExtra }) {
   return (
     <div className="mb-6">
-      <h3 className="text-base font-semibold mb-4 pb-2 tracking-wide" style={{color:"var(--og-accent-hi)",borderBottom:"2px solid var(--og-border-hi)",letterSpacing:"0.02em"}}>{title}</h3>
+      <h3 className="text-base font-semibold mb-1 pb-2 tracking-wide" style={{color:"var(--og-accent-hi)",borderBottom:"2px solid var(--og-border-hi)",letterSpacing:"0.02em"}}>{title}</h3>
+      {headerExtra && <div className="mb-3">{headerExtra}</div>}
       <div className="grid grid-cols-2 gap-3">{children}</div>
     </div>
   );
@@ -236,10 +237,10 @@ function CondicionLibrePanel({ uiLang, textoEs, textoEn, textoFr, onChangeEs, on
   );
 }
 
-function PartePanel({ data, pid, label, upParte, upPersona, addPersona, rmPersona, t }) {
+function PartePanel({ data, pid, label, upParte, upPersona, addPersona, rmPersona, t, headerExtra }) {
   const p = data.partes[pid];
   return (
-    <Section title={label}>
+    <Section title={label} headerExtra={headerExtra}>
       {p.personas.map((per, i) => (
         <div key={i} className="col-span-2 flex flex-col gap-2 p-3 rounded-lg" style={{background:"var(--og-surface)",border:"1px solid var(--og-border)"}}>
           <div className="flex items-center gap-2">
@@ -1172,7 +1173,18 @@ export default function OfertaGenPage() {
 
         {step === 0 && <>
           <PartePanel data={data} pid="ofertante" label={t.fields.label_ofertante} upParte={upParte} upPersona={upPersona} addPersona={addPersona} rmPersona={rmPersona} t={t} />
-          <PartePanel data={data} pid="propietario" label={t.fields.label_propietario} upParte={upParte} upPersona={upPersona} addPersona={addPersona} rmPersona={rmPersona} t={t} />
+          <PartePanel data={data} pid="propietario" label={t.fields.label_propietario} upParte={upParte} upPersona={upPersona} addPersona={addPersona} rmPersona={rmPersona} t={t}
+            headerExtra={
+              <div className="flex items-center gap-2 mt-2">
+                <label className="text-xs font-medium" style={{color:"var(--og-secondary)"}}>{t.fields?.titulo_vendedor || "Título en contrato"}</label>
+                <select value={data.partes?.propietario?.titulo_vendedor || "propietario"} onChange={e => upParte("propietario","titulo_vendedor",e.target.value)} className="border border-gray-200 rounded-lg px-2 py-1 text-xs bg-white" style={{background:"var(--og-surface)",borderColor:"var(--og-border)",color:"var(--og-text)"}}>
+                  <option value="propietario">{t.fields?.tv_propietario || "Propietario / Owner"}</option>
+                  <option value="fideicomisario_vendedor">{t.fields?.tv_fideicomisario || "Fideicomisario Vendedor / Fideicommissary Seller"}</option>
+                  <option value="vendedor">{t.fields?.tv_vendedor || "Vendedor / Seller"}</option>
+                </select>
+              </div>
+            }
+          />
           <Section title={t.sections.idioma}>
             <div className="col-span-2 flex flex-col gap-2">
               <p className="text-xs" style={{color:"var(--og-secondary)"}}>{t.sections.idioma_sub}</p>
@@ -1350,6 +1362,7 @@ export default function OfertaGenPage() {
                   <option value="tep_42">Notaría 42 — Lic. Héctor Manuel Benítez Pineda</option>
                 </optgroup>
                 <option value="otro">Otro notario (captura manual)</option>
+                <option value="por_designar">A designar por el ofertante</option>
               </select>
             </div>
             {data.campos.notario?.notario_seleccion === "otro" && <>
@@ -1607,6 +1620,7 @@ export default function OfertaGenPage() {
           <Toggle label="Auditoría de Hacienda" sub="Vendedor informa auditorías fiscales; responsable de adeudos pre-cierre" checked={data.bloques.auditoria_hacienda} onChange={()=>togBloque("auditoria_hacienda")} />
           <Toggle label="Holdback escrow condominio" sub="Retención en escrow por assessments pendientes; carta del administrador requerida" checked={data.bloques.holdback_escrow} onChange={()=>togBloque("holdback_escrow")} />
           <Toggle label="Caso fortuito y fuerza mayor" sub="Fallecimiento → beneficiarios; pandemias/huracanes/guerras → extensión 90 días + consentimiento mutuo" checked={data.bloques.fuerza_mayor} onChange={()=>togBloque("fuerza_mayor")} />
+          <Toggle label="Rescisión de pleno derecho" sub="Si ofertante incumple, rescisión opera sin declaración judicial; vendedor libre de vender" checked={data.bloques.rescision_pleno_derecho} onChange={()=>togBloque("rescision_pleno_derecho")} />
           <Toggle label="Factura complementaria" sub="Solo cuando vendedor es persona moral mexicana (PDF+XML)" checked={data.bloques.factura_complementaria} onChange={()=>togBloque("factura_complementaria")} />
           <Toggle label="Disclosure / Deslinde" sub="Notario neutral, agencia no asesora legal/fiscal, hold harmless" checked={data.bloques.disclosure} onChange={()=>togBloque("disclosure")} />
           <Toggle label="Documentos integrales" sub="Lista de documentos que forman parte de la oferta" checked={data.bloques.documentos_integrales} onChange={()=>togBloque("documentos_integrales")} />

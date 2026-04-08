@@ -76,8 +76,13 @@ export function ensamblarContexto(plantilla, datos) {
     const datoParte = datos.partes?.[parteDef.id];
     if (!datoParte) continue;
 
+    // Para la parte vendedora, permitir título dinámico (propietario/fideicomisario_vendedor/vendedor)
+    const rolEfectivo = parteDef.id === 'propietario' && datoParte.titulo_vendedor
+      ? datoParte.titulo_vendedor
+      : parteDef.rol;
+
     const ctxParte = generarContextoParte({
-      rol: parteDef.rol,
+      rol: rolEfectivo,
       personas: datoParte.personas,
       tipoPersona: datoParte.tipoPersona || 'fisica',
       razonSocial: datoParte.razonSocial,
@@ -246,7 +251,14 @@ export function ensamblarContexto(plantilla, datos) {
   const seleccion = notarioRaw.notario_seleccion || '';
   const notarioCat = catalogo.find(n => n.id === seleccion);
 
-  if (notarioCat && seleccion !== 'otro') {
+  if (seleccion === 'por_designar') {
+    ctx.notario = {
+      nombre_notario: '',
+      numero_notaria: '',
+      ciudad_notaria: '',
+      por_designar: true,
+    };
+  } else if (notarioCat && seleccion !== 'otro') {
     ctx.notario = {
       nombre_notario: notarioCat.nombre,
       numero_notaria: notarioCat.numero,

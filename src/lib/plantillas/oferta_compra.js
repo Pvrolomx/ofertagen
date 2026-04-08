@@ -539,10 +539,18 @@ const PLANTILLA_OFERTA_COMPRA = {
       numero: 8,
       siempre: true,
       titulo: { es: 'NOTARIO PÚBLICO DESIGNADO', en: 'DESIGNATION OF PUBLIC NOTARY' },
-      render: (ctx) => ({
-        es: `Dicha escritura pública se celebrará ante la fe del ${ctx.notario.nombre_notario}, Notario Público ${ctx.notario.numero_notaria} de ${ctx.notario.ciudad_notaria}.`,
-        en: `Said public deed will be conveyed before the faith of ${ctx.notario.nombre_notario}, Notary Public ${ctx.notario.numero_notaria} of ${ctx.notario.ciudad_notaria}.`,
-      }),
+      render: (ctx) => {
+        if (ctx.notario.por_designar) {
+          return {
+            es: `Dicha escritura pública se celebrará ante la fe del Notario Público que en su momento designe ${ctx.ofertante.referencia}, quien para los efectos de la presente oferta será el "NOTARIO PÚBLICO DESIGNADO".`,
+            en: `Said public deed will be conveyed before the faith of the Public Notary designated by ${ctx.ofertante.en.referencia}, who for the purpose of the present offer will be "THE DESIGNATED PUBLIC NOTARY".`,
+          };
+        }
+        return {
+          es: `Dicha escritura pública se celebrará ante la fe del ${ctx.notario.nombre_notario}, Notario Público ${ctx.notario.numero_notaria} de ${ctx.notario.ciudad_notaria}.`,
+          en: `Said public deed will be conveyed before the faith of ${ctx.notario.nombre_notario}, Notary Public ${ctx.notario.numero_notaria} of ${ctx.notario.ciudad_notaria}.`,
+        };
+      },
     },
 
     // ---- CLÁUSULA 9: GASTOS DE ESCRITURACIÓN ----
@@ -994,6 +1002,20 @@ const PLANTILLA_OFERTA_COMPRA = {
           en: `If the present Offer is accepted by ${ctx.propietario.en.referenciaConComillas}; the indispensable condition for its validity set forth is satisfied; and, notwithstanding, one of the parties fails to comply with the terms and conditions herein established, or shall decide, or shall be impeded to formalize the definitive contract, the responsible party will be obligated to pay the other the total amount of ${ctx.penalidad.completo}.${distribEn}\n\nIn case ${ctx.ofertante.en.referencia_negrita} had deposited into the escrow account and failed to comply, both parties will sign the instruction to release the funds to pay ${ctx.propietario.en.referencia_negrita} the agreed penalty.\n\nLikewise, if ${ctx.propietario.en.referencia_negrita} fail to comply and funds have been deposited into the escrow account, both parties must release the funds to ${ctx.ofertante.en.referencia_negrita} and add, by ${ctx.propietario.en.referencia_negrita}, to them the amount agreed upon as a penalty.\n\nThe payment of said penalty will liberate the parties of any further obligation or responsibility, and the present offer will be automatically canceled and null in all its effects.`,
         };
       },
+    },
+
+    // ---- CLÁUSULA: RESCISIÓN DE PLENO DERECHO (Sprint 1) ----
+    {
+      id: 'rescision_pleno_derecho',
+      condicional: true,
+      default: false,
+      despues_de: 'cl_penalidad',
+      etiqueta: 'Rescisión de pleno derecho',
+      etiqueta_en: 'Rescission by operation of law',
+      render: (ctx) => ({
+        es: `En caso de incumplimiento de ${ctx.ofertante.referencia_negrita}, la RESCISIÓN del presente contrato operará de pleno derecho sin necesidad de Declaración Judicial, quedando ${ctx.propietario.referencia_negrita} en libertad de enajenar EL INMUEBLE objeto del presente instrumento, inmediatamente después que se actualice el supuesto del incumplimiento.`,
+        en: `In the event of non-compliance by ${ctx.ofertante.en.referencia_negrita}, the RESCISSION of the present contract will operate by law without the need for a Judicial Declaration, leaving ${ctx.propietario.en.referencia_negrita} free to dispose of THE PROPERTY object of this instrument, immediately after the event of non-compliance is actualized.`,
+      }),
     },
 
     // ---- CLÁUSULA: FACTURA COMPLEMENTARIA (solo persona moral mexicana) ----
