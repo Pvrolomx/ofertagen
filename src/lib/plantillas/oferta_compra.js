@@ -730,6 +730,19 @@ const PLANTILLA_OFERTA_COMPRA = {
         ].filter(Boolean).length;
         
         const plural = condicionesActivas > 1;
+        const remocion = ctx.bloques.condiciones_remocion;
+
+        if (remocion) {
+          return {
+            es: plural
+              ? `Aún cuando la presente oferta fuera aceptada por ${ctx.propietario.referencia} dentro del término de vigencia que más adelante se establece, la validez de la misma se supedita a las siguientes condiciones indispensables, las cuáles deberán ser satisfechas en su totalidad, a entera satisfacción de ${ctx.ofertante.referencia} y dentro del plazo que para el efecto se establece, Y LA REMOCIÓN DE DICHAS CONDICIONES INDISPENSABLES POR ${ctx.ofertante.referencia} MEDIANTE UN ESCRITO A MÁS TARDAR A LAS 24:00 HORAS DEL DÍA DEL VENCIMIENTO DEL PERÍODO; de lo contrario, la presente oferta se tendrá por cancelada, quedando, por consiguiente, las partes liberadas de cualquier obligación derivada de la misma:`
+              : `Aún cuando la presente oferta fuera aceptada por ${ctx.propietario.referencia} dentro del término de vigencia que más adelante se establece, la validez de la misma se supedita a la siguiente condición indispensable, la cuál deberá ser satisfecha en su totalidad, a entera satisfacción de ${ctx.ofertante.referencia} y dentro del plazo que para el efecto se establece, Y LA REMOCIÓN DE DICHA CONDICIÓN INDISPENSABLE POR ${ctx.ofertante.referencia} MEDIANTE UN ESCRITO A MÁS TARDAR A LAS 24:00 HORAS DEL DÍA DEL VENCIMIENTO DEL PERÍODO; de lo contrario, la presente oferta se tendrá por cancelada, quedando, por consiguiente, las partes liberadas de cualquier obligación derivada de la misma:`,
+            en: plural
+              ? `Even if the present offer is accepted by ${ctx.propietario.en.referencia} within the term of effect specified, the validity of said is subject to the fulfillment to ${ctx.ofertante.en.referencia}'s satisfaction and within the term set forth of the following indispensable conditions AND THE REMOVAL BY ${ctx.ofertante.en.referencia} OF SAID INDISPENSABLE CONDITIONS NO LATER THAN MIDNIGHT ON THE DAY THAT SAID TERM EXPIRES; on the contrary, the present offer shall be considered canceled and the parties will be, therefore, liberated from any obligation derived from same:`
+              : `Even if the present offer is accepted by ${ctx.propietario.en.referencia} within the term of effect specified, the validity of said is subject to the fulfillment to ${ctx.ofertante.en.referencia}'s satisfaction and within the term set forth of the following indispensable condition AND THE REMOVAL BY ${ctx.ofertante.en.referencia} OF SAID INDISPENSABLE CONDITION NO LATER THAN MIDNIGHT ON THE DAY THAT SAID TERM EXPIRES; on the contrary, the present offer shall be considered canceled and the parties will be, therefore, liberated from any obligation derived from same:`,
+          };
+        }
+
         return {
           es: plural 
             ? `Esta oferta, para su validez, está sujeta a las siguientes condiciones:`
