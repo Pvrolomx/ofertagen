@@ -465,7 +465,12 @@ const PLANTILLA_OFERTA_COMPRA = {
           ? `${ctx.ofertante.en.referencia_negrita} herein offers to ${ctx.propietario.en.referencia_negrita} to celebrate an Irrevocable Trust Constitution Contract in Restricted Zone with regard to the property rights over THE PROPERTY above described in the total amount of ${ctx.precio.completo}. Said price will be paid in the following manner:`
           : `${ctx.ofertante.en.referencia_negrita} herein offers to ${ctx.propietario.en.referencia_negrita} to celebrate an Irrevocable Transfer of Domain Contract with regard to the trust rights over THE PROPERTY above described in the total amount of ${ctx.precio.completo}. Said price will be paid in the following manner:`;
         
-        return { es: textoEs, en: textoEn };
+        // Opción de asumir fideicomiso existente (solo cuando vendedor es extranjero con fideicomiso)
+        const fideiOpcion = !esMexicano && ctx.bloques.opcion_fideicomiso;
+        const fideiEs = fideiOpcion ? `\n\nDe existir un fideicomiso vigente sobre EL INMUEBLE, ${ctx.ofertante.referencia} tendrá la opción de asumir los derechos fideicomisarios existentes o constituir un nuevo fideicomiso para la adquisición de la propiedad, según convenga a sus intereses.` : '';
+        const fideiEn = fideiOpcion ? `\n\nIn the event that a trust currently exists on THE PROPERTY, ${ctx.ofertante.en.referencia} may agree to take over the pre-existing trust rights or open a new trust for the acquisition of the property, as may be convenient to their interests.` : '';
+
+        return { es: textoEs + fideiEs, en: textoEn + fideiEn };
       },
     },
 
@@ -1055,6 +1060,78 @@ const PLANTILLA_OFERTA_COMPRA = {
       render: (ctx) => ({
         es: `${ctx.ofertante.referencia} y ${ctx.propietario.referencia} reconocen que el Notario Público Designado es neutro y no actuará como representante legal de las partes. Así mismo, la(s) Agencia(s) de Bienes Raíces que participa(n) en esta operación dará(n) asesoría en materia de bienes raíces e inmobiliaria y no pretende(n) dar asesoría ni representación de naturaleza jurídica, fiscal o de contaduría. La(s) Agencia(s) de Bienes Raíces recomienda(n) que ambas partes contraten profesionales independientes, tales como abogados, fiscalistas y/o contadores, para revisar esta operación, y ambas partes liberan a la(s) Agencia(s) de Bienes Raíces de cualquier responsabilidad en el caso de daños o perjuicios sufridos como resultado de no haber consultado dichos profesionales independientes.`,
         en: `${ctx.ofertante.en.referencia} and ${ctx.propietario.en.referencia} recognize that the Designated Public Notary is a neutral third party and shall not act as legal representative of either party. At the same time, the Real Estate Agency(ies) participating in this transaction shall provide real estate brokerage and consultation services and shall not purport to give advice or representation of a legal, fiscal or accounting nature. The Real Estate Agency(ies) recommend that both parties contract independent professionals such as attorneys, tax planners and/or accountants in connection with the present transaction, and both parties shall hold the Real Estate Agency(ies) harmless in the event of damages that may be caused by the failure to seek such independent professional service.`,
+      }),
+    },
+
+    // ---- CLÁUSULA: DIVULGACIÓN RELACIONES DE AGENCIA (Sprint 2) ----
+    {
+      id: 'divulgacion_agencia',
+      condicional: true,
+      default: false,
+      etiqueta: 'Divulgación de relaciones de agencia',
+      etiqueta_en: 'Disclosure of agency relationships',
+      titulo: { es: 'DIVULGACIÓN DE RELACIONES DE AGENCIA', en: 'DISCLOSURE OF AGENCY RELATIONSHIPS' },
+      render: (ctx) => {
+        const ag = ctx.divulgacion || {};
+        return {
+          es: `Las siguientes relaciones son de aquí en adelante confirmadas por esta transacción:\n\nAgente del Listing: ${ag.agente_vendedor || '[AGENTE VENDEDOR]'} de ${ag.agencia_vendedor || '[AGENCIA VENDEDOR]'} es agente Exclusivo del Vendedor.\n\nAgente Vendedor: ${ag.agente_comprador || '[AGENTE COMPRADOR]'} de ${ag.agencia_comprador || '[AGENCIA COMPRADOR]'} es agente Exclusivo del Comprador.`,
+          en: `The following relationships are hereby confirmed for this transaction:\n\nListing Agent: ${ag.agente_vendedor || '[LISTING AGENT]'} of ${ag.agencia_vendedor || '[LISTING AGENCY]'} is the agent of the Seller Exclusively.\n\nSelling Agent: ${ag.agente_comprador || '[SELLING AGENT]'} of ${ag.agencia_comprador || '[SELLING AGENCY]'} is the agent of the Buyer Exclusively.`,
+        };
+      },
+    },
+
+    // ---- CLÁUSULA: RENUNCIA EXPRESA DE ACCIONES DE NULIDAD (Sprint 3) ----
+    {
+      id: 'renuncia_nulidad',
+      condicional: true,
+      default: false,
+      etiqueta: 'Renuncia expresa de acciones de nulidad',
+      etiqueta_en: 'Waiver of nullity actions',
+      titulo: { es: 'RENUNCIA EXPRESA DE ACCIONES DE NULIDAD', en: 'WAIVER OF NULLITY ACTIONS' },
+      render: (ctx) => ({
+        es: `Declaran las partes que el presente contrato no contiene error, enriquecimiento ilegítimo, engaño, violencia o cualquier otro vicio del consentimiento que para su celebración han otorgado, razón por la cual renuncian desde hoy al ejercicio de las acciones que pudieran corresponderles por las mencionadas causas o cualquier otra similar.`,
+        en: `The parties represent that this contract does not contain any error, fraud, duress, unjust enrichment, or any other vices of their consent given by them to execute this contract. Consequently, the parties refrain from this date forward to enforce any action with relation to the referred causes or any other similar.`,
+      }),
+    },
+
+    // ---- CLÁUSULA: CONTRATO EN SU TOTALIDAD (Sprint 3) ----
+    {
+      id: 'contrato_totalidad',
+      condicional: true,
+      default: false,
+      etiqueta: 'Contrato en su totalidad (cláusula de integración)',
+      etiqueta_en: 'Entire contract (integration clause)',
+      titulo: { es: 'EL CONTRATO EN SU TOTALIDAD', en: 'ENTIRE CONTRACT' },
+      render: (ctx) => ({
+        es: `${ctx.ofertante.referencia} y ${ctx.propietario.referencia} manifiestan que este contrato constituye la total y única manifestación de sus términos y condiciones y que ninguna evidencia externa puede ser introducida en el caso de proceso judicial o de arbitraje como condiciones adicionales a este convenio; a no ser que ambas partes agreguen cláusulas adicionales al presente por escrito y debidamente firmadas de aceptación por ambas partes.`,
+        en: `${ctx.ofertante.en.referencia} and ${ctx.propietario.en.referencia} state that this contract represents the entire and sole declaration of these terms and conditions and that no other external evidence could be introduced in the event of judicial or arbitration procedures as additional conditions to this contract; unless the parties herein include additional clauses by written and signed by all of them.`,
+      }),
+    },
+
+    // ---- CLÁUSULA: AVISO FRAUDE ELECTRÓNICO (Sprint 3) ----
+    {
+      id: 'aviso_fraude',
+      condicional: true,
+      default: false,
+      etiqueta: 'Aviso de fraude electrónico (wire fraud warning)',
+      etiqueta_en: 'Wire fraud warning',
+      titulo: { es: 'AVISO DE FRAUDE ELECTRÓNICO', en: 'WIRE FRAUD WARNING' },
+      render: (ctx) => ({
+        es: `AVISO: DEBIDO A ACTIVIDADES FRAUDULENTAS Y ELECTRÓNICAS CORRESPONDIENTES A LA TRANSFERENCIA DE FONDOS, REQUERIMOS QUE CONTACTE A SU AGENTE Y/O AGENTE DE ESCROW ANTES DE ENVIAR CUALQUIER TRANSFERENCIA. VERIFIQUE SIEMPRE LOS DATOS BANCARIOS POR TELÉFONO DIRECTAMENTE CON LA EMPRESA DEPOSITARIA ANTES DE REALIZAR CUALQUIER TRANSFERENCIA.`,
+        en: `WARNING: DUE TO FRAUD AND EMAIL SCAMS IN RELATION TO WIRING FUNDS, WE REQUIRE THAT YOU CONTACT YOUR AGENT AND/OR THE ESCROW COMPANY PRIOR TO WIRING ANY FUNDS. ALWAYS VERIFY BANKING DETAILS BY PHONE DIRECTLY WITH THE ESCROW COMPANY BEFORE MAKING ANY WIRE TRANSFER.`,
+      }),
+    },
+
+    // ---- CLÁUSULA: DOCUSIGN DISCLAIMER (Sprint 4) ----
+    {
+      id: 'docusign_disclaimer',
+      condicional: true,
+      default: false,
+      etiqueta: 'DocuSign disclaimer (ley mexicana)',
+      etiqueta_en: 'DocuSign disclaimer (Mexican law)',
+      render: (ctx) => ({
+        es: `AMBAS PARTES RECONOCEN QUE DOCUMENTOS ORIGINALES DEBIDAMENTE FIRMADOS POR LAS PARTES ES UNA FORMALIDAD REQUERIDA BAJO LAS LEYES MEXICANAS, LAS CUALES NO INCLUYEN VERSIONES ESCANEADAS, DOCUSIGN NI FIRMAS EN CONTRAPARTES. No obstante, los contratos deberán ser remitidos a las partes con firmas originales ante dos testigos en el plazo máximo de veintiún (21) días naturales siguientes a la fecha en que se suscriban electrónicamente.`,
+        en: `BOTH PARTIES ACKNOWLEDGE THAT DULY SIGNED ORIGINAL DOCUMENTS ARE A REQUIRED FORMALITY UNDER MEXICAN LAW WHICH DOES NOT INCLUDE SCANNED, DOCUSIGNED OR COUNTERPART SIGNATURES. Notwithstanding, the contract shall be provided to the parties herein with original signatures before two witnesses within a term of twenty-one (21) calendar days following the date that they were entered electronically.`,
       }),
     },
 

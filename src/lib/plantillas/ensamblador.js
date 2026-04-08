@@ -285,6 +285,7 @@ export function ensamblarContexto(plantilla, datos) {
   };
   
   ctx.coordinador = datos.campos?.coordinador || {};
+  ctx.divulgacion = datos.campos?.divulgacion || {};
 
   // Plazos de condiciones indispensables
   const plazos = datos.campos?.condiciones_plazos || {};
