@@ -1406,17 +1406,6 @@ export default function OfertaGenPage() {
               </select>
             </div>
           </Section>}
-          <Section title={t.sections.comision}>
-            <Input label={t.fields.pct_total} value={data.campos.comision?.porcentaje_total} onChange={v=>upCampo("comision","porcentaje_total",v)} />
-            <div className="flex items-center gap-2 self-end pb-2">
-              <input type="checkbox" checked={!!data.campos.comision?.incluye_iva} onChange={e=>upCampo("comision","incluye_iva",e.target.checked)} className="rounded" />
-              <label className="text-xs" style={{color:"var(--og-secondary)"}}>{t.fields.iva}</label>
-            </div>
-            <Input label={t.fields.agencia1} value={data.campos.comision?.agencia1_nombre} onChange={v=>upCampo("comision","agencia1_nombre",v)} />
-            <Input label={t.fields.pct_ag1} value={data.campos.comision?.agencia1_porcentaje} onChange={v=>upCampo("comision","agencia1_porcentaje",v)} />
-            <Input label={t.fields.agencia2} value={data.campos.comision?.agencia2_nombre} onChange={v=>upCampo("comision","agencia2_nombre",v)} />
-            <Input label={t.fields.pct_ag2} value={data.campos.comision?.agencia2_porcentaje} onChange={v=>upCampo("comision","agencia2_porcentaje",v)} />
-          </Section>
           <Section title={t.sections.penalidad}>
             <Input label={t.fields.pct_penalidad} value={data.campos.penalidad?.porcentaje_penalidad} onChange={v=>upCampo("penalidad","porcentaje_penalidad",v)} />
             <div className="flex flex-col gap-1">
@@ -1618,6 +1607,17 @@ export default function OfertaGenPage() {
           <Toggle label="Ad Corpus / As-Is" sub="Compra por cuerpo cierto, superficies aproximadas, estado actual" checked={data.bloques.ad_corpus} onChange={()=>togBloque("ad_corpus")} />
           <Toggle label="Cuenta Escrow" sub="Depósito condicional irrevocable (Stewart Title)" checked={data.bloques.escrow} onChange={()=>togBloque("escrow")} />
           <Toggle label="Comisión inmobiliaria" sub="Pago de comisión a agencias de RE" checked={data.bloques.comision} onChange={()=>togBloque("comision")} />
+          {data.bloques.comision && <Section title={t.sections?.comision || "Comisión — detalle"}>
+            <Input label={t.fields.pct_total} value={data.campos.comision?.porcentaje_total} onChange={v=>upCampo("comision","porcentaje_total",v)} />
+            <div className="flex items-center gap-2 self-end pb-2">
+              <input type="checkbox" checked={!!data.campos.comision?.incluye_iva} onChange={e=>upCampo("comision","incluye_iva",e.target.checked)} className="rounded" />
+              <label className="text-xs" style={{color:"var(--og-secondary)"}}>{t.fields.iva}</label>
+            </div>
+            <Input label={t.fields.agencia1} value={data.campos.comision?.agencia1_nombre} onChange={v=>upCampo("comision","agencia1_nombre",v)} />
+            <Input label={t.fields.pct_ag1} value={data.campos.comision?.agencia1_porcentaje} onChange={v=>upCampo("comision","agencia1_porcentaje",v)} />
+            <Input label={t.fields.agencia2} value={data.campos.comision?.agencia2_nombre} onChange={v=>upCampo("comision","agencia2_nombre",v)} />
+            <Input label={t.fields.pct_ag2} value={data.campos.comision?.agencia2_porcentaje} onChange={v=>upCampo("comision","agencia2_porcentaje",v)} />
+          </Section>}
           <div className="mt-4 mb-2"><p className="text-xs font-semibold uppercase tracking-wider" style={{color:"var(--og-muted)"}}>{t.sections.clausulas_adicionales}</p></div>
           <Toggle label="Condición general y estado de uso" sub="Entrega en misma condición que inspección, desgaste normal" checked={data.bloques.condicion_uso} onChange={()=>togBloque("condicion_uso")} />
           <Toggle label="Obligaciones del vendedor" sub="Walk-through, carta no adeudo, prorrateo servicios, cesión CFE/cable" checked={data.bloques.obligaciones_vendedor} onChange={()=>togBloque("obligaciones_vendedor")} />
