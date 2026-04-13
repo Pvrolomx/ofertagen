@@ -59,6 +59,19 @@ function Toggle({ label, sub, checked, onChange }) {
   );
 }
 
+function CatGroup({ title, children, defaultOpen }) {
+  const [open, setOpen] = useState(defaultOpen ?? false);
+  return (
+    <div className="mb-3 rounded-xl overflow-hidden" style={{border:"1px solid var(--og-border)"}}>
+      <div onClick={() => setOpen(!open)} className="flex items-center justify-between px-4 py-3 cursor-pointer" style={{background:"var(--og-surface)"}}>
+        <span className="text-sm font-semibold" style={{color:"var(--og-primary)"}}>{title}</span>
+        <span className="text-xs" style={{color:"var(--og-muted)",transform:open?"rotate(180deg)":"rotate(0deg)",transition:"transform 0.2s"}}>&#9660;</span>
+      </div>
+      {open && <div className="px-2 pb-2 flex flex-col gap-1.5">{children}</div>}
+    </div>
+  );
+}
+
 function Section({ title, children, headerExtra }) {
   return (
     <div className="mb-6">
@@ -1145,7 +1158,8 @@ export default function OfertaGenPage() {
           <button onClick={exportDraft} className="px-3 py-1.5 text-xs rounded-lg transition flex items-center gap-1" style={{background:"var(--og-surface)",border:"1px solid var(--og-border)",color:"var(--og-secondary)"}}>
             <span>💾</span> {t.header.guardar}
           </button>
-          <button onClick={resetAll} className="px-3 py-1.5 text-xs rounded-lg transition" style={{background:"var(--og-surface)",border:"1px solid var(--og-border)",color:"var(--og-secondary)"}}>{t.header.limpiar}</button>
+          <button onClick={() => { if(window.confirm(t.header?.confirmar_limpiar || "¿Borrar todos los datos y empezar de cero?")) resetAll(); }} className="px-3 py-1.5 text-xs rounded-lg transition" style={{background:"var(--og-surface)",border:"1px solid var(--og-border)",color:"var(--og-secondary)"}}>{t.header.limpiar}</button>
+          <button onClick={loadDemo} className="px-3 py-1.5 text-xs rounded-lg transition" style={{background:"var(--og-surface)",border:"1px solid var(--og-border)",color:"var(--og-accent-hi)"}}>{t.header?.demo || "Demo"}</button>
           {/* Toggle idioma UI — Sprint V-a */}
           <div className="flex rounded-lg border border-gray-200 overflow-hidden text-xs font-medium">
             {[['es','ES'],['en','EN'],['fr','FR']].map(([lang, label]) => (
@@ -1603,63 +1617,80 @@ export default function OfertaGenPage() {
           {/* OTRAS CLÁUSULAS */}
           <h2 className="text-lg font-semibold mb-1" style={{color:"var(--og-primary)"}}>{t.sections.clausulas}</h2>
           <p className="text-xs text-gray-500 mb-4">Activa o desactiva sin romper el contrato.</p>
-          <Toggle label="Adjudicación de cónyuge" sub="50% derechos fideicomisarios del esposo fallecido" checked={data.bloques.adjudicacion_conyuge} onChange={()=>togBloque("adjudicacion_conyuge")} />
-          <Toggle label="Ad Corpus / As-Is" sub="Compra por cuerpo cierto, superficies aproximadas, estado actual" checked={data.bloques.ad_corpus} onChange={()=>togBloque("ad_corpus")} />
-          <Toggle label="Cuenta Escrow" sub="Depósito condicional irrevocable (Stewart Title)" checked={data.bloques.escrow} onChange={()=>togBloque("escrow")} />
-          <Toggle label="Comisión inmobiliaria" sub="Pago de comisión a agencias de RE" checked={data.bloques.comision} onChange={()=>togBloque("comision")} />
-          {data.bloques.comision && <Section title={t.sections?.comision || "Comisión — detalle"}>
-            <Input label={t.fields.pct_total} value={data.campos.comision?.porcentaje_total} onChange={v=>upCampo("comision","porcentaje_total",v)} />
-            <div className="flex items-center gap-2 self-end pb-2">
-              <input type="checkbox" checked={!!data.campos.comision?.incluye_iva} onChange={e=>upCampo("comision","incluye_iva",e.target.checked)} className="rounded" />
-              <label className="text-xs" style={{color:"var(--og-secondary)"}}>{t.fields.iva}</label>
-            </div>
-            <Input label={t.fields.agencia1} value={data.campos.comision?.agencia1_nombre} onChange={v=>upCampo("comision","agencia1_nombre",v)} />
-            <Input label={t.fields.pct_ag1} value={data.campos.comision?.agencia1_porcentaje} onChange={v=>upCampo("comision","agencia1_porcentaje",v)} />
-            <Input label={t.fields.agencia2} value={data.campos.comision?.agencia2_nombre} onChange={v=>upCampo("comision","agencia2_nombre",v)} />
-            <Input label={t.fields.pct_ag2} value={data.campos.comision?.agencia2_porcentaje} onChange={v=>upCampo("comision","agencia2_porcentaje",v)} />
-          </Section>}
-          <div className="mt-4 mb-2"><p className="text-xs font-semibold uppercase tracking-wider" style={{color:"var(--og-muted)"}}>{t.sections.clausulas_adicionales}</p></div>
-          <Toggle label="Condición general y estado de uso" sub="Entrega en misma condición que inspección, desgaste normal" checked={data.bloques.condicion_uso} onChange={()=>togBloque("condicion_uso")} />
-          <Toggle label="Obligaciones del vendedor" sub="Walk-through, carta no adeudo, prorrateo servicios, cesión CFE/cable" checked={data.bloques.obligaciones_vendedor} onChange={()=>togBloque("obligaciones_vendedor")} />
-          {data.bloques.obligaciones_vendedor && <div className="ml-8">
-            <Toggle label="Certificado no adeudo de agua" sub="Solo para inmuebles fuera de régimen de condominio" checked={data.bloques.obligaciones_vendedor_agua} onChange={()=>togBloque("obligaciones_vendedor_agua")} />
-          </div>}
-          <Toggle label="Derecho de deducción del precio" sub="Comprador deduce del precio reclamos no resueltos en 10 días" checked={data.bloques.derecho_deduccion} onChange={()=>togBloque("derecho_deduccion")} />
-          <Toggle label="Auditoría de Hacienda" sub="Vendedor informa auditorías fiscales; responsable de adeudos pre-cierre" checked={data.bloques.auditoria_hacienda} onChange={()=>togBloque("auditoria_hacienda")} />
-          <Toggle label="Holdback escrow condominio" sub="Retención en escrow por assessments pendientes; carta del administrador requerida" checked={data.bloques.holdback_escrow} onChange={()=>togBloque("holdback_escrow")} />
-          <Toggle label="Caso fortuito y fuerza mayor" sub="Fallecimiento → beneficiarios; pandemias/huracanes/guerras → extensión 90 días + consentimiento mutuo" checked={data.bloques.fuerza_mayor} onChange={()=>togBloque("fuerza_mayor")} />
-          {data.bloques.fuerza_mayor && <div className="ml-4 mb-2">
-            <Input label="Beneficiario sustituto (opcional)" value={data.campos.fuerza_mayor?.beneficiario_sustituto||""} onChange={v=>upCampo("fuerza_mayor","beneficiario_sustituto",v)} placeholder="Nombre completo del beneficiario sustituto (dejar vacío para 'familiar en línea directa')" wide />
-          </div>}
-          <Toggle label="Rescisión de pleno derecho" sub="Si ofertante incumple, rescisión opera sin declaración judicial; vendedor libre de vender" checked={data.bloques.rescision_pleno_derecho} onChange={()=>togBloque("rescision_pleno_derecho")} />
-          <Toggle label="Factura complementaria" sub="Solo cuando vendedor es persona moral mexicana (PDF+XML)" checked={data.bloques.factura_complementaria} onChange={()=>togBloque("factura_complementaria")} />
-          <Toggle label="Disclosure / Deslinde" sub="Notario neutral, agencia no asesora legal/fiscal, hold harmless" checked={data.bloques.disclosure} onChange={()=>togBloque("disclosure")} />
-          <Toggle label="Documentos integrales" sub="Lista de documentos que forman parte de la oferta" checked={data.bloques.documentos_integrales} onChange={()=>togBloque("documentos_integrales")} />
-          <Toggle label="Protección de datos personales" sub="Cláusula de privacidad para compradores extranjeros" checked={data.bloques.proteccion_datos} onChange={()=>togBloque("proteccion_datos")} />
-          <Toggle label="Confidencialidad (NDA)" sub="Protege precio, términos e identidad del comprador durante y post-negociación" checked={data.bloques.confidencialidad} onChange={()=>togBloque("confidencialidad")} />
-          {data.bloques.confidencialidad && <Section title="Confidencialidad — meses post-cierre">
-            <label className="text-sm text-gray-600">Vigencia post-cierre / Post-closing term / Durée post-clôture</label>
-            <select value={data.campos.confidencialidad?.meses||6} onChange={e=>upCampo("confidencialidad","meses",parseInt(e.target.value))} className="border border-gray-200 rounded-lg px-3 py-2 text-sm bg-white">
-              <option value={3}>3 meses / months / mois</option>
-              <option value={6}>6 meses / months / mois</option>
-              <option value={12}>12 meses / months / mois</option>
-              <option value={24}>24 meses / months / mois</option>
-            </select>
-          </Section>}
-          <Toggle label="Duplicados / Counterparts" sub="Validez de copias firmadas y comunicaciones electrónicas" checked={data.bloques.duplicados} onChange={()=>togBloque("duplicados")} />
-          <Toggle label="Divulgación de agencia" sub="Sección formal: agente del comprador y vendedor con exclusividad" checked={data.bloques.divulgacion_agencia} onChange={()=>togBloque("divulgacion_agencia")} />
-          {data.bloques.divulgacion_agencia && <Section title="Divulgación — Agentes">
-            <Input label="Agente del comprador" value={data.campos.divulgacion?.agente_comprador||""} onChange={v=>upCampo("divulgacion","agente_comprador",v)} />
-            <Input label="Agencia del comprador" value={data.campos.divulgacion?.agencia_comprador||""} onChange={v=>upCampo("divulgacion","agencia_comprador",v)} />
-            <Input label="Agente del vendedor (listing)" value={data.campos.divulgacion?.agente_vendedor||""} onChange={v=>upCampo("divulgacion","agente_vendedor",v)} />
-            <Input label="Agencia del vendedor" value={data.campos.divulgacion?.agencia_vendedor||""} onChange={v=>upCampo("divulgacion","agencia_vendedor",v)} />
-          </Section>}
-          <Toggle label="Opción fideicomiso (asumir o nuevo)" sub="Ofertante elige asumir trust existente o abrir uno nuevo" checked={data.bloques.opcion_fideicomiso} onChange={()=>togBloque("opcion_fideicomiso")} />
-          <Toggle label="Renuncia de acciones de nulidad" sub="Sin vicios del consentimiento; renuncian acciones futuras" checked={data.bloques.renuncia_nulidad} onChange={()=>togBloque("renuncia_nulidad")} />
-          <Toggle label="Contrato en su totalidad" sub="Cláusula de integración; no evidencia externa en juicio/arbitraje" checked={data.bloques.contrato_totalidad} onChange={()=>togBloque("contrato_totalidad")} />
-          <Toggle label="Aviso fraude electrónico" sub="Wire fraud warning: verificar datos bancarios antes de transferir" checked={data.bloques.aviso_fraude} onChange={()=>togBloque("aviso_fraude")} />
-          <Toggle label="Condiciones con remoción escrita" sub="Lógica invertida: condiciones requieren remoción escrita del ofertante" checked={data.bloques.condiciones_remocion} onChange={()=>togBloque("condiciones_remocion")} />
-          <Toggle label="DocuSign disclaimer" sub="Firmas electrónicas no cumplen formalidad bajo ley mexicana" checked={data.bloques.docusign_disclaimer} onChange={()=>togBloque("docusign_disclaimer")} />
+
+          <CatGroup title="Estructura de la operación" defaultOpen={true}>
+            <Toggle label="Ad Corpus / As-Is" sub="Compra por cuerpo cierto, superficies aproximadas, estado actual" checked={data.bloques.ad_corpus} onChange={()=>togBloque("ad_corpus")} />
+            <Toggle label="Cuenta Escrow" sub="Depósito condicional irrevocable (Stewart Title)" checked={data.bloques.escrow} onChange={()=>togBloque("escrow")} />
+            <Toggle label="Opción fideicomiso (asumir o nuevo)" sub="Ofertante elige asumir trust existente o abrir uno nuevo" checked={data.bloques.opcion_fideicomiso} onChange={()=>togBloque("opcion_fideicomiso")} />
+            <Toggle label="Adjudicación de cónyuge" sub="50% derechos fideicomisarios del esposo fallecido" checked={data.bloques.adjudicacion_conyuge} onChange={()=>togBloque("adjudicacion_conyuge")} />
+          </CatGroup>
+
+          <CatGroup title="Costos y comisiones">
+            <Toggle label="Comisión inmobiliaria" sub="Pago de comisión a agencias de RE" checked={data.bloques.comision} onChange={()=>togBloque("comision")} />
+            {data.bloques.comision && <Section title={t.sections?.comision || "Comisión — detalle"}>
+              <Input label={t.fields.pct_total} value={data.campos.comision?.porcentaje_total} onChange={v=>upCampo("comision","porcentaje_total",v)} />
+              <div className="flex items-center gap-2 self-end pb-2">
+                <input type="checkbox" checked={!!data.campos.comision?.incluye_iva} onChange={e=>upCampo("comision","incluye_iva",e.target.checked)} className="rounded" />
+                <label className="text-xs" style={{color:"var(--og-secondary)"}}>{t.fields.iva}</label>
+              </div>
+              <Input label={t.fields.agencia1} value={data.campos.comision?.agencia1_nombre} onChange={v=>upCampo("comision","agencia1_nombre",v)} />
+              <Input label={t.fields.pct_ag1} value={data.campos.comision?.agencia1_porcentaje} onChange={v=>upCampo("comision","agencia1_porcentaje",v)} />
+              <Input label={t.fields.agencia2} value={data.campos.comision?.agencia2_nombre} onChange={v=>upCampo("comision","agencia2_nombre",v)} />
+              <Input label={t.fields.pct_ag2} value={data.campos.comision?.agencia2_porcentaje} onChange={v=>upCampo("comision","agencia2_porcentaje",v)} />
+            </Section>}
+            <Toggle label="Factura complementaria" sub="Solo cuando vendedor es persona moral mexicana (PDF+XML)" checked={data.bloques.factura_complementaria} onChange={()=>togBloque("factura_complementaria")} />
+            <Toggle label="Auditoría de Hacienda" sub="Vendedor informa auditorías fiscales; responsable de adeudos pre-cierre" checked={data.bloques.auditoria_hacienda} onChange={()=>togBloque("auditoria_hacienda")} />
+            <Toggle label="Holdback escrow condominio" sub="Retención en escrow por assessments pendientes; carta del administrador requerida" checked={data.bloques.holdback_escrow} onChange={()=>togBloque("holdback_escrow")} />
+          </CatGroup>
+
+          <CatGroup title="Protección al comprador">
+            <Toggle label="Condición general y estado de uso" sub="Entrega en misma condición que inspección, desgaste normal" checked={data.bloques.condicion_uso} onChange={()=>togBloque("condicion_uso")} />
+            <Toggle label="Obligaciones del vendedor" sub="Walk-through, carta no adeudo, prorrateo servicios, cesión CFE/cable" checked={data.bloques.obligaciones_vendedor} onChange={()=>togBloque("obligaciones_vendedor")} />
+            {data.bloques.obligaciones_vendedor && <div className="ml-8">
+              <Toggle label="Certificado no adeudo de agua" sub="Solo para inmuebles fuera de régimen de condominio" checked={data.bloques.obligaciones_vendedor_agua} onChange={()=>togBloque("obligaciones_vendedor_agua")} />
+            </div>}
+            <Toggle label="Derecho de deducción del precio" sub="Comprador deduce del precio reclamos no resueltos en 10 días" checked={data.bloques.derecho_deduccion} onChange={()=>togBloque("derecho_deduccion")} />
+            <Toggle label="Condiciones con remoción escrita" sub="Lógica invertida: condiciones requieren remoción escrita del ofertante" checked={data.bloques.condiciones_remocion} onChange={()=>togBloque("condiciones_remocion")} />
+          </CatGroup>
+
+          <CatGroup title="Contingencias y penalidades">
+            <Toggle label="Caso fortuito y fuerza mayor" sub="Fallecimiento → beneficiarios; pandemias/huracanes/guerras → extensión 90 días + consentimiento mutuo" checked={data.bloques.fuerza_mayor} onChange={()=>togBloque("fuerza_mayor")} />
+            {data.bloques.fuerza_mayor && <div className="ml-4 mb-2">
+              <Input label="Beneficiario sustituto (opcional)" value={data.campos.fuerza_mayor?.beneficiario_sustituto||""} onChange={v=>upCampo("fuerza_mayor","beneficiario_sustituto",v)} placeholder="Nombre completo del beneficiario sustituto (dejar vacío para 'familiar en línea directa')" wide />
+            </div>}
+            <Toggle label="Rescisión de pleno derecho" sub="Si ofertante incumple, rescisión opera sin declaración judicial; vendedor libre de vender" checked={data.bloques.rescision_pleno_derecho} onChange={()=>togBloque("rescision_pleno_derecho")} />
+          </CatGroup>
+
+          <CatGroup title="Legales y formalidades">
+            <Toggle label="Disclosure / Deslinde" sub="Notario neutral, agencia no asesora legal/fiscal, hold harmless" checked={data.bloques.disclosure} onChange={()=>togBloque("disclosure")} />
+            <Toggle label="Divulgación de agencia" sub="Sección formal: agente del comprador y vendedor con exclusividad" checked={data.bloques.divulgacion_agencia} onChange={()=>togBloque("divulgacion_agencia")} />
+            {data.bloques.divulgacion_agencia && <Section title="Divulgación — Agentes">
+              <Input label="Agente del comprador" value={data.campos.divulgacion?.agente_comprador||""} onChange={v=>upCampo("divulgacion","agente_comprador",v)} />
+              <Input label="Agencia del comprador" value={data.campos.divulgacion?.agencia_comprador||""} onChange={v=>upCampo("divulgacion","agencia_comprador",v)} />
+              <Input label="Agente del vendedor (listing)" value={data.campos.divulgacion?.agente_vendedor||""} onChange={v=>upCampo("divulgacion","agente_vendedor",v)} />
+              <Input label="Agencia del vendedor" value={data.campos.divulgacion?.agencia_vendedor||""} onChange={v=>upCampo("divulgacion","agencia_vendedor",v)} />
+            </Section>}
+            <Toggle label="Documentos integrales" sub="Lista de documentos que forman parte de la oferta" checked={data.bloques.documentos_integrales} onChange={()=>togBloque("documentos_integrales")} />
+            <Toggle label="Duplicados / Counterparts" sub="Validez de copias firmadas y comunicaciones electrónicas" checked={data.bloques.duplicados} onChange={()=>togBloque("duplicados")} />
+            <Toggle label="Renuncia de acciones de nulidad" sub="Sin vicios del consentimiento; renuncian acciones futuras" checked={data.bloques.renuncia_nulidad} onChange={()=>togBloque("renuncia_nulidad")} />
+            <Toggle label="Contrato en su totalidad" sub="Cláusula de integración; no evidencia externa en juicio/arbitraje" checked={data.bloques.contrato_totalidad} onChange={()=>togBloque("contrato_totalidad")} />
+            <Toggle label="Aviso fraude electrónico" sub="Wire fraud warning: verificar datos bancarios antes de transferir" checked={data.bloques.aviso_fraude} onChange={()=>togBloque("aviso_fraude")} />
+            <Toggle label="DocuSign disclaimer" sub="Firmas electrónicas no cumplen formalidad bajo ley mexicana" checked={data.bloques.docusign_disclaimer} onChange={()=>togBloque("docusign_disclaimer")} />
+          </CatGroup>
+
+          <CatGroup title="Privacidad">
+            <Toggle label="Protección de datos personales" sub="Cláusula de privacidad para compradores extranjeros" checked={data.bloques.proteccion_datos} onChange={()=>togBloque("proteccion_datos")} />
+            <Toggle label="Confidencialidad (NDA)" sub="Protege precio, términos e identidad del comprador durante y post-negociación" checked={data.bloques.confidencialidad} onChange={()=>togBloque("confidencialidad")} />
+            {data.bloques.confidencialidad && <Section title="Confidencialidad — meses post-cierre">
+              <label className="text-sm text-gray-600">Vigencia post-cierre / Post-closing term / Durée post-clôture</label>
+              <select value={data.campos.confidencialidad?.meses||6} onChange={e=>upCampo("confidencialidad","meses",parseInt(e.target.value))} className="border border-gray-200 rounded-lg px-3 py-2 text-sm bg-white">
+                <option value={3}>3 meses / months / mois</option>
+                <option value={6}>6 meses / months / mois</option>
+                <option value={12}>12 meses / months / mois</option>
+                <option value={24}>24 meses / months / mois</option>
+              </select>
+            </Section>}
+          </CatGroup>
         </div>}
 
         {step === 4 && <div>
