@@ -1165,6 +1165,24 @@ const PLANTILLA_OFERTA_COMPRA = {
       }),
     },
 
+    // ---- CLÁUSULA ADICIONAL (párrafo libre del abogado) ----
+    {
+      id: 'clausula_adicional',
+      condicional: true,
+      default: false,
+      etiqueta: 'Cláusula adicional',
+      etiqueta_en: 'Additional clause',
+      render: (ctx) => {
+        const textoEs = ctx.clausula_adicional?.texto_es?.trim();
+        const textoEn = ctx.clausula_adicional?.texto_en?.trim();
+        if (!textoEs && !textoEn) return { es: '', en: '' };
+        return {
+          es: textoEs || '',
+          en: textoEn || '',
+        };
+      },
+    },
+
     // ---- CLÁUSULA 19: JURISDICCIÓN ----
     {
       id: 'cl_jurisdiccion',

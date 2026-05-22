@@ -439,6 +439,7 @@ export function ensamblarContexto(plantilla, datos) {
 
   // Condición libre (texto personalizado)
   ctx.condicion_libre = datos.campos?.condicion_libre || {};
+  ctx.clausula_adicional = datos.campos?.clausula_adicional || {};
 
   // Confidencialidad
   ctx.confidencialidad = datos.campos?.confidencialidad || { meses: 6 };

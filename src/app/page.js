@@ -11,7 +11,7 @@ import { generarPdfBlob } from "@/lib/pdf/generador_pdf";
 // ============================================================
 const DEMO = {partes:{ofertante:{personas:[{nombre:"DENNIS DREISBACH DOTY",genero:"M"}],tipoPersona:"fisica",domicilio:"Calle Paseo del Arque 59, Fraccionamiento Las Ceibas, Ejido Jarretadera, Bahia de Banderas, Nayarit",nacionalidad:"estadounidense",celular:"322 306 8482",email:"claudia@castlesolutions.biz"},propietario:{personas:[{nombre:"KARIN MARGARETE PALUTKE",genero:"F"}],tipoPersona:"fisica",nacionalidad:"canadiense",celular:"322 101 7810",email:"maru@lionsrealestate.properties"}},bloques:{adjudicacion_conyuge:true,ad_corpus:true,escrow:true,inspeccion:true,doc_fideicomiso:true,comision:true,condicion_uso:true,fuerza_mayor:true,factura_complementaria:false,disclosure:false,financiamiento:false,inventario:false,arrendamientos:false,zona_federal:false,litigios_pendientes:false,empleados_condicion:false,obligaciones_vendedor:true,obligaciones_vendedor_agua:false,derecho_deduccion:true,auditoria_hacienda:false,holdback_escrow:false,documentos_integrales:true,proteccion_datos:false,confidencialidad:false,duplicados:true},campos:{inmueble:{descripcion_corta:"Departamento número 43 del Condominio Orquídeas",ubicacion_completa:"en el lote 4-12, dentro del condominio Coto Los Sauces, Condominio Maestro Flamingos Club Residencial, Km 144 carretera Tepic-Puerto Vallarta, Bahía de Banderas, Nayarit",nivel_torre:"tercer nivel de la Torre A",descripcion_interior:"sala, comedor, cocina, cuarto de lavado, terraza, 1 recámara, 1 recámara con balcón, 1 baño, recámara principal con baño",superficie_m2:129.85,superficie_letras:"ciento veintinueve metros ochenta y cinco centímetros",indiviso:"1.6790%"},antecedente:{fecha_escritura:"2018-07-20",numero_escritura:"34,362",notario_anterior:"Lic. Teodoro Ramírez Valenzuela",numero_notaria_anterior:"2",ciudad_notaria_anterior:"Bucerias, Nayarit",libro_rpp:"1406",seccion_rpp:"I",serie_rpp:"A",partida_rpp:"29",cuenta_predial:"U058152"},precio:{precio_total:220000,moneda:"USD",deposito_escrow:22000,dias_deposito:3},escrow:{empresa_escrow:"ARMOUR SECURE ESCROW, S DE RL DE CV"},fechas:{fecha_presentacion:"2023-03-20",ciudad_presentacion:"Bucerias, Nayarit",fecha_vigencia:"2023-03-22",fecha_formalizacion:"cualquier día hábil dentro de las primeras dos semanas del mes de Mayo de 2023",fecha_formalizacion_en:"any business day within the first two weeks of May 2023",fecha_extension:"las primeras dos semanas del mes de Junio 2023",fecha_extension_en:"the first two weeks of June 2023"},notario:{notario_seleccion:"buc_2"},comision:{porcentaje_total:"6%",incluye_iva:true,agencia1_nombre:"Lion's Real Estate Properties",agencia1_porcentaje:"3%",agencia2_nombre:"Pvcastlemx, SAS, de CV",agencia2_porcentaje:"3%"},penalidad:{porcentaje_penalidad:"10%"},jurisdiccion:{ciudad_jurisdiccion:"Bucerias, Nayarit, México"},inspeccion:{dias_inspeccion:4,dias_revision:5}}};
 
-const INIT = {partes:{ofertante:{personas:[{nombre:"",genero:"M"}],tipoPersona:"fisica",domicilio:"",nacionalidad:"",celular:"",email:""},propietario:{personas:[{nombre:"",genero:"F"}],tipoPersona:"fisica",domicilio:"",nacionalidad:"",celular:"",email:"",titulo_vendedor:"propietario"}},bloques:{adjudicacion_conyuge:false,ad_corpus:true,escrow:true,inspeccion:true,doc_fideicomiso:true,comision:true,condicion_uso:true,fuerza_mayor:true,factura_complementaria:false,disclosure:false,financiamiento:false,inventario:false,arrendamientos:false,zona_federal:false,litigios_pendientes:false,empleados_condicion:false,obligaciones_vendedor:true,obligaciones_vendedor_agua:false,derecho_deduccion:true,auditoria_hacienda:false,holdback_escrow:false,documentos_integrales:true,proteccion_datos:false,confidencialidad:false,duplicados:true,rescision_pleno_derecho:false,divulgacion_agencia:false,opcion_fideicomiso:false,renuncia_nulidad:false,contrato_totalidad:false,aviso_fraude:false,condiciones_remocion:false,docusign_disclaimer:false,precio_compuesto:false},campos:{inmueble:{},antecedente:{},precio:{moneda:"USD",precio_total:0,deposito_escrow:0},escrow:{empresa_escrow:"ARMOUR SECURE ESCROW, S DE RL DE CV"},fechas:{ciudad_presentacion:"Bucerias, Nayarit"},notario:{},comision:{porcentaje_total:"6%",incluye_iva:true},penalidad:{porcentaje_penalidad:"10%"},jurisdiccion:{ciudad_jurisdiccion:"Bucerias, Nayarit, México"},inspeccion:{dias_inspeccion:4,dias_revision:5}}};
+const INIT = {partes:{ofertante:{personas:[{nombre:"",genero:"M"}],tipoPersona:"fisica",domicilio:"",nacionalidad:"",celular:"",email:""},propietario:{personas:[{nombre:"",genero:"F"}],tipoPersona:"fisica",domicilio:"",nacionalidad:"",celular:"",email:"",titulo_vendedor:"propietario"}},bloques:{adjudicacion_conyuge:false,ad_corpus:true,escrow:true,inspeccion:true,doc_fideicomiso:true,comision:true,condicion_uso:true,fuerza_mayor:true,factura_complementaria:false,disclosure:false,financiamiento:false,inventario:false,arrendamientos:false,zona_federal:false,litigios_pendientes:false,empleados_condicion:false,obligaciones_vendedor:true,obligaciones_vendedor_agua:false,derecho_deduccion:true,auditoria_hacienda:false,holdback_escrow:false,documentos_integrales:true,proteccion_datos:false,confidencialidad:false,duplicados:true,rescision_pleno_derecho:false,divulgacion_agencia:false,opcion_fideicomiso:false,renuncia_nulidad:false,contrato_totalidad:false,aviso_fraude:false,condiciones_remocion:false,docusign_disclaimer:false,precio_compuesto:false,clausula_adicional:false},campos:{inmueble:{},antecedente:{},precio:{moneda:"USD",precio_total:0,deposito_escrow:0},escrow:{empresa_escrow:"ARMOUR SECURE ESCROW, S DE RL DE CV"},fechas:{ciudad_presentacion:"Bucerias, Nayarit"},notario:{},comision:{porcentaje_total:"6%",incluye_iva:true},penalidad:{porcentaje_penalidad:"10%"},jurisdiccion:{ciudad_jurisdiccion:"Bucerias, Nayarit, México"},inspeccion:{dias_inspeccion:4,dias_revision:5}}};
 
 // ============================================================
 // HELPERS
@@ -245,6 +245,60 @@ function CondicionLibrePanel({ uiLang, textoEs, textoEn, textoFr, onChangeEs, on
             <span className="font-medium">FR:</span> {textoFr.substring(0, 100)}{textoFr.length > 100 ? '...' : ''}
           </div>
         )}
+      </div>
+    </div>
+  );
+}
+
+function ClausulaAdicionalPanel({ textoEs, textoEn, onChangeEs, onChangeEn }) {
+  const [traduciendo, setTraduciendo] = useState(false);
+
+  const traducir = async () => {
+    if (!textoEs.trim()) return;
+    setTraduciendo(true);
+    try {
+      const url = `https://translate.googleapis.com/translate_a/single?client=gtx&sl=es&tl=en&dt=t&q=${encodeURIComponent(textoEs)}`;
+      const res = await fetch(url);
+      const data = await res.json();
+      onChangeEn(data[0].map(x => x[0]).join(''));
+    } catch (err) {
+      console.error('Error traduciendo:', err);
+    } finally {
+      setTraduciendo(false);
+    }
+  };
+
+  return (
+    <div className="space-y-3 p-4 rounded-xl" style={{background:"rgba(29,107,184,0.08)",border:"1px solid var(--og-border-hi)"}}>
+      <div>
+        <label className="text-xs font-medium block mb-1" style={{color:"var(--og-primary)"}}>Texto en español / Spanish text</label>
+        <textarea
+          value={textoEs}
+          onChange={e => onChangeEs(e.target.value)}
+          placeholder="Ej: Las partes acuerdan que el vendedor tendrá acceso al inmueble durante los primeros 30 días posteriores al cierre para retirar sus efectos personales..."
+          rows={4}
+          className="w-full px-3 py-2 text-sm border rounded-lg resize-y"
+          style={{borderColor:"var(--og-border)",color:"var(--og-primary)",background:"var(--og-surface)"}}
+        />
+      </div>
+      <button
+        onClick={traducir}
+        disabled={traduciendo || !textoEs.trim()}
+        className="w-full px-3 py-2 text-sm font-medium rounded-lg transition-all disabled:opacity-50"
+        style={{background:"var(--og-accent)",color:"white"}}
+      >
+        {traduciendo ? "Traduciendo..." : "🌐 Traducir al inglés / Translate to English"}
+      </button>
+      <div>
+        <label className="text-xs font-medium block mb-1" style={{color:"var(--og-primary)"}}>English text (editable)</label>
+        <textarea
+          value={textoEn}
+          onChange={e => onChangeEn(e.target.value)}
+          placeholder="Translation will appear here — you can edit it manually..."
+          rows={4}
+          className="w-full px-3 py-2 text-sm border rounded-lg resize-y"
+          style={{borderColor:"var(--og-border)",color:"var(--og-primary)",background:"var(--og-surface)"}}
+        />
       </div>
     </div>
   );
@@ -1707,6 +1761,31 @@ export default function OfertaGenPage() {
               </select>
             </Section>}
           </CatGroup>
+
+          {/* CLÁUSULA ADICIONAL — siempre visible al final del paso */}
+          <div className="mt-4">
+            <div className="flex items-center gap-3 mb-3">
+              <div
+                onClick={() => togBloque('clausula_adicional')}
+                className="w-10 h-5 rounded-full relative transition-colors flex-shrink-0 cursor-pointer"
+                style={{background: data.bloques.clausula_adicional ? "var(--og-accent)" : "var(--og-muted)"}}
+              >
+                <div className={`w-4 h-4 rounded-full bg-white absolute top-0.5 transition-all ${data.bloques.clausula_adicional ? "left-5" : "left-0.5"}`} />
+              </div>
+              <div>
+                <div className="text-sm font-medium" style={{color:"var(--og-primary)"}}>Cláusula adicional / Additional clause</div>
+                <div className="text-xs text-gray-500">Párrafo libre: imprevistos, condiciones especiales, acuerdos particulares de la operación</div>
+              </div>
+            </div>
+            {data.bloques.clausula_adicional && (
+              <ClausulaAdicionalPanel
+                textoEs={data.campos.clausula_adicional?.texto_es || ""}
+                textoEn={data.campos.clausula_adicional?.texto_en || ""}
+                onChangeEs={v => upCampo("clausula_adicional", "texto_es", v)}
+                onChangeEn={v => upCampo("clausula_adicional", "texto_en", v)}
+              />
+            )}
+          </div>
         </div>}
 
         {step === 4 && <div>
