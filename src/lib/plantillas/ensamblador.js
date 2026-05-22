@@ -15,6 +15,7 @@ import {
   bloquePrecio,
   montoALetras,
   montoFormateado,
+  montoALetrasEn,
   fechaEs,
   fechaEn,
   fechaBilingue,
@@ -131,7 +132,15 @@ export function ensamblarContexto(plantilla, datos) {
   // ============================================================
 
   const moneda = datos.campos?.precio?.moneda || 'USD';
-  const precioTotal = datos.campos?.precio?.precio_total || 0;
+
+  // Si precio_compuesto está activo, precio_total = suma de ambos componentes
+  const precioCompuesto = datos.bloques?.precio_compuesto || false;
+  const precioInmueble = datos.campos?.precio?.precio_inmueble || 0;
+  const precioMuebles  = datos.campos?.precio?.precio_muebles  || 0;
+  const precioTotal = precioCompuesto
+    ? precioInmueble + precioMuebles
+    : datos.campos?.precio?.precio_total || 0;
+
   const depositoEscrow = datos.campos?.precio?.deposito_escrow || 0;
   const saldo = precioTotal - depositoEscrow;
   const diasDeposito = datos.campos?.precio?.dias_deposito || 3;
@@ -144,6 +153,18 @@ export function ensamblarContexto(plantilla, datos) {
 
   ctx.deposito = bloquePrecio(depositoEscrow, moneda);
   ctx.saldo = bloquePrecio(saldo, moneda);
+
+  // Bloques de precio compuesto (solo cuando está activo)
+  if (precioCompuesto) {
+    ctx.precio_inmueble = {
+      ...bloquePrecio(precioInmueble, moneda),
+      letras_en: montoALetrasEn(precioInmueble),
+    };
+    ctx.precio_muebles = {
+      ...bloquePrecio(precioMuebles, moneda),
+      letras_en: montoALetrasEn(precioMuebles),
+    };
+  }
 
   // ============================================================
   // 4. RESOLVER PENALIDAD

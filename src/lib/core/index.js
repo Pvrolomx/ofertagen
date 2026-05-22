@@ -23,6 +23,7 @@ export {
   bloquePrecio,
   registrarMoneda,
   superficieALetrasEn,
+  montoALetrasEn,
 } from './num2words.js';
 
 export {

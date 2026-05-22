@@ -281,3 +281,47 @@ export function superficieALetrasEn(m2) {
   
   return resultado;
 }
+
+// ============================================================
+// MONTO A LETRAS EN INGLÉS (uso contractual)
+// ============================================================
+
+/**
+ * Convierte enteros hasta 999,999,999 a palabras en inglés.
+ * Extiende numberToWordsEn() con soporte de miles y millones.
+ */
+function numberToWordsEnFull(n) {
+  if (n === 0) return 'zero';
+  if (n < 1000) return numberToWordsEn(n);
+  if (n < 1000000) {
+    const miles = Math.floor(n / 1000);
+    const resto = n % 1000;
+    return numberToWordsEn(miles) + ' thousand' + (resto ? ' ' + numberToWordsEn(resto) : '');
+  }
+  const millones = Math.floor(n / 1000000);
+  const resto = n % 1000000;
+  return numberToWordsEn(millones) + ' million' + (resto ? ' ' + numberToWordsEnFull(resto) : '');
+}
+
+/**
+ * Capitaliza la primera letra de cada palabra (Title Case).
+ * Ej: "two hundred thousand" → "Two Hundred Thousand"
+ */
+function toTitleCase(str) {
+  return str.replace(/\b\w/g, c => c.toUpperCase());
+}
+
+/**
+ * Convierte un monto numérico a letras en inglés con formato contractual.
+ * Ej: 275000 → "Two Hundred Seventy Five Thousand U.S. Dollars and 00/100"
+ *
+ * @param {number} monto
+ * @returns {string}
+ */
+export function montoALetrasEn(monto) {
+  const parteEntera = Math.floor(Math.abs(monto));
+  const centavos = Math.round((Math.abs(monto) - parteEntera) * 100);
+  const letras = toTitleCase(numberToWordsEnFull(parteEntera));
+  const sufijo = centavos > 0 ? `${centavos}/100` : '00/100';
+  return `${letras} U.S. Dollars and ${sufijo}`;
+}

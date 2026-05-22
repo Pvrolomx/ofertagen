@@ -446,31 +446,48 @@ const PLANTILLA_OFERTA_COMPRA = {
       }),
     },
 
-    // ---- CLÁUSULA 4: PRECIO Y CONDICIONES DE PAGO ----
+    // ---- CLÁUSULA 4: PRECIO Y CONDICIONES DE PAGO / PRECIO Y OBJETO ----
     {
       id: 'cl_precio',
       numero: 4,
       siempre: true,
-      titulo: { es: 'PRECIO Y CONDICIONES DE PAGO', en: 'PRICE AND PAYMENT TERMS' },
+      tituloFn: true,
       render: (ctx) => {
-        // Si el vendedor es mexicano → el comprador extranjero necesita CONSTITUIR fideicomiso
-        // Si el vendedor es extranjero → ya tiene fideicomiso, se transfieren derechos fideicomisarios
+        // ---- PRECIO COMPUESTO: Inmueble + Muebles ----
+        if (ctx.bloques.precio_compuesto) {
+          const pi = ctx.precio_inmueble;
+          const pm = ctx.precio_muebles;
+          const piUsd = `USD $${pi.monto.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+          const pmUsd = `USD $${pm.monto.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+          return {
+            titulo_es: 'PRECIO Y OBJETO',
+            titulo_en: 'PRICE AND OBJECT',
+            es: `PRIMERA: PRECIO Y OBJETO.- El precio total de la operación se compone de dos operaciones distintas, independientes y acumulativas, según lo siguiente:\n\nA) COMPRAVENTA DEL INMUEBLE: El precio de la compraventa de la unidad privativa descrita en la declaración anterior será la cantidad de ${pi.formateado} (${pi.letras}). Las partes acuerdan expresamente que esta cantidad será el valor único y definitivo que se asentará en la Escritura Pública correspondiente ante el Notario Público designado, y sobre el cual se calcularán los impuestos de adquisición y enajenación.\n\nB) COMPRAVENTA DE BIENES MUEBLES: El precio de la compraventa del mobiliario, decoración y electrodomésticos que se encuentran dentro del inmueble será la cantidad de ${pm.formateado} (${pm.letras}). Esta operación se formalizará por separado mediante Contrato Privado de Compraventa de Bienes Muebles con su respectivo inventario anexo, obligándose las partes a no incluir este valor ni dichos bienes dentro de la Escritura Pública del inmueble.`,
+            en: `FIRST: PRICE AND OBJECT.- The total price of the transaction is composed of two distinct, independent, and cumulative operations, as follows:\n\nA) REAL PROPERTY PURCHASE: The purchase price for the private unit described in the preceding declaration shall be the amount of ${piUsd} (${pi.letras_en}). The parties expressly agree that this amount shall be the sole and definitive value stated in the corresponding Deed before the designated Notary Public, and upon which acquisition and capital gains taxes shall be calculated.\n\nB) PERSONAL PROPERTY PURCHASE: The purchase price for the furniture, furnishings, and appliances located within the property shall be the amount of ${pmUsd} (${pm.letras_en}). This transaction shall be formalized separately through a Private Personal Property Purchase and Sale Agreement with its respective attached inventory. The parties bind themselves not to include this value or said assets within the Public Deed of the real property.`,
+          };
+        }
+
+        // ---- PRECIO SIMPLE (comportamiento actual) ----
         const esMexicano = ctx.propietario.esMexicano;
-        
+
         const textoEs = esMexicano
           ? `${ctx.ofertante.referencia_negrita} por medio de la presente ofrece a ${ctx.propietario.referencia_negrita} celebrar Contrato de Constitución de Fideicomiso Traslativo de Dominio Irrevocable en Zona Restringida en relación a los derechos de propiedad sobre el INMUEBLE arriba descrito en la cantidad total de ${ctx.precio.completo}. Precio este que será liquidado de la siguiente manera:`
           : `${ctx.ofertante.referencia_negrita} por medio de la presente ofrece a ${ctx.propietario.referencia_negrita} celebrar Contrato Traslativo de Dominio Irrevocable en relación a los derechos fideicomisarios sobre el INMUEBLE arriba descrito en la cantidad total de ${ctx.precio.completo}. Precio este que será liquidado de la siguiente manera:`;
-        
+
         const textoEn = esMexicano
           ? `${ctx.ofertante.en.referencia_negrita} herein offers to ${ctx.propietario.en.referencia_negrita} to celebrate an Irrevocable Trust Constitution Contract in Restricted Zone with regard to the property rights over THE PROPERTY above described in the total amount of ${ctx.precio.completo}. Said price will be paid in the following manner:`
           : `${ctx.ofertante.en.referencia_negrita} herein offers to ${ctx.propietario.en.referencia_negrita} to celebrate an Irrevocable Transfer of Domain Contract with regard to the trust rights over THE PROPERTY above described in the total amount of ${ctx.precio.completo}. Said price will be paid in the following manner:`;
-        
-        // Opción de asumir fideicomiso existente (solo cuando vendedor es extranjero con fideicomiso)
+
         const fideiOpcion = !esMexicano && ctx.bloques.opcion_fideicomiso;
         const fideiEs = fideiOpcion ? `\n\nDe existir un fideicomiso vigente sobre EL INMUEBLE, ${ctx.ofertante.referencia} tendrá la opción de asumir los derechos fideicomisarios existentes o constituir un nuevo fideicomiso para la adquisición de la propiedad, según convenga a sus intereses.` : '';
         const fideiEn = fideiOpcion ? `\n\nIn the event that a trust currently exists on THE PROPERTY, ${ctx.ofertante.en.referencia} may agree to take over the pre-existing trust rights or open a new trust for the acquisition of the property, as may be convenient to their interests.` : '';
 
-        return { es: textoEs + fideiEs, en: textoEn + fideiEn };
+        return {
+          titulo_es: 'PRECIO Y CONDICIONES DE PAGO',
+          titulo_en: 'PRICE AND PAYMENT TERMS',
+          es: textoEs + fideiEs,
+          en: textoEn + fideiEn,
+        };
       },
     },
 
