@@ -29,17 +29,18 @@ function renderBlks(ctx) {
 // ============================================================
 // COMPONENTS
 // ============================================================
-function Input({ label, value, onChange, type = "text", placeholder = "", required, wide, rows }) {
+function Input({ label, value, onChange, type = "text", placeholder = "", required, wide, rows, hasError }) {
+  const errCls = hasError ? "border-red-500 bg-red-50" : "border-gray-200 bg-white";
   return (
     <div className={`flex flex-col gap-1 ${wide ? "col-span-2" : ""}`}>
       <label className="text-xs font-medium text-gray-500">{label}{required && <span className="text-red-500 ml-0.5">*</span>}</label>
       {rows ? (
         <textarea value={value || ""} onChange={e => onChange(e.target.value)} placeholder={placeholder} rows={rows}
-          className="border border-gray-200 rounded-lg px-3 py-2 text-sm bg-white focus:ring-2 focus:ring-blue-400 focus:border-transparent outline-none resize-y" />
+          className={`border rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-blue-400 focus:border-transparent outline-none resize-y ${errCls}`} />
       ) : (
         <input type={type} value={value || ""} onChange={e => onChange(type === "number" ? +e.target.value : e.target.value)} placeholder={placeholder}
           step={type === "number" ? "any" : undefined}
-          className="border border-gray-200 rounded-lg px-3 py-2 text-sm bg-white focus:ring-2 focus:ring-blue-400 focus:border-transparent outline-none" />
+          className={`border rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-blue-400 focus:border-transparent outline-none ${errCls}`} />
       )}
     </div>
   );
@@ -304,18 +305,20 @@ function ClausulaAdicionalPanel({ textoEs, textoEn, onChangeEs, onChangeEn }) {
   );
 }
 
-function PartePanel({ data, pid, label, upParte, upPersona, addPersona, rmPersona, t, headerExtra }) {
+function PartePanel({ data, pid, label, upParte, upPersona, addPersona, rmPersona, t, headerExtra, fieldErrors = {} }) {
   const p = data.partes[pid];
   return (
     <Section title={label} headerExtra={headerExtra}>
-      {p.personas.map((per, i) => (
+      {p.personas.map((per, i) => {
+        const nombreError = i === 0 && fieldErrors[`partes.${pid}.personas[0].nombre`];
+        return (
         <div key={i} className="col-span-2 flex flex-col gap-2 p-3 rounded-lg" style={{background:"var(--og-surface)",border:"1px solid var(--og-border)"}}>
           <div className="flex items-center gap-2">
             {p.personas.length > 1 && <span className="text-xs font-medium text-gray-400">#{i+1}</span>}
             {p.personas.length > 1 && <button onClick={() => rmPersona(pid, i)} className="ml-auto text-xs text-red-500 hover:text-red-700">✕</button>}
           </div>
           <input value={per.nombre} onChange={e => upPersona(pid, i, "nombre", e.target.value.toUpperCase())} placeholder={t?.fields?.nombre_completo || "NOMBRE COMPLETO"}
-            className="rounded-lg px-3 py-2 text-sm outline-none font-medium w-full" />
+            className={`rounded-lg px-3 py-2 text-sm outline-none font-medium w-full border ${nombreError ? "border-red-500 bg-red-50" : "border-transparent"}`} />
           <div className="flex gap-2">
             {[["M", t?.fields?.genero_m || "M"], ["F", t?.fields?.genero_f || "F"]].map(([g, label]) => (
               <button key={g} onClick={() => upPersona(pid, i, "genero", g)} title={label}
@@ -323,7 +326,8 @@ function PartePanel({ data, pid, label, upParte, upPersona, addPersona, rmPerson
             ))}
           </div>
         </div>
-      ))}
+        );
+      })}
       <button onClick={() => addPersona(pid)} className="col-span-2 text-xs py-1" style={{color:"var(--og-accent-hi)"}}>{t?.fields?.agregar_persona || "+ Agregar persona"}</button>
       <div className="flex flex-col gap-1">
         <label className="text-xs font-medium" style={{color:"var(--og-secondary)"}}>{t.fields.nacionalidad}</label>
@@ -336,7 +340,7 @@ function PartePanel({ data, pid, label, upParte, upPersona, addPersona, rmPerson
         </select>
       </div>
       <Input label={t.fields.celular} value={p.celular} onChange={v => upParte(pid, "celular", v)} type="tel" required />
-      <Input label={t.fields.email} value={p.email} onChange={v => upParte(pid, "email", v)} type="email" required wide />
+      <Input label={t.fields.email} value={p.email} onChange={v => upParte(pid, "email", v)} type="email" required wide hasError={fieldErrors[`partes.${pid}.email`]} />
       <div className="col-span-2 flex flex-col gap-2">
         <div className="flex items-center gap-2">
           <input type="checkbox"
@@ -834,6 +838,7 @@ export default function OfertaGenPage() {
   const [showDisclaimer, setShowDisclaimer] = useState(false);
   const [disclaimerAccepted, setDisclaimerAccepted] = useState(false);
   const [pendingDownload, setPendingDownload] = useState(null); // 'word' | 'pdf' | null
+  const [fieldErrors, setFieldErrors] = useState({}); // clave→booleano: marca inline campos requeridos vacíos
   const t = UI[idiomaSecundario] || UI.es; // i18n activo Sprint V-a
   const lang2 = contractLang; // idioma secundario del contrato — independiente de la UI
   const steps = t.steps;
@@ -936,21 +941,34 @@ export default function OfertaGenPage() {
   const validarOferta = useCallback((bloquesRenderizados, contratLang2 = 'en') => {
     const errors = [];
     const warnings = [];
+    const fieldKeys = []; // claves de campos requeridos vacíos → marcado inline en rojo
 
     // Campos críticos
     const partes = data.partes;
-    if (!partes.ofertante.personas[0]?.nombre?.trim())
+    if (!partes.ofertante.personas[0]?.nombre?.trim()) {
       errors.push("Nombre del ofertante vacío");
-    if (!partes.ofertante.email?.trim())
+      fieldKeys.push("partes.ofertante.personas[0].nombre");
+    }
+    if (!partes.ofertante.email?.trim()) {
       errors.push("Email del ofertante vacío");
-    if (!partes.propietario.personas[0]?.nombre?.trim())
+      fieldKeys.push("partes.ofertante.email");
+    }
+    if (!partes.propietario.personas[0]?.nombre?.trim()) {
       errors.push("Nombre del propietario vacío");
-    if (!data.campos.precio?.precio_total || data.campos.precio.precio_total <= 0)
+      fieldKeys.push("partes.propietario.personas[0].nombre");
+    }
+    if (!data.campos.precio?.precio_total || data.campos.precio.precio_total <= 0) {
       errors.push("Precio de oferta no definido");
-    if (!data.campos.fechas?.fecha_vigencia)
+      fieldKeys.push("campos.precio.precio_total");
+    }
+    if (!data.campos.fechas?.fecha_vigencia) {
       errors.push("Fecha de vigencia no definida");
-    if (!data.campos.notario?.notario_seleccion)
+      fieldKeys.push("campos.fechas.fecha_vigencia");
+    }
+    if (!data.campos.notario?.notario_seleccion) {
       errors.push("Notario no seleccionado");
+      fieldKeys.push("campos.notario.notario_seleccion");
+    }
 
     // Placeholders no resueltos — revisa ES + idioma secundario
     const PLACEHOLDER_RE = /\[([A-ZÁÉÍÓÚÑ_]{3,})\]/g;
@@ -977,11 +995,16 @@ export default function OfertaGenPage() {
       }
     });
 
-    return { valid: errors.length === 0, errors, warnings };
+    return { valid: errors.length === 0, errors, warnings, fieldKeys };
   }, [data, contractLang]);
+
+  // Convierte un array de fieldKeys en el objeto {clave: true} para fieldErrors
+  const buildFieldErrors = (fieldKeys = []) =>
+    fieldKeys.reduce((acc, k) => { acc[k] = true; return acc; }, {});
 
   const handleGenerateForced = useCallback(async () => {
     setValidationResult(null);
+    setFieldErrors({});
     setGenerating(true);
     try {
       const blob = await generarDocxBlob(bloques, PLANTILLA.meta, { logoBase64, idiomaSecundario: lang2 });
@@ -1040,9 +1063,11 @@ export default function OfertaGenPage() {
     if (!bloques.length) return;
     const result = validarOferta(bloques, lang2);
     if (!result.valid || result.warnings.length > 0) {
+      setFieldErrors(buildFieldErrors(result.fieldKeys));
       setValidationResult(result);
       return;
     }
+    setFieldErrors({});
     // Si no ha aceptado disclaimer, mostrar modal
     if (!disclaimerAccepted) {
       setPendingDownload('word');
@@ -1056,9 +1081,11 @@ export default function OfertaGenPage() {
     if (!bloques.length) return;
     const result = validarOferta(bloques, lang2);
     if (!result.valid || result.warnings.length > 0) {
+      setFieldErrors(buildFieldErrors(result.fieldKeys));
       setValidationResult(result);
       return;
     }
+    setFieldErrors({});
     // Si no ha aceptado disclaimer, mostrar modal
     if (!disclaimerAccepted) {
       setPendingDownload('pdf');
@@ -1174,7 +1201,7 @@ export default function OfertaGenPage() {
               </div>
             )}
             <div className="flex gap-3 mt-5">
-              <button onClick={() => setValidationResult(null)}
+              <button onClick={() => { setValidationResult(null); setFieldErrors({}); }}
                 className="flex-1 px-4 py-2 text-sm border border-gray-300 rounded-xl hover:bg-gray-50:bg-gray-800 transition">
                 {t.validation.corregir}
               </button>
@@ -1240,8 +1267,8 @@ export default function OfertaGenPage() {
       <div className="bg-white rounded-2xl p-6 mb-4 min-h-[400px]" style={{background:"var(--og-card)",border:"1px solid var(--og-border)"}}>
 
         {step === 0 && <>
-          <PartePanel data={data} pid="ofertante" label={t.fields.label_ofertante} upParte={upParte} upPersona={upPersona} addPersona={addPersona} rmPersona={rmPersona} t={t} />
-          <PartePanel data={data} pid="propietario" label={t.fields.label_propietario} upParte={upParte} upPersona={upPersona} addPersona={addPersona} rmPersona={rmPersona} t={t}
+          <PartePanel data={data} pid="ofertante" label={t.fields.label_ofertante} upParte={upParte} upPersona={upPersona} addPersona={addPersona} rmPersona={rmPersona} t={t} fieldErrors={fieldErrors} />
+          <PartePanel data={data} pid="propietario" label={t.fields.label_propietario} upParte={upParte} upPersona={upPersona} addPersona={addPersona} rmPersona={rmPersona} t={t} fieldErrors={fieldErrors}
             headerExtra={
               <div className="flex items-center gap-2 mt-2">
                 <label className="text-xs font-medium" style={{color:"var(--og-secondary)"}}>{t.fields?.titulo_vendedor || "Título en contrato"}</label>
@@ -1356,7 +1383,7 @@ export default function OfertaGenPage() {
                 </div>
               </>
             ) : (
-              <Input label={t.fields.precio_total} value={data.campos.precio?.precio_total} onChange={v=>upCampo("precio","precio_total",v)} type="number" required />
+              <Input label={t.fields.precio_total} value={data.campos.precio?.precio_total} onChange={v=>upCampo("precio","precio_total",v)} type="number" required hasError={fieldErrors["campos.precio.precio_total"]} />
             )}
             <div className="flex flex-col gap-1">
               <label className="text-xs font-medium" style={{color:"var(--og-secondary)"}}>{t.fields.moneda}</label>
@@ -1414,7 +1441,7 @@ export default function OfertaGenPage() {
           <Section title={t.sections.fechas}>
             <Input label={t.fields.fecha_presentacion} value={data.campos.fechas?.fecha_presentacion} onChange={v=>upCampo("fechas","fecha_presentacion",v)} type="date" required />
             <Input label={t.fields.ciudad} value={data.campos.fechas?.ciudad_presentacion} onChange={v=>upCampo("fechas","ciudad_presentacion",v)} required />
-            <Input label={t.fields.fecha_vigencia} value={data.campos.fechas?.fecha_vigencia} onChange={v=>upCampo("fechas","fecha_vigencia",v)} type="date" required />
+            <Input label={t.fields.fecha_vigencia} value={data.campos.fechas?.fecha_vigencia} onChange={v=>upCampo("fechas","fecha_vigencia",v)} type="date" required hasError={fieldErrors["campos.fechas.fecha_vigencia"]} />
             <Input label={t.fields.hora_vigencia} value={data.campos.fechas?.hora_vigencia||"medianoche"} onChange={v=>upCampo("fechas","hora_vigencia",v)} placeholder="medianoche, 17:00 horas..." />
             <Input label={t.fields.formalizacion} value={data.campos.fechas?.fecha_formalizacion} onChange={v=>upCampo("fechas","fecha_formalizacion",v)} wide placeholder="cualquier día hábil dentro de las primeras dos semanas del mes de Mayo de 2023" />
             <Input label={t.fields.extension} value={data.campos.fechas?.fecha_extension} onChange={v=>upCampo("fechas","fecha_extension",v)} wide placeholder="las primeras dos semanas del mes de Junio 2023" />
@@ -1422,7 +1449,7 @@ export default function OfertaGenPage() {
           <Section title={t.sections.notario}>
             <div className="flex flex-col gap-1 col-span-2">
               <label className="text-xs font-medium" style={{color:"var(--og-secondary)"}}>{t.fields.notario_label} <span style={{color:"var(--og-danger)"}}>*</span></label>
-              <select value={data.campos.notario?.notario_seleccion||""} onChange={e=>upCampo("notario","notario_seleccion",e.target.value)} className="border border-gray-200 rounded-lg px-3 py-2 text-sm bg-white">
+              <select value={data.campos.notario?.notario_seleccion||""} onChange={e=>upCampo("notario","notario_seleccion",e.target.value)} className={`border rounded-lg px-3 py-2 text-sm ${fieldErrors["campos.notario.notario_seleccion"] ? "border-red-500 bg-red-50" : "border-gray-200 bg-white"}`}>
                 <option value="">— Seleccionar notario —</option>
                 <optgroup label="Puerto Vallarta, Jalisco">
                   <option value="pv_1">Notaría 1 — Lic. Fernando Castro Rubio</option>
