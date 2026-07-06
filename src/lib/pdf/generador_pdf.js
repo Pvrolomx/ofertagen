@@ -58,6 +58,7 @@ export async function generarPdfBlob(bloques, meta = {}, opciones = {}) {
     
     const { idiomaSecundario = 'en', logoBase64 } = opciones;
   const lang2 = idiomaSecundario;
+  const soloEs = idiomaSecundario === 'es'; // documento monolingüe: una sola columna
   
   const bloquesNormales = bloques.filter(b => b.tipo !== 'firmas');
   const bloqueFirmas = bloques.find(b => b.tipo === 'firmas');
@@ -100,10 +101,15 @@ export async function generarPdfBlob(bloques, meta = {}, opciones = {}) {
       celdaEn.push({ text: textoLang2, fontSize: 8, lineHeight: 1.2 });
     }
     
-    tableBody.push([
-      { stack: celdaEs.length ? celdaEs : [{ text: '' }], margin: [4, 4, 4, 4] },
-      { stack: celdaEn.length ? celdaEn : [{ text: '' }], margin: [4, 4, 4, 4] }
-    ]);
+    const filaEs = { stack: celdaEs.length ? celdaEs : [{ text: '' }], margin: [4, 4, 4, 4] };
+    if (soloEs) {
+      tableBody.push([filaEs]);
+    } else {
+      tableBody.push([
+        filaEs,
+        { stack: celdaEn.length ? celdaEn : [{ text: '' }], margin: [4, 4, 4, 4] }
+      ]);
+    }
   }
   
   // Firmas
@@ -129,11 +135,13 @@ export async function generarPdfBlob(bloques, meta = {}, opciones = {}) {
     if (bloqueFirmas.aceptacion !== false) {
       firmasContent.push(
         { text: '', margin: [0, 30, 0, 0] },
-        { 
-          text: 'LUGAR, FECHA Y HORA DE ACEPTACIÓN / ACCEPTANCE PLACE, DATE AND TIME:', 
-          bold: true, 
-          fontSize: 9, 
-          alignment: 'center' 
+        {
+          text: soloEs
+            ? 'LUGAR, FECHA Y HORA DE ACEPTACIÓN:'
+            : 'LUGAR, FECHA Y HORA DE ACEPTACIÓN / ACCEPTANCE PLACE, DATE AND TIME:',
+          bold: true,
+          fontSize: 9,
+          alignment: 'center'
         },
         { 
           text: '_____________________________________________________________', 
@@ -197,12 +205,12 @@ export async function generarPdfBlob(bloques, meta = {}, opciones = {}) {
       {
         table: {
           headerRows: 0,
-          widths: ['50%', '50%'],
+          widths: soloEs ? ['100%'] : ['50%', '50%'],
           body: tableBody
         },
         layout: {
           hLineWidth: function(i, node) { return 0.3; },
-          vLineWidth: function(i, node) { return (i === 1) ? 0.7 : 0.3; },
+          vLineWidth: function(i, node) { return soloEs ? (i === 1 ? 0 : 0.3) : ((i === 1) ? 0.7 : 0.3); },
           hLineColor: function() { return '#cccccc'; },
           vLineColor: function() { return '#555555'; },
           paddingLeft: function() { return 5; },

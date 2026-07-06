@@ -834,7 +834,7 @@ export default function OfertaGenPage() {
   const [logoBase64, setLogoBase64] = useState(null);
   const [logoPreview, setLogoPreview] = useState(null);
   const [idiomaSecundario, setIdiomaSecundario] = useState('es'); // 'es', 'en' o 'fr'
-  const [contractLang, setContractLang] = useState('en'); // 'en' o 'fr' — idioma secundario del contrato
+  const [contractLang, setContractLang] = useState('en'); // 'es' | 'en' | 'fr' — 'es' = documento monolingüe (una columna)
   const [showDisclaimer, setShowDisclaimer] = useState(false);
   const [disclaimerAccepted, setDisclaimerAccepted] = useState(false);
   const [pendingDownload, setPendingDownload] = useState(null); // 'word' | 'pdf' | null
@@ -973,7 +973,7 @@ export default function OfertaGenPage() {
     // Placeholders no resueltos — revisa ES + idioma secundario
     const PLACEHOLDER_RE = /\[([A-ZÁÉÍÓÚÑ_]{3,})\]/g;
     bloquesRenderizados.forEach((b) => {
-      const bLang2 = lang2 === 'fr' ? b.fr : b.en;
+      const bLang2 = lang2 === 'es' ? null : (lang2 === 'fr' ? b.fr : b.en);
       [b.es, bLang2].forEach((txt) => {
         if (!txt) return;
         const matches = [...txt.matchAll(PLACEHOLDER_RE)];
@@ -986,8 +986,8 @@ export default function OfertaGenPage() {
 
     // Ratio ES/idioma2 — posible traducción incompleta
     bloquesRenderizados.forEach((b) => {
-      const bLang2 = lang2 === 'fr' ? b.fr : b.en;
-      if (!b.es || !lang2) return;
+      const bLang2 = lang2 === 'es' ? null : (lang2 === 'fr' ? b.fr : b.en);
+      if (!b.es || !lang2 || lang2 === 'es') return;
       const ratio = b.es.length / (bLang2||b.es).length;
       if (ratio < 0.4 || ratio > 2.5) {
         const id = b.id || b.t?.es?.slice(0, 20) || '?';
@@ -1284,7 +1284,7 @@ export default function OfertaGenPage() {
             <div className="col-span-2 flex flex-col gap-2">
               <p className="text-xs" style={{color:"var(--og-secondary)"}}>{t.sections.idioma_sub}</p>
               <div className="flex gap-2">
-                {[['en','🇺🇸 English'],['fr','🇨🇦 Français']].map(([cl, label]) => (
+                {[['es','🇲🇽 Solo Español'],['en','🇺🇸 English'],['fr','🇨🇦 Français']].map(([cl, label]) => (
                   <button key={cl} onClick={() => setContractLang(cl)}
                     className="flex-1 px-3 py-2 text-sm rounded-xl transition font-medium"
                     style={{
@@ -1831,9 +1831,9 @@ export default function OfertaGenPage() {
           </div>
           {bloques.length === 0 ? <p className="text-sm" style={{color:"var(--og-secondary)"}}>Completa los datos de las partes para ver la vista previa.</p> :
           <div className="rounded-xl overflow-hidden text-xs leading-relaxed" style={{border:"1px solid var(--og-border)"}}>
-            <div className="grid grid-cols-2" style={{background:"var(--og-surface)",borderBottom:"1px solid var(--og-border)"}}>
-              <div className="px-3 py-2 font-semibold text-[10px] tracking-wider border-r" style={{color:"var(--og-secondary)",borderColor:"var(--og-border)"}}>ESPAÑOL</div>
-              <div className="px-3 py-2 font-semibold text-[10px] tracking-wider" style={{color:"var(--og-secondary)"}}>{lang2 === 'fr' ? 'FRANÇAIS' : 'ENGLISH'}</div>
+            <div className={lang2 === 'es' ? "grid grid-cols-1" : "grid grid-cols-2"} style={{background:"var(--og-surface)",borderBottom:"1px solid var(--og-border)"}}>
+              <div className={`px-3 py-2 font-semibold text-[10px] tracking-wider ${lang2 === 'es' ? '' : 'border-r'}`} style={{color:"var(--og-secondary)",borderColor:"var(--og-border)"}}>ESPAÑOL</div>
+              {lang2 !== 'es' && <div className="px-3 py-2 font-semibold text-[10px] tracking-wider" style={{color:"var(--og-secondary)"}}>{lang2 === 'fr' ? 'FRANÇAIS' : 'ENGLISH'}</div>}
             </div>
             {bloques.map((b, i) => {
               // Función para limpiar undefined
@@ -1859,15 +1859,15 @@ export default function OfertaGenPage() {
               const textoLang2 = limpiarTexto(b[lang2] || b.en || '', lang2);
               const num = b.numero || b.n;
               return (
-                <div key={i} className={`grid grid-cols-2 ${i ? "border-t border-gray-100" : ""}`}>
-                  <div className="px-3 py-2.5 border-r border-gray-100">
+                <div key={i} className={`grid ${lang2 === 'es' ? 'grid-cols-1' : 'grid-cols-2'} ${i ? "border-t border-gray-100" : ""}`}>
+                  <div className={`px-3 py-2.5 ${lang2 === 'es' ? '' : 'border-r border-gray-100'}`}>
                     {tEs && <p className="font-bold mb-1">{num ? `${num}.- ` : ""}{tEs}</p>}
                     {textoEs?.split("\n\n").map((p, j) => <p key={j} className="mb-1.5">{p.split("\n").map((l, k) => <span key={k}>{k > 0 && <br />}{l}</span>)}</p>)}
                   </div>
-                  <div className="px-3 py-2.5 text-gray-500">
+                  {lang2 !== 'es' && <div className="px-3 py-2.5 text-gray-500">
                     {tLang2 && <p className="font-bold mb-1 text-gray-600">{num ? `${num}.- ` : ""}{tLang2}</p>}
                     {textoLang2?.split("\n\n").map((p, j) => <p key={j} className="mb-1.5">{p.split("\n").map((l, k) => <span key={k}>{k > 0 && <br />}{l}</span>)}</p>)}
-                  </div>
+                  </div>}
                 </div>
               );
             })}

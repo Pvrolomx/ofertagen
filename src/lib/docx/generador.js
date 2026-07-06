@@ -69,6 +69,8 @@ const BORDERS_NONE = { top: BORDER_NONE, bottom: BORDER_NONE, left: BORDER_NONE,
 const BORDERS_COL_ES = { top: BORDER_NONE, bottom: BORDER_NONE, left: BORDER_NONE, right: BORDER_THIN };
 // Columna EN: solo borde izquierdo (la línea divisoria)
 const BORDERS_COL_EN = { top: BORDER_NONE, bottom: BORDER_NONE, left: BORDER_THIN, right: BORDER_NONE };
+// Modo solo-español: celda única sin línea divisoria
+const BORDERS_COL_SOLO = { top: BORDER_NONE, bottom: BORDER_NONE, left: BORDER_NONE, right: BORDER_NONE };
 
 // Márgenes de celda
 const CELL_MARGINS = { top: 60, bottom: 60, left: 100, right: 100 };
@@ -184,8 +186,38 @@ function textoAParagrafos(texto, fontSize = FONT_SIZE_BODY, alignment = Alignmen
  */
 function crearFilasClausula(bloque, idiomaSecundario = 'en') {
   const filas = [];
-  const lang2 = idiomaSecundario; // 'en' o 'fr'
-  
+  const lang2 = idiomaSecundario; // 'es' | 'en' | 'fr'
+  const soloEs = idiomaSecundario === 'es'; // documento monolingüe: una sola columna
+
+  // Arma las celdas de una fila: dos columnas (ES + lang2) en bilingüe, o una única full-width en solo-español.
+  const filaDeCeldas = (childrenEs, childrenLang2) => {
+    if (soloEs) {
+      return [new TableCell({
+        borders: BORDERS_COL_SOLO,
+        width: { size: CONTENT_WIDTH, type: WidthType.DXA },
+        margins: CELL_MARGINS,
+        verticalAlign: VerticalAlign.TOP,
+        children: childrenEs,
+      })];
+    }
+    return [
+      new TableCell({
+        borders: BORDERS_COL_ES,
+        width: { size: COL_ES, type: WidthType.DXA },
+        margins: CELL_MARGINS,
+        verticalAlign: VerticalAlign.TOP,
+        children: childrenEs,
+      }),
+      new TableCell({
+        borders: BORDERS_COL_EN,
+        width: { size: COL_EN, type: WidthType.DXA },
+        margins: CELL_MARGINS,
+        verticalAlign: VerticalAlign.TOP,
+        children: childrenLang2,
+      }),
+    ];
+  };
+
   // 1. FILA DE TÍTULO (si tiene)
   if (bloque.titulo || bloque.t) {
     const tituloEs = bloque.titulo?.es || bloque.t?.es || '';
@@ -194,40 +226,28 @@ function crearFilasClausula(bloque, idiomaSecundario = 'en') {
 
     if (tituloEs || tituloLang2) {
       filas.push(new TableRow({
-        children: [
-          new TableCell({
-            borders: BORDERS_COL_ES,
-            width: { size: COL_ES, type: WidthType.DXA },
-            margins: CELL_MARGINS,
-            verticalAlign: VerticalAlign.TOP,
-            children: [new Paragraph({
-              children: [new TextRun({
-                text: `${numPrefix}${tituloEs}`,
-                font: FONT,
-                size: FONT_SIZE_TITLE,
-                bold: true,
-                underline: {},
-              })],
-              spacing: { after: 60 },
+        children: filaDeCeldas(
+          [new Paragraph({
+            children: [new TextRun({
+              text: `${numPrefix}${tituloEs}`,
+              font: FONT,
+              size: FONT_SIZE_TITLE,
+              bold: true,
+              underline: {},
             })],
-          }),
-          new TableCell({
-            borders: BORDERS_COL_EN,
-            width: { size: COL_EN, type: WidthType.DXA },
-            margins: CELL_MARGINS,
-            verticalAlign: VerticalAlign.TOP,
-            children: [new Paragraph({
-              children: [new TextRun({
-                text: `${numPrefix}${tituloLang2}`,
-                font: FONT,
-                size: FONT_SIZE_TITLE,
-                bold: true,
-                underline: {},
-              })],
-              spacing: { after: 60 },
+            spacing: { after: 60 },
+          })],
+          [new Paragraph({
+            children: [new TextRun({
+              text: `${numPrefix}${tituloLang2}`,
+              font: FONT,
+              size: FONT_SIZE_TITLE,
+              bold: true,
+              underline: {},
             })],
-          }),
-        ],
+            spacing: { after: 60 },
+          })],
+        ),
       }));
     }
   }
@@ -238,38 +258,26 @@ function crearFilasClausula(bloque, idiomaSecundario = 'en') {
     const subLang2 = bloque.subtitulo?.[lang2] || bloque.subtitulo?.en || '';
     if (subEs || subLang2) {
       filas.push(new TableRow({
-        children: [
-          new TableCell({
-            borders: BORDERS_COL_ES,
-            width: { size: COL_ES, type: WidthType.DXA },
-            margins: CELL_MARGINS,
-            verticalAlign: VerticalAlign.TOP,
-            children: [new Paragraph({
-              children: [new TextRun({
-                text: subEs,
-                font: FONT,
-                size: FONT_SIZE_BODY,
-                bold: true,
-              })],
-              spacing: { after: 60 },
+        children: filaDeCeldas(
+          [new Paragraph({
+            children: [new TextRun({
+              text: subEs,
+              font: FONT,
+              size: FONT_SIZE_BODY,
+              bold: true,
             })],
-          }),
-          new TableCell({
-            borders: BORDERS_COL_EN,
-            width: { size: COL_EN, type: WidthType.DXA },
-            margins: CELL_MARGINS,
-            verticalAlign: VerticalAlign.TOP,
-            children: [new Paragraph({
-              children: [new TextRun({
-                text: subLang2,
-                font: FONT,
-                size: FONT_SIZE_BODY,
-                bold: true,
-              })],
-              spacing: { after: 60 },
+            spacing: { after: 60 },
+          })],
+          [new Paragraph({
+            children: [new TextRun({
+              text: subLang2,
+              font: FONT,
+              size: FONT_SIZE_BODY,
+              bold: true,
             })],
-          }),
-        ],
+            spacing: { after: 60 },
+          })],
+        ),
       }));
     }
   }
@@ -311,42 +319,34 @@ function crearFilasClausula(bloque, idiomaSecundario = 'en') {
     };
     
     filas.push(new TableRow({
-      children: [
-        new TableCell({
-          borders: BORDERS_COL_ES,
-          width: { size: COL_ES, type: WidthType.DXA },
-          margins: CELL_MARGINS,
-          verticalAlign: VerticalAlign.TOP,
-          children: crearContenidoCelda(pEs),
-        }),
-        new TableCell({
-          borders: BORDERS_COL_EN,
-          width: { size: COL_EN, type: WidthType.DXA },
-          margins: CELL_MARGINS,
-          verticalAlign: VerticalAlign.TOP,
-          children: crearContenidoCelda(pLang2),
-        }),
-      ],
+      children: filaDeCeldas(crearContenidoCelda(pEs), crearContenidoCelda(pLang2)),
     }));
   }
   
   // Si no hay contenido, agregar fila vacía
   if (filas.length === 0) {
     filas.push(new TableRow({
-      children: [
-        new TableCell({
-          borders: BORDERS_COL_ES,
-          width: { size: COL_ES, type: WidthType.DXA },
-          margins: CELL_MARGINS,
-          children: [new Paragraph({ children: [] })],
-        }),
-        new TableCell({
-          borders: BORDERS_COL_EN,
-          width: { size: COL_EN, type: WidthType.DXA },
-          margins: CELL_MARGINS,
-          children: [new Paragraph({ children: [] })],
-        }),
-      ],
+      children: soloEs
+        ? [new TableCell({
+            borders: BORDERS_COL_SOLO,
+            width: { size: CONTENT_WIDTH, type: WidthType.DXA },
+            margins: CELL_MARGINS,
+            children: [new Paragraph({ children: [] })],
+          })]
+        : [
+          new TableCell({
+            borders: BORDERS_COL_ES,
+            width: { size: COL_ES, type: WidthType.DXA },
+            margins: CELL_MARGINS,
+            children: [new Paragraph({ children: [] })],
+          }),
+          new TableCell({
+            borders: BORDERS_COL_EN,
+            width: { size: COL_EN, type: WidthType.DXA },
+            margins: CELL_MARGINS,
+            children: [new Paragraph({ children: [] })],
+          }),
+        ],
     }));
   }
   
@@ -470,11 +470,13 @@ function generarInicialesFooter(bloqueFirmas) {
 // HELPERS: TESTIGOS Y ACEPTACIÓN
 // ============================================================
 
-function crearTestigos() {
+function crearTestigos(soloEs = false) {
+  const testigo1 = soloEs ? 'TESTIGO 1:' : 'TESTIGO 1 / WITNESS 1:';
+  const testigo2 = soloEs ? 'TESTIGO 2:' : 'TESTIGO 2 / WITNESS 2:';
   return [
     new Paragraph({ spacing: { before: 400 }, children: [] }),
     new Paragraph({
-      children: [new TextRun({ text: 'TESTIGO 1 / WITNESS 1:', font: FONT, size: FONT_SIZE_FIRMA })],
+      children: [new TextRun({ text: testigo1, font: FONT, size: FONT_SIZE_FIRMA })],
     }),
     new Paragraph({
       spacing: { before: 300 },
@@ -482,7 +484,7 @@ function crearTestigos() {
     }),
     new Paragraph({ spacing: { before: 200 }, children: [] }),
     new Paragraph({
-      children: [new TextRun({ text: 'TESTIGO 2 / WITNESS 2:', font: FONT, size: FONT_SIZE_FIRMA })],
+      children: [new TextRun({ text: testigo2, font: FONT, size: FONT_SIZE_FIRMA })],
     }),
     new Paragraph({
       spacing: { before: 300 },
@@ -491,13 +493,16 @@ function crearTestigos() {
   ];
 }
 
-function crearAceptacion() {
+function crearAceptacion(soloEs = false) {
+  const labelAceptacion = soloEs
+    ? 'LUGAR, FECHA Y HORA DE ACEPTACIÓN:'
+    : 'LUGAR, FECHA Y HORA DE ACEPTACIÓN / ACCEPTANCE PLACE, DATE AND TIME:';
   return [
     new Paragraph({ spacing: { before: 400 }, children: [] }),
     new Paragraph({
       alignment: AlignmentType.CENTER,
       children: [
-        new TextRun({ text: 'LUGAR, FECHA Y HORA DE ACEPTACIÓN / ACCEPTANCE PLACE, DATE AND TIME:', font: FONT, size: FONT_SIZE_FIRMA, bold: true }),
+        new TextRun({ text: labelAceptacion, font: FONT, size: FONT_SIZE_FIRMA, bold: true }),
       ],
     }),
     new Paragraph({
@@ -522,7 +527,8 @@ function crearAceptacion() {
  */
 export async function generarDocx(bloques, meta = {}, opciones = {}) {
   const { logoBase64, idiomaSecundario = 'en' } = opciones;
-  
+  const soloEs = idiomaSecundario === 'es'; // documento monolingüe: una sola columna
+
   // Separar bloques normales de firmas
   const bloquesNormales = bloques.filter(b => (b.tipo || b.tipo) !== 'firmas');
   const bloqueFirmas = bloques.find(b => b.tipo === 'firmas');
@@ -534,7 +540,7 @@ export async function generarDocx(bloques, meta = {}, opciones = {}) {
   // Tabla principal
   const tablaContrato = new Table({
     width: { size: CONTENT_WIDTH, type: WidthType.DXA },
-    columnWidths: [COL_ES, COL_EN],
+    columnWidths: soloEs ? [CONTENT_WIDTH] : [COL_ES, COL_EN],
     rows: filas,
   });
 
@@ -575,12 +581,12 @@ export async function generarDocx(bloques, meta = {}, opciones = {}) {
 
     // Testigos opcionales
     if (bloqueFirmas.testigos) {
-      contenidoFirmas.push(...crearTestigos());
+      contenidoFirmas.push(...crearTestigos(soloEs));
     }
 
     // Aceptación
     if (bloqueFirmas.aceptacion !== false) {
-      contenidoFirmas.push(...crearAceptacion());
+      contenidoFirmas.push(...crearAceptacion(soloEs));
     }
   }
 
