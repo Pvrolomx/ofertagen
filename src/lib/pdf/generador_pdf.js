@@ -232,7 +232,7 @@ export async function generarPdfBlob(bloques, meta = {}, opciones = {}) {
   
   // Nombre del archivo
   const nombreBase = opciones.nombre || 'OFERTA';
-  const idiomaSufijo = lang2 === 'fr' ? '_FR' : '';
+  const idiomaSufijo = lang2 === 'es' ? '_ES' : lang2 === 'fr' ? '_FR' : '';
   const filename = `OFERTA_${nombreBase}${idiomaSufijo}.pdf`;
   
   pdfDoc.download(filename);

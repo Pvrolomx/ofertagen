@@ -632,12 +632,17 @@ export async function generarDocx(bloques, meta = {}, opciones = {}) {
     new TextRun({ text: `${paginaEs} `, font: FONT, size: 14, color: '333333' }),
     new TextRun({ children: [PageNumber.CURRENT], font: FONT, size: 14, color: '333333' }),
     new TextRun({ text: ' de ', font: FONT, size: 14, color: '333333' }),
-    new TextRun({ children: [PageNumber.TOTAL_PAGES], font: FONT, size: 14, color: '333333' }),
-    new TextRun({ text: `  |  ${paginaLang2} `, font: FONT, size: 14, color: '333333' }),
-    new TextRun({ children: [PageNumber.CURRENT], font: FONT, size: 14, color: '333333' }),
-    new TextRun({ text: ` ${deLang2} `, font: FONT, size: 14, color: '333333' }),
     new TextRun({ children: [PageNumber.TOTAL_PAGES], font: FONT, size: 14, color: '333333' })
   );
+  // En modo solo-español el footer omite la parte en idioma secundario ("| Page X of Y")
+  if (!soloEs) {
+    headerChildren.push(
+      new TextRun({ text: `  |  ${paginaLang2} `, font: FONT, size: 14, color: '333333' }),
+      new TextRun({ children: [PageNumber.CURRENT], font: FONT, size: 14, color: '333333' }),
+      new TextRun({ text: ` ${deLang2} `, font: FONT, size: 14, color: '333333' }),
+      new TextRun({ children: [PageNumber.TOTAL_PAGES], font: FONT, size: 14, color: '333333' })
+    );
+  }
 
   // Header: Logo izquierda + Paginación derecha (usando TabStops)
   const headerDefault = new Header({

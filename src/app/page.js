@@ -251,8 +251,9 @@ function CondicionLibrePanel({ uiLang, textoEs, textoEn, textoFr, onChangeEs, on
   );
 }
 
-function ClausulaAdicionalPanel({ textoEs, textoEn, onChangeEs, onChangeEn }) {
+function ClausulaAdicionalPanel({ textoEs, textoEn, onChangeEs, onChangeEn, lang2 }) {
   const [traduciendo, setTraduciendo] = useState(false);
+  const soloEs = lang2 === 'es'; // documento monolingüe: sin traducción ni columna EN
 
   const traducir = async () => {
     if (!textoEs.trim()) return;
@@ -282,25 +283,29 @@ function ClausulaAdicionalPanel({ textoEs, textoEn, onChangeEs, onChangeEn }) {
           style={{borderColor:"var(--og-border)",color:"var(--og-primary)",background:"var(--og-surface)"}}
         />
       </div>
-      <button
-        onClick={traducir}
-        disabled={traduciendo || !textoEs.trim()}
-        className="w-full px-3 py-2 text-sm font-medium rounded-lg transition-all disabled:opacity-50"
-        style={{background:"var(--og-accent)",color:"white"}}
-      >
-        {traduciendo ? "Traduciendo..." : "🌐 Traducir al inglés / Translate to English"}
-      </button>
-      <div>
-        <label className="text-xs font-medium block mb-1" style={{color:"var(--og-primary)"}}>English text (editable)</label>
-        <textarea
-          value={textoEn}
-          onChange={e => onChangeEn(e.target.value)}
-          placeholder="Translation will appear here — you can edit it manually..."
-          rows={4}
-          className="w-full px-3 py-2 text-sm border rounded-lg resize-y"
-          style={{borderColor:"var(--og-border)",color:"var(--og-primary)",background:"var(--og-surface)"}}
-        />
-      </div>
+      {!soloEs && (
+        <>
+          <button
+            onClick={traducir}
+            disabled={traduciendo || !textoEs.trim()}
+            className="w-full px-3 py-2 text-sm font-medium rounded-lg transition-all disabled:opacity-50"
+            style={{background:"var(--og-accent)",color:"white"}}
+          >
+            {traduciendo ? "Traduciendo..." : "🌐 Traducir al inglés / Translate to English"}
+          </button>
+          <div>
+            <label className="text-xs font-medium block mb-1" style={{color:"var(--og-primary)"}}>English text (editable)</label>
+            <textarea
+              value={textoEn}
+              onChange={e => onChangeEn(e.target.value)}
+              placeholder="Translation will appear here — you can edit it manually..."
+              rows={4}
+              className="w-full px-3 py-2 text-sm border rounded-lg resize-y"
+              style={{borderColor:"var(--og-border)",color:"var(--og-primary)",background:"var(--og-surface)"}}
+            />
+          </div>
+        </>
+      )}
     </div>
   );
 }
@@ -957,7 +962,17 @@ export default function OfertaGenPage() {
       errors.push("Nombre del propietario vacío");
       fieldKeys.push("partes.propietario.personas[0].nombre");
     }
-    if (!data.campos.precio?.precio_total || data.campos.precio.precio_total <= 0) {
+    if (data.bloques.precio_compuesto) {
+      // Precio compuesto: validar inmueble + muebles en lugar del total
+      if (!data.campos.precio?.precio_inmueble || data.campos.precio.precio_inmueble <= 0) {
+        errors.push("Precio del inmueble no definido");
+        fieldKeys.push("campos.precio.precio_inmueble");
+      }
+      if (!data.campos.precio?.precio_muebles || data.campos.precio.precio_muebles <= 0) {
+        errors.push("Precio de muebles no definido");
+        fieldKeys.push("campos.precio.precio_muebles");
+      }
+    } else if (!data.campos.precio?.precio_total || data.campos.precio.precio_total <= 0) {
       errors.push("Precio de oferta no definido");
       fieldKeys.push("campos.precio.precio_total");
     }
@@ -1009,7 +1024,7 @@ export default function OfertaGenPage() {
     try {
       const blob = await generarDocxBlob(bloques, PLANTILLA.meta, { logoBase64, idiomaSecundario: lang2 });
       const nombre = data.partes.ofertante.personas[0]?.nombre?.replace(/\s+/g, "_") || "OFERTA";
-      const idiomaSufijo = lang2 === 'fr' ? '_FR' : '';
+      const idiomaSufijo = lang2 === 'es' ? '_ES' : lang2 === 'fr' ? '_FR' : '';
       const url = URL.createObjectURL(blob);
       const a = document.createElement("a");
       a.href = url; a.download = `OFERTA_${nombre}${idiomaSufijo}.docx`;
@@ -1027,7 +1042,7 @@ export default function OfertaGenPage() {
     try {
       const blob = await generarDocxBlob(bloques, PLANTILLA.meta, { logoBase64, idiomaSecundario: lang2 });
       const nombre = data.partes.ofertante.personas[0]?.nombre?.replace(/\s+/g, "_") || "OFERTA";
-      const idiomaSufijo = lang2 === 'fr' ? '_FR' : '';
+      const idiomaSufijo = lang2 === 'es' ? '_ES' : lang2 === 'fr' ? '_FR' : '';
       const url = URL.createObjectURL(blob);
       const a = document.createElement("a");
       a.href = url;
@@ -1376,8 +1391,8 @@ export default function OfertaGenPage() {
             />
             {data.bloques.precio_compuesto ? (
               <>
-                <Input label="Precio del inmueble (USD) / Real property price" value={data.campos.precio?.precio_inmueble||""} onChange={v=>upCampo("precio","precio_inmueble",v)} type="number" required />
-                <Input label="Precio de muebles (USD) / Personal property price" value={data.campos.precio?.precio_muebles||""} onChange={v=>upCampo("precio","precio_muebles",v)} type="number" required />
+                <Input label="Precio del inmueble (USD) / Real property price" value={data.campos.precio?.precio_inmueble||""} onChange={v=>upCampo("precio","precio_inmueble",v)} type="number" required hasError={fieldErrors["campos.precio.precio_inmueble"]} />
+                <Input label="Precio de muebles (USD) / Personal property price" value={data.campos.precio?.precio_muebles||""} onChange={v=>upCampo("precio","precio_muebles",v)} type="number" required hasError={fieldErrors["campos.precio.precio_muebles"]} />
                 <div className="col-span-2 px-1 py-2 text-sm font-medium" style={{color:"var(--og-secondary)"}}>
                   Total: ${((+data.campos.precio?.precio_inmueble||0) + (+data.campos.precio?.precio_muebles||0)).toLocaleString('en-US', {minimumFractionDigits:2, maximumFractionDigits:2})} USD
                 </div>
@@ -1810,6 +1825,7 @@ export default function OfertaGenPage() {
                 textoEn={data.campos.clausula_adicional?.texto_en || ""}
                 onChangeEs={v => upCampo("clausula_adicional", "texto_es", v)}
                 onChangeEn={v => upCampo("clausula_adicional", "texto_en", v)}
+                lang2={lang2}
               />
             )}
           </div>
