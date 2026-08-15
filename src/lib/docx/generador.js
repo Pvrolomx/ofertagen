@@ -144,7 +144,7 @@ function parseTextoConNegritas(texto, fontSize = FONT_SIZE_BODY) {
 /**
  * Convierte texto con \n\n (párrafos) y \n (line breaks) en Paragraphs.
  */
-function textoAParagrafos(texto, fontSize = FONT_SIZE_BODY, alignment = AlignmentType.JUSTIFIED) {
+function textoAParagrafos(texto, fontSize = FONT_SIZE_BODY, alignment = AlignmentType.LEFT) {
   if (!texto) return [new Paragraph({ children: [new TextRun({ text: '', font: FONT, size: fontSize })] })];
 
   const parrafos = texto.split('\n\n');
@@ -313,7 +313,7 @@ function crearFilasClausula(bloque, idiomaSecundario = 'en') {
       
       return [new Paragraph({
         children: runs,
-        alignment: AlignmentType.JUSTIFIED,
+        alignment: AlignmentType.LEFT,
         spacing: { after: 80 },
       })];
     };
@@ -526,7 +526,7 @@ function crearAceptacion(soloEs = false) {
  * @returns {Promise<Buffer>} Buffer del archivo .docx
  */
 export async function generarDocx(bloques, meta = {}, opciones = {}) {
-  const { logoBase64, idiomaSecundario = 'en' } = opciones;
+  const { logoBase64, idiomaSecundario = 'en', firmasEnLinea = false } = opciones;
   const soloEs = idiomaSecundario === 'es'; // documento monolingüe: una sola columna
 
   // Separar bloques normales de firmas
@@ -555,28 +555,40 @@ export async function generarDocx(bloques, meta = {}, opciones = {}) {
   if (bloqueFirmas) {
     const firmas = bloqueFirmas.firmas || [];
 
-    // Firmas de las partes
-    for (let i = 0; i < firmas.length; i++) {
-      const firma = firmas[i];
-      // Primera firma: más espacio (600), siguientes: menos (300)
-      const spacingBefore = i === 0 ? 600 : 300;
-      
+    if (firmasEnLinea) {
+      // Firmas lado a lado en una sola fila (compacta la página final)
       contenidoFirmas.push(
-        new Paragraph({ spacing: { before: spacingBefore }, children: [] }),
-        new Paragraph({
-          alignment: AlignmentType.CENTER,
-          children: [new TextRun({ text: '___________________________', font: FONT, size: FONT_SIZE_FIRMA })],
-        }),
-        new Paragraph({
-          alignment: AlignmentType.CENTER,
-          spacing: { before: 80 },
-          children: [new TextRun({ text: firma.nombre, font: FONT, size: FONT_SIZE_FIRMA, bold: true })],
-        }),
-        new Paragraph({
-          alignment: AlignmentType.CENTER,
-          children: [new TextRun({ text: firma.rol_es || '', font: FONT, size: FONT_SIZE_FIRMA })],
+        new Paragraph({ spacing: { before: 600 }, children: [] }),
+        new Table({
+          width: { size: CONTENT_WIDTH, type: WidthType.DXA },
+          columnWidths: [COL_ES, COL_EN],
+          rows: [crearFilaFirmas(bloqueFirmas)],
         }),
       );
+    } else {
+      // Firmas apiladas (una arriba de la otra)
+      for (let i = 0; i < firmas.length; i++) {
+        const firma = firmas[i];
+        // Primera firma: más espacio (600), siguientes: menos (300)
+        const spacingBefore = i === 0 ? 600 : 300;
+
+        contenidoFirmas.push(
+          new Paragraph({ spacing: { before: spacingBefore }, children: [] }),
+          new Paragraph({
+            alignment: AlignmentType.CENTER,
+            children: [new TextRun({ text: '___________________________', font: FONT, size: FONT_SIZE_FIRMA })],
+          }),
+          new Paragraph({
+            alignment: AlignmentType.CENTER,
+            spacing: { before: 80 },
+            children: [new TextRun({ text: firma.nombre, font: FONT, size: FONT_SIZE_FIRMA, bold: true })],
+          }),
+          new Paragraph({
+            alignment: AlignmentType.CENTER,
+            children: [new TextRun({ text: firma.rol_es || '', font: FONT, size: FONT_SIZE_FIRMA })],
+          }),
+        );
+      }
     }
 
     // Testigos opcionales

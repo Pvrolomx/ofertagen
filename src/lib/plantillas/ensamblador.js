@@ -22,9 +22,9 @@ import {
   plazo,
   vencimiento,
   superficieALetrasEn,
-} from '../core/index';
+} from '../core/index.js';
 
-import { obtenerTraduccionFr, obtenerTituloFr } from './traducciones_fr';
+import { obtenerTraduccionFr, obtenerTituloFr } from './traducciones_fr.js';
 
 /**
  * Números pequeños a letras (para días de plazos).
@@ -151,6 +151,7 @@ export function ensamblarContexto(plantilla, datos) {
     plazo_deposito_en: plazo(diasDeposito, 'habiles').enFrase,
   };
 
+  ctx.precio.moneda = moneda;
   ctx.deposito = bloquePrecio(depositoEscrow, moneda);
   ctx.saldo = bloquePrecio(saldo, moneda);
 
@@ -236,7 +237,7 @@ export function ensamblarContexto(plantilla, datos) {
   if (ctx.escrow.empresa_escrow === 'otro_escrow') {
     ctx.escrow.empresa_escrow = ctx.escrow.empresa_escrow_manual || 'EMPRESA ESCROW';
   }
-  const honEscrow = datos.campos?.escrow?.honorarios_escrow || 750;
+  const honEscrow = datos.campos?.escrow?.honorarios_escrow ?? 750;
   ctx.escrow.honorarios_escrow = honEscrow;
   if (honEscrow > 0) {
     ctx.escrow.honorarios_completo = bloquePrecio(honEscrow, moneda);
@@ -531,6 +532,18 @@ export function renderizarBloques(plantilla, ctx) {
         en: `[ERROR: ${err.message}]`,
         fr: `[ERREUR: ${err.message}]`,
       });
+    }
+  }
+
+  // Renumeración dinámica: reasigna números correlativos a las cláusulas
+  // realmente renderizadas, para que apagar una cláusula numerada (p.ej. comisión)
+  // no deje huecos en la secuencia (15 → 17). Los sub-bloques (sub_clausula A/B/C
+  // y bloques sin numero) no se tocan.
+  let numClausula = 0;
+  for (const b of resultado) {
+    if (b.numero != null) {
+      numClausula++;
+      b.numero = numClausula;
     }
   }
 

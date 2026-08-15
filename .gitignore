@@ -45,3 +45,6 @@ next-env.d.ts
 /playwright-report/
 /blob-report/
 /playwright/.cache/
+
+# drivers/scripts locales con datos de cliente — NO subir (PII)
+/generar_oferta_*.mjs
