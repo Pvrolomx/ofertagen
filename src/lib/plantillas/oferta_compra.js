@@ -198,10 +198,9 @@ const PLANTILLA_OFERTA_COMPRA = {
         // ── Mascota, Jalisco ─────────────────────────────────
         { id: 'mas_1', nombre: 'Lic. Luis Alberto González Valdés',           numero: '1',  ciudad: 'Mascota, Jalisco' },
         // ── Bucerías, Nayarit ────────────────────────────────
-        { id: 'buc_2',  nombre: 'Lic. Teodoro Ramírez Valenzuela',            numero: '2',  ciudad: 'Bucerías, Nayarit' },
         { id: 'buc_19', nombre: 'Lic. Luis Miguel Castro Montero',            numero: '19', ciudad: 'Bucerías, Nayarit' },
         { id: 'buc_29', nombre: 'Lic. Adán Meza Barajas',                    numero: '29', ciudad: 'Bucerías, Nayarit' },
-        { id: 'buc_29s', nombre: 'Lic. Adán Gilberto Meza Espinosa (Notario Suplente en funciones, Notaría Titular a cargo del Lic. Adán Meza Barajas)', numero: '29', ciudad: 'Bucerías, Nayarit' },
+        { id: 'buc_29s', nombre: 'Lic. Adán Gilberto Meza Espinosa (Notario Suplente en funciones, Notaría Titular a cargo del Lic. Adán Meza Barajas)', nombre_en: 'Lic. Adán Gilberto Meza Espinosa (Acting Substitute Notary, Head Notary’s Office held by Lic. Adán Meza Barajas)', numero: '29', ciudad: 'Bucerías, Nayarit' },
         { id: 'buc_31', nombre: 'Lic. José Luis Reyes Vázquez',              numero: '31', ciudad: 'Bucerías, Nayarit' },
         // ── Nuevo Vallarta, Nayarit ──────────────────────────
         { id: 'nv_4',  nombre: 'Lic. Jorge Rogelio Careaga Pérez',            numero: '4',  ciudad: 'Nuevo Vallarta, Nayarit' },
@@ -228,7 +227,6 @@ const PLANTILLA_OFERTA_COMPRA = {
           { valor: '', texto: '— Mascota, Jalisco —', disabled: true },
           { valor: 'mas_1', texto: 'Notaría 1 — Lic. Luis Alberto González Valdés' },
           { valor: '', texto: '— Bucerías, Nayarit —', disabled: true },
-          { valor: 'buc_2',  texto: 'Notaría 2 — Lic. Teodoro Ramírez Valenzuela' },
           { valor: 'buc_19', texto: 'Notaría 19 — Lic. Luis Miguel Castro Montero' },
           { valor: 'buc_29', texto: 'Notaría 29 — Lic. Adán Meza Barajas' },
           { valor: 'buc_31', texto: 'Notaría 31 — Lic. José Luis Reyes Vázquez' },
@@ -579,7 +577,7 @@ const PLANTILLA_OFERTA_COMPRA = {
         }
         return {
           es: `Dicha escritura pública se celebrará ante la fe del ${ctx.notario.nombre_notario}, Notario Público ${ctx.notario.numero_notaria} de ${ctx.notario.ciudad_notaria}.`,
-          en: `Said public deed will be conveyed before the faith of ${ctx.notario.nombre_notario}, Notary Public ${ctx.notario.numero_notaria} of ${ctx.notario.ciudad_notaria}.`,
+          en: `Said public deed will be conveyed before the faith of ${ctx.notario.nombre_notario_en || ctx.notario.nombre_notario}, Notary Public ${ctx.notario.numero_notaria} of ${ctx.notario.ciudad_notaria}.`,
         };
       },
     },

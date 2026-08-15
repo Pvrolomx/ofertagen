@@ -283,6 +283,7 @@ export function ensamblarContexto(plantilla, datos) {
   } else if (notarioCat && seleccion !== 'otro') {
     ctx.notario = {
       nombre_notario: notarioCat.nombre,
+      nombre_notario_en: notarioCat.nombre_en || notarioCat.nombre,
       numero_notaria: notarioCat.numero,
       ciudad_notaria: notarioCat.ciudad,
     };
