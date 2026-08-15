@@ -321,9 +321,9 @@ export function ensamblarContexto(plantilla, datos) {
 
   // Inspección con plazos configurables
   const insInspDias = plazos.inspeccion_inspeccionar_dias || 4;
-  const insInspTipo = plazos.inspeccion_inspeccionar_tipo || 'naturales';
+  const insInspTipo = plazos.inspeccion_inspeccionar_tipo || 'habiles';
   const insRevDias = plazos.inspeccion_revisar_dias || 5;
-  const insRevTipo = plazos.inspeccion_revisar_tipo || 'naturales';
+  const insRevTipo = plazos.inspeccion_revisar_tipo || 'habiles';
   ctx.inspeccion = {
     dias_inspeccion: insInspDias,
     dias_revision: insRevDias,

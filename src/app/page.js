@@ -1626,8 +1626,8 @@ export default function OfertaGenPage() {
                 checked={data.bloques.inspeccion}
                 onChange={() => togBloque("inspeccion")}
                 plazos={[
-                  { label: t.condiciones?.plazo_inspeccionar || "Plazo para inspeccionar", campo: "inspeccion_inspeccionar", dias: data.campos.condiciones_plazos?.inspeccion_inspeccionar_dias || 4, tipo: data.campos.condiciones_plazos?.inspeccion_inspeccionar_tipo || "naturales", default: 4 },
-                  { label: t.condiciones?.plazo_revisar || "Plazo para revisar", campo: "inspeccion_revisar", dias: data.campos.condiciones_plazos?.inspeccion_revisar_dias || 5, tipo: data.campos.condiciones_plazos?.inspeccion_revisar_tipo || "naturales", default: 5 },
+                  { label: t.condiciones?.plazo_inspeccionar || "Plazo para inspeccionar", campo: "inspeccion_inspeccionar", dias: data.campos.condiciones_plazos?.inspeccion_inspeccionar_dias || 4, tipo: data.campos.condiciones_plazos?.inspeccion_inspeccionar_tipo || "habiles", default: 4 },
+                  { label: t.condiciones?.plazo_revisar || "Plazo para revisar", campo: "inspeccion_revisar", dias: data.campos.condiciones_plazos?.inspeccion_revisar_dias || 5, tipo: data.campos.condiciones_plazos?.inspeccion_revisar_tipo || "habiles", default: 5 },
                 ]}
                 onPlazoChange={(campo, valor) => upCampo("condiciones_plazos", campo, valor)}
                 t={t.condiciones}
