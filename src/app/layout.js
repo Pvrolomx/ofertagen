@@ -20,7 +20,9 @@ export default function RootLayout({ children }) {
         {children}
         <script dangerouslySetInnerHTML={{ __html: `
           if ('serviceWorker' in navigator) {
-            navigator.serviceWorker.register('/sw.js');
+            // updateViaCache:'none' → el navegador revalida sw.js en cada carga (nunca lo sirve de su HTTP cache),
+            // así el SW nuevo se detecta y activa (skipWaiting) tras cada deploy; un reload simple basta para ver los cambios.
+            navigator.serviceWorker.register('/sw.js', { updateViaCache: 'none' });
           }
           let deferredPrompt;
           window.addEventListener('beforeinstallprompt', (e) => {
