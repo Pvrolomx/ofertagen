@@ -11,7 +11,7 @@ import { generarPdfBlob } from "@/lib/pdf/generador_pdf";
 // ============================================================
 const DEMO = {partes:{ofertante:{personas:[{nombre:"DENNIS DREISBACH DOTY",genero:"M"}],tipoPersona:"fisica",domicilio:"Calle Paseo del Arque 59, Fraccionamiento Las Ceibas, Ejido Jarretadera, Bahia de Banderas, Nayarit",nacionalidad:"estadounidense",celular:"322 306 8482",email:"claudia@castlesolutions.biz"},propietario:{personas:[{nombre:"KARIN MARGARETE PALUTKE",genero:"F"}],tipoPersona:"fisica",nacionalidad:"canadiense",celular:"322 101 7810",email:"maru@lionsrealestate.properties"}},bloques:{adjudicacion_conyuge:true,ad_corpus:true,escrow:true,inspeccion:true,doc_fideicomiso:true,comision:true,condicion_uso:true,fuerza_mayor:true,factura_complementaria:false,disclosure:false,financiamiento:false,inventario:false,arrendamientos:false,zona_federal:false,litigios_pendientes:false,empleados_condicion:false,obligaciones_vendedor:true,obligaciones_vendedor_agua:false,derecho_deduccion:true,auditoria_hacienda:false,holdback_escrow:false,documentos_integrales:true,proteccion_datos:false,confidencialidad:false,duplicados:true},campos:{inmueble:{descripcion_corta:"Departamento número 43 del Condominio Orquídeas",ubicacion_completa:"en el lote 4-12, dentro del condominio Coto Los Sauces, Condominio Maestro Flamingos Club Residencial, Km 144 carretera Tepic-Puerto Vallarta, Bahía de Banderas, Nayarit",nivel_torre:"tercer nivel de la Torre A",descripcion_interior:"sala, comedor, cocina, cuarto de lavado, terraza, 1 recámara, 1 recámara con balcón, 1 baño, recámara principal con baño",superficie_m2:129.85,superficie_letras:"ciento veintinueve metros ochenta y cinco centímetros",indiviso:"1.6790%"},antecedente:{fecha_escritura:"2018-07-20",numero_escritura:"34,362",notario_anterior:"Lic. Teodoro Ramírez Valenzuela",numero_notaria_anterior:"2",ciudad_notaria_anterior:"Bucerias, Nayarit",libro_rpp:"1406",seccion_rpp:"I",serie_rpp:"A",partida_rpp:"29",cuenta_predial:"U058152"},precio:{precio_total:220000,moneda:"USD",deposito_escrow:22000,dias_deposito:3},escrow:{empresa_escrow:"ARMOUR SECURE ESCROW, S DE RL DE CV"},fechas:{fecha_presentacion:"2023-03-20",ciudad_presentacion:"Bucerias, Nayarit",fecha_vigencia:"2023-03-22",fecha_formalizacion:"cualquier día hábil dentro de las primeras dos semanas del mes de Mayo de 2023",fecha_formalizacion_en:"any business day within the first two weeks of May 2023",fecha_extension:"las primeras dos semanas del mes de Junio 2023",fecha_extension_en:"the first two weeks of June 2023"},notario:{notario_seleccion:"buc_29"},comision:{porcentaje_total:"6%",incluye_iva:true,agencia1_nombre:"Lion's Real Estate Properties",agencia1_porcentaje:"3%",agencia2_nombre:"Pvcastlemx, SAS, de CV",agencia2_porcentaje:"3%"},penalidad:{porcentaje_penalidad:"10%"},jurisdiccion:{ciudad_jurisdiccion:"Bucerias, Nayarit, México"},inspeccion:{dias_inspeccion:4,dias_revision:5}}};
 
-const INIT = {partes:{ofertante:{personas:[{nombre:"",genero:"M"}],tipoPersona:"fisica",domicilio:"",nacionalidad:"",celular:"",email:""},propietario:{personas:[{nombre:"",genero:"F"}],tipoPersona:"fisica",domicilio:"",nacionalidad:"",celular:"",email:"",titulo_vendedor:"propietario"}},bloques:{adjudicacion_conyuge:false,ad_corpus:true,escrow:true,inspeccion:true,doc_fideicomiso:true,comision:true,condicion_uso:true,fuerza_mayor:true,factura_complementaria:false,disclosure:false,financiamiento:false,inventario:false,arrendamientos:false,zona_federal:false,litigios_pendientes:false,empleados_condicion:false,obligaciones_vendedor:true,obligaciones_vendedor_agua:false,derecho_deduccion:true,auditoria_hacienda:false,holdback_escrow:false,documentos_integrales:true,proteccion_datos:false,confidencialidad:false,duplicados:true,rescision_pleno_derecho:false,divulgacion_agencia:false,opcion_fideicomiso:false,renuncia_nulidad:false,contrato_totalidad:false,aviso_fraude:false,condiciones_remocion:false,docusign_disclaimer:false,precio_compuesto:false,clausula_adicional:false},campos:{inmueble:{},antecedente:{},precio:{moneda:"USD",precio_total:0,deposito_escrow:0},escrow:{empresa_escrow:"ARMOUR SECURE ESCROW, S DE RL DE CV"},fechas:{ciudad_presentacion:"Bucerias, Nayarit"},notario:{},comision:{porcentaje_total:"6%",incluye_iva:true},penalidad:{porcentaje_penalidad:"10%"},jurisdiccion:{ciudad_jurisdiccion:"Bucerias, Nayarit, México"},inspeccion:{dias_inspeccion:4,dias_revision:5}}};
+const INIT = {partes:{ofertante:{personas:[{nombre:"",genero:"M"}],tipoPersona:"fisica",domicilio:"",nacionalidad:"",celular:"",email:""},propietario:{personas:[{nombre:"",genero:"F"}],tipoPersona:"fisica",domicilio:"",nacionalidad:"",celular:"",email:"",titulo_vendedor:"propietario"}},bloques:{adjudicacion_conyuge:false,ad_corpus:true,escrow:true,inspeccion:true,doc_fideicomiso:true,comision:true,condicion_uso:true,fuerza_mayor:true,factura_complementaria:false,disclosure:false,financiamiento:false,inventario:false,arrendamientos:false,zona_federal:false,litigios_pendientes:false,empleados_condicion:false,obligaciones_vendedor:true,obligaciones_vendedor_agua:false,derecho_deduccion:true,auditoria_hacienda:false,holdback_escrow:false,documentos_integrales:true,proteccion_datos:false,confidencialidad:false,duplicados:true,rescision_pleno_derecho:false,divulgacion_agencia:false,opcion_fideicomiso:false,renuncia_nulidad:false,contrato_totalidad:false,aviso_fraude:false,condiciones_remocion:false,docusign_disclaimer:false,firmas_en_linea:false,precio_compuesto:false,clausula_adicional:false},campos:{inmueble:{},antecedente:{},precio:{moneda:"USD",precio_total:0,deposito_escrow:0},escrow:{empresa_escrow:"ARMOUR SECURE ESCROW, S DE RL DE CV"},fechas:{ciudad_presentacion:"Bucerias, Nayarit"},notario:{},comision:{porcentaje_total:"6%",incluye_iva:true},penalidad:{porcentaje_penalidad:"10%"},jurisdiccion:{ciudad_jurisdiccion:"Bucerias, Nayarit, México"},inspeccion:{dias_inspeccion:4,dias_revision:5}}};
 
 // ============================================================
 // HELPERS
@@ -1043,7 +1043,7 @@ export default function OfertaGenPage() {
     setFieldErrors({});
     setGenerating(true);
     try {
-      const blob = await generarDocxBlob(bloques, PLANTILLA.meta, { logoBase64, idiomaSecundario: lang2 });
+      const blob = await generarDocxBlob(bloques, PLANTILLA.meta, { logoBase64, idiomaSecundario: lang2, firmasEnLinea: data.bloques.firmas_en_linea });
       const nombre = data.partes.ofertante.personas[0]?.nombre?.replace(/\s+/g, "_") || "OFERTA";
       const idiomaSufijo = lang2 === 'es' ? '_ES' : lang2 === 'fr' ? '_FR' : '';
       const url = URL.createObjectURL(blob);
@@ -1061,7 +1061,7 @@ export default function OfertaGenPage() {
   const doGenerateWord = useCallback(async () => {
     setGenerating(true);
     try {
-      const blob = await generarDocxBlob(bloques, PLANTILLA.meta, { logoBase64, idiomaSecundario: lang2 });
+      const blob = await generarDocxBlob(bloques, PLANTILLA.meta, { logoBase64, idiomaSecundario: lang2, firmasEnLinea: data.bloques.firmas_en_linea });
       const nombre = data.partes.ofertante.personas[0]?.nombre?.replace(/\s+/g, "_") || "OFERTA";
       const idiomaSufijo = lang2 === 'es' ? '_ES' : lang2 === 'fr' ? '_FR' : '';
       const url = URL.createObjectURL(blob);
@@ -1077,7 +1077,7 @@ export default function OfertaGenPage() {
       alert("Error al generar el documento. Revisa la consola.");
     }
     setGenerating(false);
-  }, [bloques, data.partes.ofertante.personas, logoBase64, lang2]);
+  }, [bloques, data.partes.ofertante.personas, logoBase64, lang2, data.bloques.firmas_en_linea]);
 
   // Función interna para generar PDF (después de aceptar disclaimer)
   const doGeneratePdf = useCallback(async () => {
@@ -1755,7 +1755,7 @@ export default function OfertaGenPage() {
 
           <CatGroup title="Estructura de la operación" defaultOpen={true}>
             <Toggle label="Ad Corpus / As-Is" sub="Compra por cuerpo cierto, superficies aproximadas, estado actual" checked={data.bloques.ad_corpus} onChange={()=>togBloque("ad_corpus")} />
-            <Toggle label="Cuenta Escrow" sub="Depósito condicional irrevocable (Stewart Title)" checked={data.bloques.escrow} onChange={()=>togBloque("escrow")} />
+            <Toggle label="Cuenta Escrow" sub={`Depósito condicional irrevocable (${data.campos.escrow?.empresa_escrow === "otro_escrow" ? (data.campos.escrow?.empresa_escrow_manual || "empresa escrow") : (data.campos.escrow?.empresa_escrow || "ARMOUR SECURE ESCROW, S DE RL DE CV")})`} checked={data.bloques.escrow} onChange={()=>togBloque("escrow")} />
             <Toggle label="Opción fideicomiso (asumir o nuevo)" sub="Ofertante elige asumir trust existente o abrir uno nuevo" checked={data.bloques.opcion_fideicomiso} onChange={()=>togBloque("opcion_fideicomiso")} />
             <Toggle label="Adjudicación de cónyuge" sub="50% derechos fideicomisarios del esposo fallecido" checked={data.bloques.adjudicacion_conyuge} onChange={()=>togBloque("adjudicacion_conyuge")} />
           </CatGroup>
@@ -1811,6 +1811,7 @@ export default function OfertaGenPage() {
             <Toggle label="Contrato en su totalidad" sub="Cláusula de integración; no evidencia externa en juicio/arbitraje" checked={data.bloques.contrato_totalidad} onChange={()=>togBloque("contrato_totalidad")} />
             <Toggle label="Aviso fraude electrónico" sub="Wire fraud warning: verificar datos bancarios antes de transferir" checked={data.bloques.aviso_fraude} onChange={()=>togBloque("aviso_fraude")} />
             <Toggle label="DocuSign disclaimer" sub="Firmas electrónicas no cumplen formalidad bajo ley mexicana" checked={data.bloques.docusign_disclaimer} onChange={()=>togBloque("docusign_disclaimer")} />
+            <Toggle label="Firmas en línea (formato DOCX)" sub="Coloca las dos firmas lado a lado; compacta la última página. Solo afecta el Word." checked={data.bloques.firmas_en_linea} onChange={()=>togBloque("firmas_en_linea")} />
           </CatGroup>
 
           <CatGroup title="Privacidad">
