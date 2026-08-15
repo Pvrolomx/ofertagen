@@ -1507,6 +1507,7 @@ export default function OfertaGenPage() {
                   <option value="buc_2" disabled>Notaría 2 — Lic. Teodoro Ramírez Valenzuela (no disponible)</option>
                   <option value="buc_19">Notaría 19 — Lic. Luis Miguel Castro Montero</option>
                   <option value="buc_29">Notaría 29 — Lic. Adán Meza Barajas</option>
+                  <option value="buc_29s">Lic. Adán Gilberto Meza Espinosa — en funciones de la Notaría 29</option>
                   <option value="buc_31">Notaría 31 — Lic. José Luis Reyes Vázquez</option>
                 </optgroup>
                 <optgroup label="Nuevo Vallarta, Nayarit">

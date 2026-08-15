@@ -201,6 +201,7 @@ const PLANTILLA_OFERTA_COMPRA = {
         { id: 'buc_2',  nombre: 'Lic. Teodoro Ramírez Valenzuela',            numero: '2',  ciudad: 'Bucerías, Nayarit' },
         { id: 'buc_19', nombre: 'Lic. Luis Miguel Castro Montero',            numero: '19', ciudad: 'Bucerías, Nayarit' },
         { id: 'buc_29', nombre: 'Lic. Adán Meza Barajas',                    numero: '29', ciudad: 'Bucerías, Nayarit' },
+        { id: 'buc_29s', nombre: 'Lic. Adán Gilberto Meza Espinosa (Notario Suplente en funciones, Notaría Titular a cargo del Lic. Adán Meza Barajas)', numero: '29', ciudad: 'Bucerías, Nayarit' },
         { id: 'buc_31', nombre: 'Lic. José Luis Reyes Vázquez',              numero: '31', ciudad: 'Bucerías, Nayarit' },
         // ── Nuevo Vallarta, Nayarit ──────────────────────────
         { id: 'nv_4',  nombre: 'Lic. Jorge Rogelio Careaga Pérez',            numero: '4',  ciudad: 'Nuevo Vallarta, Nayarit' },
