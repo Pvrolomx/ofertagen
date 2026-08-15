@@ -16,9 +16,30 @@ const INIT = {partes:{ofertante:{personas:[{nombre:"",genero:"M"}],tipoPersona:"
 // ============================================================
 // HELPERS
 // ============================================================
-function ensamblar(data) { 
-  try { return ensamblarContexto(PLANTILLA, data); } 
-  catch(e) { console.error('ensamblar:', e.message); return null; } 
+
+// T2 — El <select> de nacionalidad guarda solo la clave ES; el molde usa nacionalidad_en.
+// Mapeamos la clave a su adjetivo inglés para que la columna EN no salga en español.
+const NACIONALIDAD_EN = {
+  mexicano: 'Mexican',
+  estadounidense: 'American',
+  canadiense: 'Canadian',
+  francocanadiense: 'French-Canadian',
+};
+
+// Deriva nacionalidad_en por parte (sin mutar el estado) antes de ensamblar.
+function conNacionalidadEn(data) {
+  if (!data?.partes) return data;
+  const partes = {};
+  for (const [id, parte] of Object.entries(data.partes)) {
+    const clave = (parte?.nacionalidad || '').toLowerCase().trim();
+    partes[id] = { ...parte, nacionalidad_en: NACIONALIDAD_EN[clave] || parte?.nacionalidad || '' };
+  }
+  return { ...data, partes };
+}
+
+function ensamblar(data) {
+  try { return ensamblarContexto(PLANTILLA, conNacionalidadEn(data)); }
+  catch(e) { console.error('ensamblar:', e.message); return null; }
 }
 function renderBlks(ctx) { 
   if (!ctx) return [];
@@ -1459,7 +1480,9 @@ export default function OfertaGenPage() {
             <Input label={t.fields.fecha_vigencia} value={data.campos.fechas?.fecha_vigencia} onChange={v=>upCampo("fechas","fecha_vigencia",v)} type="date" required hasError={fieldErrors["campos.fechas.fecha_vigencia"]} />
             <Input label={t.fields.hora_vigencia} value={data.campos.fechas?.hora_vigencia||"medianoche"} onChange={v=>upCampo("fechas","hora_vigencia",v)} placeholder="medianoche, 17:00 horas..." />
             <Input label={t.fields.formalizacion} value={data.campos.fechas?.fecha_formalizacion} onChange={v=>upCampo("fechas","fecha_formalizacion",v)} wide placeholder="cualquier día hábil dentro de las primeras dos semanas del mes de Mayo de 2023" />
+            {lang2 !== 'es' && <Input label="Fecha de formalización (inglés) / Formalizing date (English)" value={data.campos.fechas?.fecha_formalizacion_en} onChange={v=>upCampo("fechas","fecha_formalizacion_en",v)} wide placeholder="any business day within the first two weeks of May 2023" />}
             <Input label={t.fields.extension} value={data.campos.fechas?.fecha_extension} onChange={v=>upCampo("fechas","fecha_extension",v)} wide placeholder="las primeras dos semanas del mes de Junio 2023" />
+            {lang2 !== 'es' && <Input label="Extensión (inglés) / Extension (English)" value={data.campos.fechas?.fecha_extension_en} onChange={v=>upCampo("fechas","fecha_extension_en",v)} wide placeholder="the first two weeks of June 2023" />}
           </Section>
           <Section title={t.sections.notario}>
             <div className="flex flex-col gap-1 col-span-2">
