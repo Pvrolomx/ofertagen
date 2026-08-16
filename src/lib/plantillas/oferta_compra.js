@@ -598,12 +598,14 @@ const PLANTILLA_OFERTA_COMPRA = {
       siempre: true,
       titulo: { es: 'GASTOS DE ESCRITURACIÓN', en: 'CLOSING COSTS' },
       render: (ctx) => {
-        const escrowFee = ctx.bloques.escrow && ctx.escrow.honorarios_completo
+        // Honorarios escrow en §9: solo si la cláusula escrow está activa Y el usuario los incluye (default: sí)
+        const incluirHon = ctx.bloques.escrow && ctx.escrow.incluir_honorarios !== false;
+        const escrowFee = incluirHon && ctx.escrow.honorarios_completo
           ? `, así como los honorarios por concepto de la CUENTA ESCROW por la cantidad de ${ctx.escrow.honorarios_completo.completo}`
-          : (ctx.bloques.escrow ? ', así como los honorarios por concepto de la CUENTA ESCROW' : '');
-        const escrowFeeEn = ctx.bloques.escrow && ctx.escrow.honorarios_completo
+          : (incluirHon ? ', así como los honorarios por concepto de la CUENTA ESCROW' : '');
+        const escrowFeeEn = incluirHon && ctx.escrow.honorarios_completo
           ? `, including the ESCROW ACCOUNT fees in the amount of ${ctx.escrow.honorarios_completo.completo}`
-          : (ctx.bloques.escrow ? ', including the ESCROW ACCOUNT fees' : '');
+          : (incluirHon ? ', including the ESCROW ACCOUNT fees' : '');
         const anticipo = ctx.precio.anticipo_gastos > 0
           ? `\n\n${ctx.ofertante.referencia_negrita} deberá establecer de inmediato con el Notario Público designado un anticipo de gastos de escrituración por la cantidad de ${ctx.precio.anticipo_completo.completo}, a fin de poder llevar a cabo dentro del término establecido los trámites correspondientes, abonando el saldo pendiente en la FECHA DE FORMALIZACIÓN.`
           : '';

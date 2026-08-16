@@ -1476,7 +1476,15 @@ export default function OfertaGenPage() {
                   className="mt-2 w-full rounded-lg px-3 py-2 text-sm" style={{background:"var(--og-surface)",border:"1px solid var(--og-border-hi)",color:"var(--og-primary)"}} />
               )}
             </div>
-            <Input label={t.fields.honorarios_escrow} value={data.campos.escrow?.honorarios_escrow||750} onChange={v=>upCampo("escrow","honorarios_escrow",v)} type="number" />
+            <div className="flex flex-col gap-2 col-span-2">
+              <div className="flex items-center gap-3">
+                <input type="checkbox" checked={data.campos.escrow?.incluir_honorarios !== false} onChange={e=>upCampo("escrow","incluir_honorarios",e.target.checked)} className="rounded" />
+                <label className="text-xs font-medium" style={{color:"var(--og-secondary)"}}>Incluir honorarios de escrow en §9 (Gastos de escrituración)</label>
+              </div>
+              {data.campos.escrow?.incluir_honorarios !== false && (
+                <Input label={t.fields.honorarios_escrow} value={data.campos.escrow?.honorarios_escrow||750} onChange={v=>upCampo("escrow","honorarios_escrow",v)} type="number" />
+              )}
+            </div>
             <div className="flex flex-col gap-1 col-span-2">
               <label className="text-xs font-medium" style={{color:"var(--og-secondary)"}}>El plazo del depósito corre a partir de</label>
               <select value={data.campos.escrow?.ancla_deposito||"aceptacion"} onChange={e=>upCampo("escrow","ancla_deposito",e.target.value)} className="border border-gray-200 rounded-lg px-3 py-2 text-sm bg-white" style={{background:"var(--og-surface)",borderColor:"var(--og-border)",color:"var(--og-text)"}}>
