@@ -1339,9 +1339,13 @@ export default function OfertaGenPage() {
         {step === 1 && <>
           <Section title={t.sections.inmueble}>
             <Input label={t.fields.descripcion_corta} value={data.campos.inmueble?.descripcion_corta} onChange={v=>upCampo("inmueble","descripcion_corta",v)} placeholder="Departamento 43 del Condo Orquídeas" required wide />
+            {lang2 !== 'es' && <Input label="Descripción corta (inglés) / Short description (English)" value={data.campos.inmueble?.descripcion_corta_en} onChange={v=>upCampo("inmueble","descripcion_corta_en",v)} placeholder="Apartment 43 of the Orquídeas Condominium" wide />}
             <Input label={t.fields.ubicacion_completa} value={data.campos.inmueble?.ubicacion_completa} onChange={v=>upCampo("inmueble","ubicacion_completa",v)} wide rows={3} required />
+            {lang2 !== 'es' && <Input label="Ubicación completa (inglés) / Full location (English)" value={data.campos.inmueble?.ubicacion_completa_en} onChange={v=>upCampo("inmueble","ubicacion_completa_en",v)} wide rows={3} />}
             <Input label={t.fields.nivel_torre} value={data.campos.inmueble?.nivel_torre} onChange={v=>upCampo("inmueble","nivel_torre",v)} />
+            {lang2 !== 'es' && <Input label="Nivel/torre (inglés) / Level/tower (English)" value={data.campos.inmueble?.nivel_torre_en} onChange={v=>upCampo("inmueble","nivel_torre_en",v)} placeholder="third level of Tower A" />}
             <Input label={t.fields.interior} value={data.campos.inmueble?.descripcion_interior} onChange={v=>upCampo("inmueble","descripcion_interior",v)} />
+            {lang2 !== 'es' && <Input label="Interior (inglés) / Interior (English)" value={data.campos.inmueble?.descripcion_interior_en} onChange={v=>upCampo("inmueble","descripcion_interior_en",v)} />}
             <Input label={t.fields.superficie_m2} value={data.campos.inmueble?.superficie_m2} onChange={v=>upCampo("inmueble","superficie_m2",v)} type="number" required />
             <Input label={t.fields.superficie_letras} value={data.campos.inmueble?.superficie_letras} onChange={v=>upCampo("inmueble","superficie_letras",v)} required />
             <Input label={t.fields.indiviso} value={data.campos.inmueble?.indiviso} onChange={v=>upCampo("inmueble","indiviso",v)} />

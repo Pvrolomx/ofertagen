@@ -232,7 +232,8 @@ export function ensamblarContexto(plantilla, datos) {
   }
 
   // Honorarios escrow
-  ctx.escrow = datos.campos?.escrow || {};
+  // Copia (no referencia) para no escribir campos computados de vuelta en el draft del usuario.
+  ctx.escrow = { ...(datos.campos?.escrow || {}) };
   // Resolver empresa manual si aplica
   if (ctx.escrow.empresa_escrow === 'otro_escrow') {
     ctx.escrow.empresa_escrow = ctx.escrow.empresa_escrow_manual || 'EMPRESA ESCROW';
@@ -247,14 +248,14 @@ export function ensamblarContexto(plantilla, datos) {
   // 6. RESOLVER INMUEBLE Y ANTECEDENTE
   // ============================================================
 
-  ctx.inmueble = datos.campos?.inmueble || {};
+  ctx.inmueble = { ...(datos.campos?.inmueble || {}) };
   
   // Generar superficie en letras en inglés automáticamente
   if (ctx.inmueble.superficie_m2) {
     ctx.inmueble.superficie_letras_en = superficieALetrasEn(parseFloat(ctx.inmueble.superficie_m2));
   }
   
-  ctx.antecedente = datos.campos?.antecedente || {};
+  ctx.antecedente = { ...(datos.campos?.antecedente || {}) };
 
   // Agregar fechas formateadas al antecedente
   if (ctx.antecedente.fecha_escritura) {
@@ -296,7 +297,15 @@ export function ensamblarContexto(plantilla, datos) {
   }
 
   ctx.escrow = { ...ctx.escrow, ...(datos.campos?.escrow || {}) };
-  ctx.comision = datos.campos?.comision || {};
+  // T7: recomputar honorarios TRAS el último merge de escrow. Si el fee es 0, borrar el monto
+  // computado (honorarios_completo) para que §9 no imprima un residuo arrastrado del draft.
+  ctx.escrow.honorarios_escrow = honEscrow;
+  if (honEscrow > 0) {
+    ctx.escrow.honorarios_completo = bloquePrecio(honEscrow, moneda);
+  } else {
+    delete ctx.escrow.honorarios_completo;
+  }
+  ctx.comision = { ...(datos.campos?.comision || {}) };
   
   // Jurisdicción: manejar caso "otro"
   const jurisdiccionData = datos.campos?.jurisdiccion || {};

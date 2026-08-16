@@ -300,20 +300,22 @@ function crearFilasClausula(bloque, idiomaSecundario = 'en') {
     // Convertir \n simples a line breaks dentro del párrafo
     const crearContenidoCelda = (texto) => {
       if (!texto) return [new Paragraph({ children: [new TextRun({ text: '', font: FONT, size: FONT_SIZE_BODY })] })];
-      
+
       const lineas = texto.split('\n');
       const runs = [];
-      
+
       for (let j = 0; j < lineas.length; j++) {
         if (j > 0) {
           runs.push(new TextRun({ break: 1, font: FONT, size: FONT_SIZE_BODY }));
         }
         runs.push(...parseTextoConNegritas(lineas[j], FONT_SIZE_BODY));
       }
-      
+
+      // T8: prosa justificada, PERO izquierda si el párrafo trae saltos de línea manuales
+      // (bloques de direcciones/listas tipo §17) para que esas líneas cortas no se estiren orilla a orilla.
       return [new Paragraph({
         children: runs,
-        alignment: AlignmentType.LEFT,
+        alignment: texto.includes('\n') ? AlignmentType.LEFT : AlignmentType.JUSTIFIED,
         spacing: { after: 80 },
       })];
     };
