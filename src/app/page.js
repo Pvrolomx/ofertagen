@@ -1344,7 +1344,7 @@ export default function OfertaGenPage() {
                 <label className="text-xs font-medium" style={{color:"var(--og-secondary)"}}>{t.fields?.titulo_vendedor || "Título en contrato"}</label>
                 <select value={data.partes?.propietario?.titulo_vendedor || "propietario"} onChange={e => upParte("propietario","titulo_vendedor",e.target.value)} className="border border-gray-200 rounded-lg px-2 py-1 text-xs bg-white" style={{background:"var(--og-surface)",borderColor:"var(--og-border)",color:"var(--og-text)"}}>
                   <option value="propietario">{t.fields?.tv_propietario || "Propietario / Owner"}</option>
-                  <option value="fideicomisario_vendedor">{t.fields?.tv_fideicomisario || "Fideicomisario Vendedor / Fideicommissary Seller"}</option>
+                  <option value="fideicomisario_vendedor">{t.fields?.tv_fideicomisario || "Fideicomisario Vendedor / Selling Trust Beneficiary"}</option>
                   <option value="vendedor">{t.fields?.tv_vendedor || "Vendedor / Seller"}</option>
                 </select>
               </div>

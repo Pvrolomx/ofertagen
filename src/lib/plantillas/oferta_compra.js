@@ -466,18 +466,35 @@ const PLANTILLA_OFERTA_COMPRA = {
           };
         }
 
-        // ---- PRECIO SIMPLE (comportamiento actual) ----
-        const esMexicano = ctx.propietario.esMexicano;
+        // ---- PRECIO SIMPLE — tipo de contrato según nacionalidad (Vendedor → Comprador) ----
+        const vendedorMx = ctx.propietario.esMexicano;
+        const compradorMx = ctx.ofertante.esMexicano;
 
-        const textoEs = esMexicano
-          ? `${ctx.ofertante.referencia_negrita} por medio de la presente ofrece a ${ctx.propietario.referencia_negrita} celebrar Contrato de Constitución de Fideicomiso Traslativo de Dominio Irrevocable en Zona Restringida en relación a los derechos de propiedad sobre el INMUEBLE arriba descrito en la cantidad total de ${ctx.precio.completo}. Precio este que será liquidado de la siguiente manera:`
-          : `${ctx.ofertante.referencia_negrita} por medio de la presente ofrece a ${ctx.propietario.referencia_negrita} celebrar Contrato Traslativo de Dominio Irrevocable en relación a los derechos fideicomisarios sobre el INMUEBLE arriba descrito en la cantidad total de ${ctx.precio.completo}. Precio este que será liquidado de la siguiente manera:`;
+        let objetoEs, objetoEn, esExtExt = false;
+        if (vendedorMx && !compradorMx) {
+          // Mexicano → Extranjero: se constituye fideicomiso en zona restringida
+          objetoEs = 'Contrato de Constitución de Fideicomiso Traslativo de Dominio Irrevocable en Zona Restringida en relación a los derechos de propiedad sobre el INMUEBLE arriba descrito';
+          objetoEn = 'an Irrevocable Trust Constitution Contract in Restricted Zone with regard to the property rights over THE PROPERTY above described';
+        } else if (vendedorMx && compradorMx) {
+          // Mexicano → Mexicano: compraventa directa (sin fideicomiso)
+          objetoEs = 'Contrato de Compraventa en relación al INMUEBLE arriba descrito';
+          objetoEn = 'a Purchase and Sale Agreement with regard to THE PROPERTY above described';
+        } else if (!vendedorMx && compradorMx) {
+          // Extranjero → Mexicano: se ejecutan los fines del fideicomiso y se transmite la propiedad
+          objetoEs = 'Contrato de Transmisión de Propiedad en Ejecución de los Fines del Fideicomiso en relación a los derechos de propiedad sobre el INMUEBLE arriba descrito';
+          objetoEn = 'a Property Transfer Agreement in Execution of the Trust Purposes with regard to the property rights over THE PROPERTY above described';
+        } else {
+          // Extranjero → Extranjero: cesión de derechos y obligaciones de fideicomisario (no se transmite dominio)
+          objetoEs = 'Contrato de Cesión de Derechos y Obligaciones de Fideicomisario en relación a los derechos fideicomisarios sobre el INMUEBLE arriba descrito';
+          objetoEn = 'an Assignment of Trust Beneficiary Rights and Obligations Agreement with regard to the trust rights over THE PROPERTY above described';
+          esExtExt = true;
+        }
 
-        const textoEn = esMexicano
-          ? `${ctx.ofertante.en.referencia_negrita} herein offers to ${ctx.propietario.en.referencia_negrita} to celebrate an Irrevocable Trust Constitution Contract in Restricted Zone with regard to the property rights over THE PROPERTY above described in the total amount of ${ctx.precio.completo}. Said price will be paid in the following manner:`
-          : `${ctx.ofertante.en.referencia_negrita} herein offers to ${ctx.propietario.en.referencia_negrita} to celebrate an Irrevocable Transfer of Domain Contract with regard to the trust rights over THE PROPERTY above described in the total amount of ${ctx.precio.completo}. Said price will be paid in the following manner:`;
+        const textoEs = `${ctx.ofertante.referencia_negrita} por medio de la presente ofrece a ${ctx.propietario.referencia_negrita} celebrar ${objetoEs} en la cantidad total de ${ctx.precio.completo}. Precio este que será liquidado de la siguiente manera:`;
+        const textoEn = `${ctx.ofertante.en.referencia_negrita} herein offers to ${ctx.propietario.en.referencia_negrita} to celebrate ${objetoEn} in the total amount of ${ctx.precio.completo}. Said price will be paid in the following manner:`;
 
-        const fideiOpcion = !esMexicano && ctx.bloques.opcion_fideicomiso;
+        // Opción de fideicomiso: solo Extranjero → Extranjero (comprador extranjero + fideicomiso existente)
+        const fideiOpcion = esExtExt && ctx.bloques.opcion_fideicomiso;
         const fideiEs = fideiOpcion ? `\n\nDe existir un fideicomiso vigente sobre EL INMUEBLE, ${ctx.ofertante.referencia} tendrá la opción de asumir los derechos fideicomisarios existentes o constituir un nuevo fideicomiso para la adquisición de la propiedad, según convenga a sus intereses.` : '';
         const fideiEn = fideiOpcion ? `\n\nIn the event that a trust currently exists on THE PROPERTY, ${ctx.ofertante.en.referencia} may agree to take over the pre-existing trust rights or open a new trust for the acquisition of the property, as may be convenient to their interests.` : '';
 

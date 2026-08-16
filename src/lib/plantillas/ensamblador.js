@@ -150,6 +150,9 @@ export function ensamblarContexto(plantilla, datos) {
     }
   }
 
+  // Flags de UI que NO son bloques del molde pero el render sí consulta (ej. opcion_fideicomiso en §4).
+  ctx.bloques.opcion_fideicomiso = datos.bloques?.opcion_fideicomiso ?? false;
+
   // ============================================================
   // 3. RESOLVER PRECIO Y MONTOS
   // ============================================================
