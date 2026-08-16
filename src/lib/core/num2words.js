@@ -210,11 +210,14 @@ export function montoFormateado(monto, moneda = 'USD') {
 export function bloquePrecio(monto, moneda = 'USD') {
   const formateado = montoFormateado(monto, moneda);
   const letras = montoALetras(monto, moneda);
+  const letras_en = montoALetrasEn(monto);
 
   return {
     formateado,                                    // "$220,000.00 USD"
     letras,                                        // "doscientos veinte mil dólares estadounidenses 00/100 USD"
+    letras_en,                                     // "Two Hundred Twenty Thousand U.S. Dollars and 00/100"
     completo: `${formateado} (${letras})`,         // "$220,000.00 USD (doscientos veinte mil...)"
+    completo_en: `${formateado} (${letras_en})`,   // "$220,000.00 USD (Two Hundred Twenty Thousand...)" — columna EN
     monto,
     moneda,
   };

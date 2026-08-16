@@ -239,7 +239,7 @@ export function ensamblarContexto(plantilla, datos) {
     const venc = vencimiento(
       fechasDatos.fecha_vigencia,
       horaVig,
-      fechasDatos.ciudad_presentacion || 'Bucerias, Nayarit'
+      fechasDatos.ciudad_presentacion || 'Bucerías, Nayarit'
     );
     ctx.fechas.vencimiento_es = venc.es;
     ctx.fechas.vencimiento_en = venc.en;
