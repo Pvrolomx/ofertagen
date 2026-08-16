@@ -347,6 +347,14 @@ export function ensamblarContexto(plantilla, datos) {
 
   // Plazos de condiciones indispensables
   const plazos = datos.campos?.condiciones_plazos || {};
+
+  // Plazo de subsanación de condiciones materiales (§15 revisión de documentos), configurable. Default 10 días hábiles.
+  const subsDias = parseInt(plazos.subsanacion_material_dias) || 10;
+  ctx.subsanacion_material = {
+    dias: subsDias,
+    dias_letras: diasALetras(subsDias),
+    dias_letras_en: diasALetrasEn(subsDias),
+  };
   
   // Helper para tipo de días
   const tipoDias = (tipo) => ({

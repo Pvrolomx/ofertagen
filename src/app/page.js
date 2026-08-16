@@ -1536,6 +1536,7 @@ export default function OfertaGenPage() {
             {lang2 !== 'es' && <Input label="Fecha de formalización (inglés) / Formalizing date (English)" value={data.campos.fechas?.fecha_formalizacion_en} onChange={v=>upCampo("fechas","fecha_formalizacion_en",v)} wide placeholder="any business day within the first two weeks of May 2023" />}
             <Input label={t.fields.extension} value={data.campos.fechas?.fecha_extension} onChange={v=>upCampo("fechas","fecha_extension",v)} wide placeholder="las primeras dos semanas del mes de Junio 2023" />
             {lang2 !== 'es' && <Input label="Extensión (inglés) / Extension (English)" value={data.campos.fechas?.fecha_extension_en} onChange={v=>upCampo("fechas","fecha_extension_en",v)} wide placeholder="the first two weeks of June 2023" />}
+            <Input label="Plazo de subsanación de condiciones materiales (días hábiles)" value={data.campos.condiciones_plazos?.subsanacion_material_dias ?? 10} onChange={v=>upCampo("condiciones_plazos","subsanacion_material_dias",v)} type="number" />
           </Section>
           <Section title={t.sections.notario}>
             <div className="flex flex-col gap-1 col-span-2">
