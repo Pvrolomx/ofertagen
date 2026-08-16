@@ -31,6 +31,17 @@ import { obtenerTraduccionFr, obtenerTituloFr } from './traducciones_fr.js';
 // El documento está "limpio" exactamente cuando no queda ningún marcador.
 export const PENDIENTE_MARK = '⟦Pendiente⟧';
 
+// Formas de nacionalidad con concordancia de género por idioma.
+// ES: solo "mexicano/mexicana" varía (las demás son invariables en -ense).
+// FR: todas varían (mexicain/mexicaine, canadien/canadienne, etc.) — antes salía la clave en español.
+// EN: invariable (respaldo de nacionalidad_en).
+const NACIONALIDAD_FORMAS = {
+  mexicano:         { es_m: 'mexicano',         es_f: 'mexicana',         en: 'Mexican',         fr_m: 'mexicain',        fr_f: 'mexicaine' },
+  estadounidense:   { es_m: 'estadounidense',   es_f: 'estadounidense',   en: 'American',        fr_m: 'américain',       fr_f: 'américaine' },
+  canadiense:       { es_m: 'canadiense',       es_f: 'canadiense',       en: 'Canadian',        fr_m: 'canadien',        fr_f: 'canadienne' },
+  francocanadiense: { es_m: 'francocanadiense', es_f: 'francocanadiense', en: 'French-Canadian', fr_m: 'franco-canadien', fr_f: 'franco-canadienne' },
+};
+
 /**
  * Números pequeños a letras (para días de plazos).
  */
@@ -103,7 +114,13 @@ export function ensamblarContexto(plantilla, datos) {
     ctxParte.celular = datoParte.celular?.trim() || PENDIENTE_MARK;
     ctxParte.email = datoParte.email?.trim() || PENDIENTE_MARK;
     ctxParte.domicilio = datoParte.domicilio?.trim() || PENDIENTE_MARK;
-    ctxParte.nacionalidad_en = datoParte.nacionalidad_en || datoParte.nacionalidad || '';
+    // Nacionalidad con concordancia de género (fem = clave fs/fp) y por idioma.
+    const nacKey = (datoParte.nacionalidad || '').toLowerCase().trim();
+    const nacFem = ctxParte.clave === 'fs' || ctxParte.clave === 'fp';
+    const nacFormas = NACIONALIDAD_FORMAS[nacKey];
+    ctxParte.nacionalidad_es = nacFormas ? (nacFem ? nacFormas.es_f : nacFormas.es_m) : (datoParte.nacionalidad || '');
+    ctxParte.nacionalidad_fr = nacFormas ? (nacFem ? nacFormas.fr_f : nacFormas.fr_m) : (datoParte.nacionalidad || '');
+    ctxParte.nacionalidad_en = datoParte.nacionalidad_en || nacFormas?.en || datoParte.nacionalidad || '';
 
     // Versiones con negrita (para el renderizador DOCX/HTML)
     ctxParte.referencia_negrita = ctxParte.referencia; // El renderizador aplicará el formato
@@ -116,8 +133,7 @@ export function ensamblarContexto(plantilla, datos) {
     ctxParte.quien_en = 'who';
     
     // Helper: ¿es mexicano? (para lógica de fideicomiso)
-    const nacLower = (datoParte.nacionalidad || '').toLowerCase().trim();
-    ctxParte.esMexicano = nacLower === 'mexicano' || nacLower === 'mexicana' || nacLower === 'mexican';
+    ctxParte.esMexicano = nacKey === 'mexicano' || nacKey === 'mexicana' || nacKey === 'mexican';
 
     ctx[parteDef.id] = ctxParte;
   }

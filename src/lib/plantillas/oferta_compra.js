@@ -360,7 +360,7 @@ const PLANTILLA_OFERTA_COMPRA = {
       render: (ctx) => ({
         titulo_es: `${ctx.propietario.referencia}`,
         titulo_en: `${ctx.propietario.en.referencia}`,
-        es: `${ctx.propietario.referencia_negrita}, ${ctx.propietario.nombres}, de nacionalidad ${ctx.propietario.nacionalidad}, en adelante ${ctx.propietario.referenciaConComillas_negrita}, ${ctx.propietario.quien} ${ctx.propietario.manifiesta} tener la capacidad jurídica necesaria para contratar en los términos del presente acuerdo, señalando como domicilio convencional el inmueble materia de la presente oferta.`,
+        es: `${ctx.propietario.referencia_negrita}, ${ctx.propietario.nombres}, de nacionalidad ${ctx.propietario.nacionalidad_es}, en adelante ${ctx.propietario.referenciaConComillas_negrita}, ${ctx.propietario.quien} ${ctx.propietario.manifiesta} tener la capacidad jurídica necesaria para contratar en los términos del presente acuerdo, señalando como domicilio convencional el inmueble materia de la presente oferta.`,
         en: `${ctx.propietario.en.referencia_negrita}, ${ctx.propietario.nombres}, of ${ctx.propietario.nacionalidad_en} nationality, hereinafter ${ctx.propietario.en.referenciaConComillas_negrita}, ${ctx.propietario.quien_en} state${ctx.propietario.clave === 'ms' || ctx.propietario.clave === 'fs' ? 's' : ''} that ${ctx.propietario.clave === 'ms' ? 'he has' : ctx.propietario.clave === 'fs' ? 'she has' : 'they have'} the necessary legal capacity to contract under the terms of this agreement, indicating as conventional address the property object of the present offer.`,
       }),
     },

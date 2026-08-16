@@ -28,10 +28,10 @@ export const BLOQUES_FR = {
   
   // ---- COMPARECENCIA ----
   'cl_ofertante': (ctx) => 
-    `${ctx.ofertante.fr?.referencia || "L'OFFRANT"}, de nationalité ${ctx.ofertante.nacionalidad || 'étrangère'}, ci-après dénommé ${ctx.ofertante.fr?.referenciaConComillas || '"L\'OFFRANT"'}, déclare avoir la capacité juridique et économique nécessaire pour contracter selon les termes du présent accord, et désigne comme adresse conventionnelle ${ctx.ofertante.domicilio || '[ADRESSE]'}.`,
+    `${ctx.ofertante.fr?.referencia || "L'OFFRANT"}, de nationalité ${ctx.ofertante.nacionalidad_fr || 'étrangère'}, ci-après dénommé ${ctx.ofertante.fr?.referenciaConComillas || '"L\'OFFRANT"'}, déclare avoir la capacité juridique et économique nécessaire pour contracter selon les termes du présent accord, et désigne comme adresse conventionnelle ${ctx.ofertante.domicilio || '[ADRESSE]'}.`,
 
   'cl_propietario': (ctx) =>
-    `${ctx.propietario.fr?.referencia || 'LE PROPRIÉTAIRE'}, de nationalité ${ctx.propietario.nacionalidad || 'mexicaine'}, ci-après dénommé ${ctx.propietario.fr?.referenciaConComillas || '"LE PROPRIÉTAIRE"'}, déclare avoir la capacité juridique nécessaire pour contracter selon les termes du présent accord, et désigne comme adresse conventionnelle l'immeuble objet de la présente offre.`,
+    `${ctx.propietario.fr?.referencia || 'LE PROPRIÉTAIRE'}, de nationalité ${ctx.propietario.nacionalidad_fr || 'mexicaine'}, ci-après dénommé ${ctx.propietario.fr?.referenciaConComillas || '"LE PROPRIÉTAIRE"'}, déclare avoir la capacité juridique nécessaire pour contracter selon les termes du présent accord, et désigne comme adresse conventionnelle l'immeuble objet de la présente offre.`,
 
   // ---- ADJUDICACIÓN CÓNYUGE ----
   'adjudicacion_conyuge': (ctx) =>
