@@ -1477,6 +1477,13 @@ export default function OfertaGenPage() {
               )}
             </div>
             <Input label={t.fields.honorarios_escrow} value={data.campos.escrow?.honorarios_escrow||750} onChange={v=>upCampo("escrow","honorarios_escrow",v)} type="number" />
+            <div className="flex flex-col gap-1 col-span-2">
+              <label className="text-xs font-medium" style={{color:"var(--og-secondary)"}}>El plazo del depósito corre a partir de</label>
+              <select value={data.campos.escrow?.ancla_deposito||"aceptacion"} onChange={e=>upCampo("escrow","ancla_deposito",e.target.value)} className="border border-gray-200 rounded-lg px-3 py-2 text-sm bg-white" style={{background:"var(--og-surface)",borderColor:"var(--og-border)",color:"var(--og-text)"}}>
+                <option value="aceptacion">Aceptación de la oferta</option>
+                <option value="condiciones">Cumplimiento de las condiciones indispensables</option>
+              </select>
+            </div>
           </Section>
           <Section title={t.sections.fechas}>
             <Input label={t.fields.fecha_presentacion} value={data.campos.fechas?.fecha_presentacion} onChange={v=>upCampo("fechas","fecha_presentacion",v)} type="date" required />
