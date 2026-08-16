@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useMemo, useCallback, useEffect } from "react";
-import { ensamblarContexto, renderizarBloques } from "@/lib/plantillas/ensamblador";
+import { ensamblarContexto, renderizarBloques, PENDIENTE_MARK } from "@/lib/plantillas/ensamblador";
 import PLANTILLA from "@/lib/plantillas/oferta_compra";
 import { generarDocxBlob } from "@/lib/docx/generador";
 import { generarPdfBlob } from "@/lib/pdf/generador_pdf";
@@ -24,6 +24,13 @@ const NACIONALIDAD_EN = {
   estadounidense: 'American',
   canadiense: 'Canadian',
   francocanadiense: 'French-Canadian',
+};
+
+// T11: campos indispensables que se imprimen y deben marcarse "Pendiente" si faltan.
+// El domicilio del propietario NO entra: §2 usa frase fija ("el inmueble materia...") y no lo imprime.
+const PENDIENTE_FIELDS = {
+  ofertante: ['celular', 'email', 'domicilio'],
+  propietario: ['celular', 'email'],
 };
 
 // Deriva nacionalidad_en por parte (sin mutar el estado) antes de ensamblar.
@@ -365,7 +372,7 @@ function PartePanel({ data, pid, label, upParte, upPersona, addPersona, rmPerson
           ))}
         </select>
       </div>
-      <Input label={t.fields.celular} value={p.celular} onChange={v => upParte(pid, "celular", v)} type="tel" required />
+      <Input label={t.fields.celular} value={p.celular} onChange={v => upParte(pid, "celular", v)} type="tel" required hasError={fieldErrors[`partes.${pid}.celular`]} />
       <Input label={t.fields.email} value={p.email} onChange={v => upParte(pid, "email", v)} type="email" required wide hasError={fieldErrors[`partes.${pid}.email`]} />
       <div className="col-span-2 flex flex-col gap-2">
         <div className="flex items-center gap-2">
@@ -377,7 +384,7 @@ function PartePanel({ data, pid, label, upParte, upPersona, addPersona, rmPerson
             {t.fields.domicilio_inmueble || "Inmueble materia de la presente oferta"}
           </label>
         </div>
-        <Input label={t.fields.domicilio} value={p.domicilio} onChange={v => upParte(pid, "domicilio", v)} wide rows={2} />
+        <Input label={t.fields.domicilio} value={p.domicilio} onChange={v => upParte(pid, "domicilio", v)} wide rows={2} hasError={fieldErrors[`partes.${pid}.domicilio`]} />
       </div>
     </Section>
   );
@@ -975,9 +982,13 @@ export default function OfertaGenPage() {
       errors.push("Nombre del ofertante vacío");
       fieldKeys.push("partes.ofertante.personas[0].nombre");
     }
-    if (!partes.ofertante.email?.trim()) {
-      errors.push("Email del ofertante vacío");
-      fieldKeys.push("partes.ofertante.email");
+    // T11: contacto/domicilio indispensables → PENDIENTES (warnings, no bloqueo duro).
+    // Permite exportar el borrador con confirmación, avisando qué falta; el doc los pinta resaltados.
+    for (const [pid, campos] of Object.entries(PENDIENTE_FIELDS)) {
+      const pt = partes[pid] || {};
+      for (const c of campos) {
+        if (!pt[c]?.trim()) { warnings.push(`Pendiente: ${c} del ${pid}`); fieldKeys.push(`partes.${pid}.${c}`); }
+      }
     }
     if (!partes.propietario.personas[0]?.nombre?.trim()) {
       errors.push("Nombre del propietario vacío");
@@ -1037,6 +1048,29 @@ export default function OfertaGenPage() {
   // Convierte un array de fieldKeys en el objeto {clave: true} para fieldErrors
   const buildFieldErrors = (fieldKeys = []) =>
     fieldKeys.reduce((acc, k) => { acc[k] = true; return acc; }, {});
+
+  // T11: contador de campos indispensables pendientes (celular/email/domicilio de ambas partes)
+  const pendientesCount = useMemo(() => {
+    let n = 0;
+    for (const [pid, campos] of Object.entries(PENDIENTE_FIELDS)) {
+      const pt = data.partes?.[pid] || {};
+      for (const c of campos) if (!pt[c]?.trim()) n++;
+    }
+    return n;
+  }, [data.partes]);
+
+  // T11: en el preview, pinta el marcador de campo faltante como "Pendiente" resaltado (naranja/rojo)
+  const pintarPendiente = (linea) => {
+    if (linea == null) return linea;
+    const s = String(linea);
+    if (!s.includes(PENDIENTE_MARK)) return s;
+    const out = [];
+    s.split(PENDIENTE_MARK).forEach((parte, i) => {
+      if (i > 0) out.push(<span key={'p' + i} style={{ background: '#FEF08A', color: '#B91C1C', fontWeight: 600, padding: '0 3px', borderRadius: 3 }}>Pendiente</span>);
+      if (parte) out.push(<span key={'t' + i}>{parte}</span>);
+    });
+    return out;
+  };
 
   const handleGenerateForced = useCallback(async () => {
     setValidationResult(null);
@@ -1876,7 +1910,12 @@ export default function OfertaGenPage() {
 
         {step === 4 && <div>
           <div className="flex items-center justify-between mb-4">
-            <h2 className="text-lg font-semibold" style={{color:"var(--og-primary)"}}>{t.preview.title}</h2>
+            <div className="flex items-center gap-3">
+              <h2 className="text-lg font-semibold" style={{color:"var(--og-primary)"}}>{t.preview.title}</h2>
+              {pendientesCount > 0
+                ? <span className="text-xs font-semibold px-2 py-1 rounded-lg" style={{background:"#FEF08A",color:"#B91C1C"}}>⚠️ {pendientesCount} pendiente{pendientesCount === 1 ? '' : 's'}</span>
+                : <span className="text-xs font-medium px-2 py-1 rounded-lg" style={{background:"#DCFCE7",color:"#166534"}}>✓ Sin pendientes</span>}
+            </div>
             <div className="flex items-center gap-2">
               <button onClick={handleGenerate} disabled={generating || !bloques.length}
                 className="px-4 py-2 text-white text-sm font-medium rounded-xl transition flex items-center gap-1.5" style={{background:"var(--og-success-hi)"}}>
@@ -1921,11 +1960,11 @@ export default function OfertaGenPage() {
                 <div key={i} className={`grid ${lang2 === 'es' ? 'grid-cols-1' : 'grid-cols-2'} ${i ? "border-t border-gray-100" : ""}`}>
                   <div className={`px-3 py-2.5 ${lang2 === 'es' ? '' : 'border-r border-gray-100'}`}>
                     {tEs && <p className="font-bold mb-1">{num ? `${num}.- ` : ""}{tEs}</p>}
-                    {textoEs?.split("\n\n").map((p, j) => <p key={j} className="mb-1.5">{p.split("\n").map((l, k) => <span key={k}>{k > 0 && <br />}{l}</span>)}</p>)}
+                    {textoEs?.split("\n\n").map((p, j) => <p key={j} className="mb-1.5">{p.split("\n").map((l, k) => <span key={k}>{k > 0 && <br />}{pintarPendiente(l)}</span>)}</p>)}
                   </div>
                   {lang2 !== 'es' && <div className="px-3 py-2.5 text-gray-500">
                     {tLang2 && <p className="font-bold mb-1 text-gray-600">{num ? `${num}.- ` : ""}{tLang2}</p>}
-                    {textoLang2?.split("\n\n").map((p, j) => <p key={j} className="mb-1.5">{p.split("\n").map((l, k) => <span key={k}>{k > 0 && <br />}{l}</span>)}</p>)}
+                    {textoLang2?.split("\n\n").map((p, j) => <p key={j} className="mb-1.5">{p.split("\n").map((l, k) => <span key={k}>{k > 0 && <br />}{pintarPendiente(l)}</span>)}</p>)}
                   </div>}
                 </div>
               );

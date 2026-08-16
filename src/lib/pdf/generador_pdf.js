@@ -7,6 +7,8 @@
  * Sprint PDF v2 — Abril 2026
  */
 
+import { PENDIENTE_MARK } from '../plantillas/ensamblador.js';
+
 // ============================================================
 // HELPERS
 // ============================================================
@@ -21,6 +23,7 @@ function limpiarTexto(texto, lang = 'es') {
   const placeholder = lang === 'es' ? '[SIN DEFINIR]' : '[UNDEFINED]';
   return texto
     .replace(/undefined/g, placeholder)
+    .replaceAll(PENDIENTE_MARK, 'Pendiente') // T11: el PDF no resalta; muestra "Pendiente" legible en vez del marcador
     .replace(/\n\n+/g, '\n')
     .trim();
 }

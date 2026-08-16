@@ -26,6 +26,11 @@ import {
 
 import { obtenerTraduccionFr, obtenerTituloFr } from './traducciones_fr.js';
 
+// T11: marcador de campo indispensable faltante. Se inyecta en el texto renderizado
+// (celular/email/domicilio vacíos) y el preview/generador lo pintan resaltado como "Pendiente".
+// El documento está "limpio" exactamente cuando no queda ningún marcador.
+export const PENDIENTE_MARK = '⟦Pendiente⟧';
+
 /**
  * Números pequeños a letras (para días de plazos).
  */
@@ -94,8 +99,10 @@ export function ensamblarContexto(plantilla, datos) {
     });
 
     // Agregar campos extra de la parte
-    ctxParte.celular = datoParte.celular || '';
-    ctxParte.email = datoParte.email || '';
+    // T11: celular/email/domicilio son indispensables → vacío se marca como Pendiente (no en blanco).
+    ctxParte.celular = datoParte.celular?.trim() || PENDIENTE_MARK;
+    ctxParte.email = datoParte.email?.trim() || PENDIENTE_MARK;
+    ctxParte.domicilio = datoParte.domicilio?.trim() || PENDIENTE_MARK;
     ctxParte.nacionalidad_en = datoParte.nacionalidad_en || datoParte.nacionalidad || '';
 
     // Versiones con negrita (para el renderizador DOCX/HTML)

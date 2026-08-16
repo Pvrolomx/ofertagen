@@ -36,6 +36,7 @@ import {
   VerticalAlign,
   ImageRun,
 } from 'docx';
+import { PENDIENTE_MARK } from '../plantillas/ensamblador.js';
 
 // ============================================================
 // CONSTANTES DE FORMATO
@@ -138,6 +139,24 @@ function parseTextoConNegritas(texto, fontSize = FONT_SIZE_BODY) {
     runs.push(new TextRun({ text: texto, font: FONT, size: fontSize }));
   }
 
+  return runs;
+}
+
+/**
+ * T11: procesa una línea reemplazando el marcador de campo faltante por un run
+ * "Pendiente" resaltado (amarillo, negritas, texto rojo). El resto pasa por el
+ * parser de negritas normal. Así el borrador muestra en contexto qué falta.
+ */
+function runsDeLinea(linea, fontSize = FONT_SIZE_BODY) {
+  if (!linea.includes(PENDIENTE_MARK)) return parseTextoConNegritas(linea, fontSize);
+  const runs = [];
+  const partes = linea.split(PENDIENTE_MARK);
+  partes.forEach((parte, i) => {
+    if (i > 0) {
+      runs.push(new TextRun({ text: 'Pendiente', font: FONT, size: fontSize, bold: true, color: 'C00000', highlight: 'yellow' }));
+    }
+    if (parte) runs.push(...parseTextoConNegritas(parte, fontSize));
+  });
   return runs;
 }
 
@@ -308,7 +327,7 @@ function crearFilasClausula(bloque, idiomaSecundario = 'en') {
         if (j > 0) {
           runs.push(new TextRun({ break: 1, font: FONT, size: FONT_SIZE_BODY }));
         }
-        runs.push(...parseTextoConNegritas(lineas[j], FONT_SIZE_BODY));
+        runs.push(...runsDeLinea(lineas[j], FONT_SIZE_BODY));
       }
 
       // T8: prosa justificada, PERO izquierda si el párrafo trae saltos de línea manuales
