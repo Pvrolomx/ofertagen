@@ -163,7 +163,12 @@ export function montoALetras(monto, moneda = 'USD') {
   const letras = enteroALetras(parteEntera);
   const nombreMoneda = parteEntera === 1 ? config.singular : config.plural;
 
-  let resultado = `${letras} ${nombreMoneda}`;
+  // "Millón/millones" EXACTO rige la preposición "de": "un millón DE dólares
+  // estadounidenses". Si el número trae resto, no la rige: "dos millones
+  // setecientos cincuenta mil dólares estadounidenses" (sin "de").
+  const nexo = /mill(ón|ones)$/.test(letras) ? ' de ' : ' ';
+
+  let resultado = `${letras}${nexo}${nombreMoneda}`;
 
   if (centavos > 0) {
     resultado += ` ${centavos}/100`;
