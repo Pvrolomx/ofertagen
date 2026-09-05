@@ -206,7 +206,7 @@ function textoAParagrafos(texto, fontSize = FONT_SIZE_BODY, alignment = Alignmen
 function crearFilasClausula(bloque, idiomaSecundario = 'en') {
   const filas = [];
   const lang2 = idiomaSecundario; // 'es' | 'en' | 'fr'
-  const soloEs = idiomaSecundario === 'es'; // documento monolingüe: una sola columna
+  const soloEs = !idiomaSecundario || idiomaSecundario === 'es' || idiomaSecundario === 'none'; // documento monolingüe: una sola columna
 
   // Arma las celdas de una fila: dos columnas (ES + lang2) en bilingüe, o una única full-width en solo-español.
   const filaDeCeldas = (childrenEs, childrenLang2) => {
@@ -432,13 +432,12 @@ function crearFilaFirmas(bloque) {
 /**
  * Genera el encabezado del documento.
  */
-function crearEncabezado(meta) {
+function crearEncabezado(meta, soloEs = false) {
   const tituloEs = (meta.nombre || 'OFERTA DE INTENCIÓN DE COMPRA').toUpperCase();
-  const tituloEn = (meta.nombre_en || 'OFFER INTENT TO PURCHASE').toUpperCase();
-  return [
+  const parrafos = [
     new Paragraph({
       alignment: AlignmentType.CENTER,
-      spacing: { after: 200 },
+      spacing: { after: soloEs ? 300 : 200 },
       children: [
         new TextRun({
           text: tituloEs,
@@ -448,19 +447,27 @@ function crearEncabezado(meta) {
         }),
       ],
     }),
-    new Paragraph({
-      alignment: AlignmentType.CENTER,
-      spacing: { after: 300 },
-      children: [
-        new TextRun({
-          text: tituloEn,
-          font: FONT,
-          size: FONT_SIZE_HEADER,
-          bold: true,
-        }),
-      ],
-    }),
   ];
+
+  if (!soloEs) {
+    const tituloEn = (meta.nombre_en || 'OFFER INTENT TO PURCHASE').toUpperCase();
+    parrafos.push(
+      new Paragraph({
+        alignment: AlignmentType.CENTER,
+        spacing: { after: 300 },
+        children: [
+          new TextRun({
+            text: tituloEn,
+            font: FONT,
+            size: FONT_SIZE_HEADER,
+            bold: true,
+          }),
+        ],
+      })
+    );
+  }
+
+  return parrafos;
 }
 
 // ============================================================
@@ -548,7 +555,7 @@ function crearAceptacion(soloEs = false) {
  */
 export async function generarDocx(bloques, meta = {}, opciones = {}) {
   const { logoBase64, idiomaSecundario = 'en', firmasEnLinea = false } = opciones;
-  const soloEs = idiomaSecundario === 'es'; // documento monolingüe: una sola columna
+  const soloEs = !idiomaSecundario || idiomaSecundario === 'es' || idiomaSecundario === 'none'; // documento monolingüe: una sola columna
 
   // Separar bloques normales de firmas
   const bloquesNormales = bloques.filter(b => (b.tipo || b.tipo) !== 'firmas');
@@ -567,7 +574,7 @@ export async function generarDocx(bloques, meta = {}, opciones = {}) {
 
   // Contenido de la sección principal (con footer de iniciales)
   const contenidoPrincipal = [
-    ...crearEncabezado(meta),
+    ...crearEncabezado(meta, soloEs),
     tablaContrato,
   ];
 

@@ -152,6 +152,9 @@ export function ensamblarContexto(plantilla, datos) {
 
   // Flags de UI que NO son bloques del molde pero el render sí consulta (ej. opcion_fideicomiso en §4).
   ctx.bloques.opcion_fideicomiso = datos.bloques?.opcion_fideicomiso ?? false;
+  // Mobiliario vendido por convenio aparte: la oferta no obliga sobre electrodomésticos
+  // ni lista el inventario de muebles como documento integral.
+  ctx.bloques.mobiliario_separado = datos.bloques?.mobiliario_separado ?? false;
 
   // ============================================================
   // 3. RESOLVER PRECIO Y MONTOS
