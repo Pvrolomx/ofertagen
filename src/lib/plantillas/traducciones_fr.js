@@ -52,15 +52,28 @@ export const BLOQUES_FR = {
 
   // ---- PRECIO ----
   'cl_precio': (ctx) => {
-    const esMexicano = ctx.propietario.esMexicano;
+    const vendedorMx = ctx.propietario.esMexicano;
+    const compradorMx = ctx.ofertante.esMexicano;
     const refOfertante = ctx.ofertante.fr?.referencia || "L'OFFRANT";
     const refPropietario = ctx.propietario.fr?.referencia || 'LE PROPRIÉTAIRE';
-    
-    if (esMexicano) {
-      return `${refOfertante} offre par la présente à ${refPropietario} de conclure un Contrat de Constitution de Fidéicommis de Transfert de Propriété Irrévocable en Zone Restreinte concernant les droits de propriété sur L'IMMEUBLE décrit ci-dessus pour la somme totale de ${ctx.precio.completo}. Ce prix sera payé comme suit:`;
+
+    // Misma matriz que el molde ES/EN (Vendeur → Acheteur).
+    let objetFr;
+    if (vendedorMx && !compradorMx) {
+      // Mexicain → Étranger : constitution de fidéicommis en zone restreinte
+      objetFr = "un Contrat de Constitution de Fidéicommis de Transfert de Propriété Irrévocable en Zone Restreinte concernant les droits de propriété sur L'IMMEUBLE décrit ci-dessus";
+    } else if (vendedorMx && compradorMx) {
+      // Mexicain → Mexicain : vente directe (sans fidéicommis)
+      objetFr = "un Contrat de Vente concernant L'IMMEUBLE décrit ci-dessus";
+    } else if (!vendedorMx && compradorMx) {
+      // Étranger → Mexicain : exécution des fins du fidéicommis
+      objetFr = "un Contrat de Transfert de Propriété en Exécution des Fins du Fidéicommis concernant les droits de propriété sur L'IMMEUBLE décrit ci-dessus";
     } else {
-      return `${refOfertante} offre par la présente à ${refPropietario} de conclure un Contrat de Transfert de Propriété Irrévocable concernant les droits fiduciaires sur L'IMMEUBLE décrit ci-dessus pour la somme totale de ${ctx.precio.completo}. Ce prix sera payé comme suit:`;
+      // Étranger → Étranger : cession de droits fiduciaires
+      objetFr = "un Contrat de Transfert de Propriété Irrévocable concernant les droits fiduciaires sur L'IMMEUBLE décrit ci-dessus";
     }
+
+    return `${refOfertante} offre par la présente à ${refPropietario} de conclure ${objetFr} pour la somme totale de ${ctx.precio.completo}. Ce prix sera payé comme suit:`;
   },
 
   // ---- ESCROW ----
@@ -177,7 +190,7 @@ export const BLOQUES_FR = {
 
   // ---- FORMALIZACIÓN ----
   'cl_formalizacion': (ctx) =>
-    `Les parties conviennent que l'acte de cession des droits fiduciaires sera formalisé devant ${ctx.notario.nombre_completo}, Notaire Public ${ctx.notario.numero_notaria} de ${ctx.notario.ciudad_notaria}, le ${ctx.fechas.fecha_formalizacion}, avec possibilité de prolongation jusqu'au ${ctx.fechas.fecha_extension || '[DATE D\'EXTENSION]'} par accord mutuel.`,
+    `Les parties conviennent que ${ctx.propietario.esMexicano && ctx.ofertante.esMexicano ? "l'acte de vente" : "l'acte de cession des droits fiduciaires"} sera formalisé devant ${ctx.notario.nombre_completo}, Notaire Public ${ctx.notario.numero_notaria} de ${ctx.notario.ciudad_notaria}, le ${ctx.fechas.fecha_formalizacion}, avec possibilité de prolongation jusqu'au ${ctx.fechas.fecha_extension || '[DATE D\'EXTENSION]'} par accord mutuel.`,
 
   // ---- VIGENCIA ----
   'cl_vigencia': (ctx) =>

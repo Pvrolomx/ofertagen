@@ -123,13 +123,17 @@ export function ensamblarContextoContraoferta(plantilla, datos) {
 
   const ofertaOrig = datos.campos?.oferta_original || {};
   const precioOrig = ofertaOrig.precio_original || 0;
+  // Moneda de la operacion. Default 'USD' por retrocompatibilidad: sin este dato,
+  // una contraoferta en pesos se imprimia en dolares en ambos idiomas.
+  const moneda = ofertaOrig.moneda || datos.campos?.precio?.moneda || 'USD';
+  ctx.moneda = moneda;
 
   ctx.oferta_original = {
     fecha_es: fechaEs(ofertaOrig.fecha_oferta) || '[FECHA]',
     fecha_en: fechaEn(ofertaOrig.fecha_oferta) || '[DATE]',
     fecha_fr: fechaFr(ofertaOrig.fecha_oferta) || '[DATE]',
     descripcion_inmueble: ofertaOrig.descripcion_inmueble || '[INMUEBLE]',
-    precio_completo: bloquePrecio(precioOrig, 'USD').completo,
+    precio_completo: bloquePrecio(precioOrig, moneda).completo,
   };
 
   // ============================================================
@@ -160,7 +164,7 @@ export function ensamblarContextoContraoferta(plantilla, datos) {
 
   ctx.modificaciones = {
     // Precio
-    nuevo_precio_completo: nuevoPrecio > 0 ? bloquePrecio(nuevoPrecio, 'USD').completo : '',
+    nuevo_precio_completo: nuevoPrecio > 0 ? bloquePrecio(nuevoPrecio, moneda).completo : '',
     
     // Fecha de formalización
     nueva_fecha_formalizacion_es: fechaEs(mods.nueva_fecha_formalizacion) || '',
@@ -185,7 +189,7 @@ export function ensamblarContextoContraoferta(plantilla, datos) {
     nueva_hora_vigencia_fr: horaVig.fr,
     
     // Depósito (monto y/o empresa)
-    nuevo_deposito_completo: nuevoDeposito > 0 ? bloquePrecio(nuevoDeposito, 'USD').completo : '',
+    nuevo_deposito_completo: nuevoDeposito > 0 ? bloquePrecio(nuevoDeposito, moneda).completo : '',
     nueva_empresa_escrow: resolverEmpresaEscrow(mods),
     
     // Cláusula libre

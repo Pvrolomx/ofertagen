@@ -42,6 +42,7 @@ const MONEDAS = {
     simbolo: '$',
     centavos: 'centavos de dólar',
     sufijo: 'USD',
+    en_plural: 'U.S. Dollars',
   },
   MXN: {
     singular: 'peso',
@@ -49,6 +50,7 @@ const MONEDAS = {
     simbolo: '$',
     centavos: 'centavos',
     sufijo: 'M.N.',
+    en_plural: 'Mexican Pesos',
   },
   EUR: {
     singular: 'euro',
@@ -56,6 +58,7 @@ const MONEDAS = {
     simbolo: '€',
     centavos: 'céntimos',
     sufijo: 'EUR',
+    en_plural: 'Euros',
   },
 };
 
@@ -215,7 +218,7 @@ export function montoFormateado(monto, moneda = 'USD') {
 export function bloquePrecio(monto, moneda = 'USD') {
   const formateado = montoFormateado(monto, moneda);
   const letras = montoALetras(monto, moneda);
-  const letras_en = montoALetrasEn(monto);
+  const letras_en = montoALetrasEn(monto, moneda);
 
   return {
     formateado,                                    // "$220,000.00 USD"
@@ -321,15 +324,25 @@ function toTitleCase(str) {
 
 /**
  * Convierte un monto numérico a letras en inglés con formato contractual.
- * Ej: 275000 → "Two Hundred Seventy Five Thousand U.S. Dollars and 00/100"
+ * Ej: 275000, "USD" → "Two Hundred Seventy Five Thousand U.S. Dollars and 00/100"
+ * Ej: 275000, "MXN" → "Two Hundred Seventy Five Thousand Mexican Pesos and 00/100"
+ *
+ * La moneda es obligatoria en la práctica: omitirla asume USD y produce
+ * "U.S. Dollars" en la columna inglesa aunque la operación sea en pesos.
  *
  * @param {number} monto
+ * @param {string} moneda - "USD" | "MXN" | "EUR"
  * @returns {string}
  */
-export function montoALetrasEn(monto) {
+export function montoALetrasEn(monto, moneda = 'USD') {
+  const config = MONEDAS[moneda];
+  if (!config) {
+    throw new Error(`Moneda no soportada: "${moneda}". Disponibles: ${Object.keys(MONEDAS).join(', ')}`);
+  }
+
   const parteEntera = Math.floor(Math.abs(monto));
   const centavos = Math.round((Math.abs(monto) - parteEntera) * 100);
   const letras = toTitleCase(numberToWordsEnFull(parteEntera));
   const sufijo = centavos > 0 ? `${centavos}/100` : '00/100';
-  return `${letras} U.S. Dollars and ${sufijo}`;
+  return `${letras} ${config.en_plural} and ${sufijo}`;
 }

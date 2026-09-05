@@ -152,9 +152,25 @@ export function ensamblarContexto(plantilla, datos) {
 
   // Flags de UI que NO son bloques del molde pero el render sí consulta (ej. opcion_fideicomiso en §4).
   ctx.bloques.opcion_fideicomiso = datos.bloques?.opcion_fideicomiso ?? false;
+  // Precio compuesto (inmueble + muebles). El render de §4 consulta ctx.bloques,
+  // así que el flag debe copiarse aquí o la rama compuesta nunca se alcanza.
+  ctx.bloques.precio_compuesto = datos.bloques?.precio_compuesto ?? false;
   // Mobiliario vendido por convenio aparte: la oferta no obliga sobre electrodomésticos
   // ni lista el inventario de muebles como documento integral.
   ctx.bloques.mobiliario_separado = datos.bloques?.mobiliario_separado ?? false;
+  // Pacto de no incluir el valor de los muebles en la Escritura Pública. OPT-IN:
+  // es una obligación bilateral de omisión documental, no se imprime por defecto.
+  ctx.bloques.pacto_no_incluir_muebles = datos.bloques?.pacto_no_incluir_muebles ?? false;
+
+  // Objeto de la operación de muebles (precio compuesto). Permite describir algo
+  // distinto de "mobiliario y electrodomésticos" —p. ej. un negocio en marcha con
+  // inventario y acreditamiento comercial— y nombrar el convenio que lo formaliza.
+  ctx.muebles = {
+    objeto_es: datos.campos?.muebles?.objeto_es || '',
+    objeto_en: datos.campos?.muebles?.objeto_en || '',
+    convenio_es: datos.campos?.muebles?.convenio_es || '',
+    convenio_en: datos.campos?.muebles?.convenio_en || '',
+  };
 
   // ============================================================
   // 3. RESOLVER PRECIO Y MONTOS
@@ -188,11 +204,11 @@ export function ensamblarContexto(plantilla, datos) {
   if (precioCompuesto) {
     ctx.precio_inmueble = {
       ...bloquePrecio(precioInmueble, moneda),
-      letras_en: montoALetrasEn(precioInmueble),
+      letras_en: montoALetrasEn(precioInmueble, moneda),
     };
     ctx.precio_muebles = {
       ...bloquePrecio(precioMuebles, moneda),
-      letras_en: montoALetrasEn(precioMuebles),
+      letras_en: montoALetrasEn(precioMuebles, moneda),
     };
   }
 
