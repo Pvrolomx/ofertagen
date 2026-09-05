@@ -32,11 +32,19 @@ const DIAS_ORDINAL_EN = (d) => {
 
 /**
  * Parsea una fecha desde string ISO o Date object.
+ *
+ * Devuelve null cuando no hay fecha o no es parseable, para que los
+ * formateadores puedan responder cadena vacía en vez de reventar. Los
+ * llamadores ya dependen de eso: `fechaEs(x) || '[FECHA]'`.
+ *
  * @param {string|Date} fecha
- * @returns {{ dia: number, mes: number, anio: number }}
+ * @returns {{ dia: number, mes: number, anio: number } | null}
  */
 function parsearFecha(fecha) {
+  if (!fecha) return null;
+
   if (fecha instanceof Date) {
+    if (Number.isNaN(fecha.getTime())) return null;
     return {
       dia: fecha.getDate(),
       mes: fecha.getMonth(), // 0-indexed
@@ -44,13 +52,16 @@ function parsearFecha(fecha) {
     };
   }
 
+  if (typeof fecha !== 'string') return null;
+
   // ISO string: "2023-03-20" o "2023-03-20T00:00:00"
   const parts = fecha.split('T')[0].split('-');
-  return {
-    dia: parseInt(parts[2], 10),
-    mes: parseInt(parts[1], 10) - 1, // convertir a 0-indexed
-    anio: parseInt(parts[0], 10),
-  };
+  const anio = parseInt(parts[0], 10);
+  const mes = parseInt(parts[1], 10) - 1;
+  const dia = parseInt(parts[2], 10);
+  if (Number.isNaN(anio) || Number.isNaN(mes) || Number.isNaN(dia)) return null;
+
+  return { dia, mes, anio };
 }
 
 /**
@@ -64,7 +75,9 @@ function parsearFecha(fecha) {
  */
 export function fechaEs(fecha, opciones = {}) {
   const { conDia = true, soloMesAnio = false } = opciones;
-  const { dia, mes, anio } = parsearFecha(fecha);
+  const partes = parsearFecha(fecha);
+  if (!partes) return '';
+  const { dia, mes, anio } = partes;
 
   if (soloMesAnio) {
     return `${MESES_ES[mes]} de ${anio}`;
@@ -88,7 +101,9 @@ export function fechaEs(fecha, opciones = {}) {
  */
 export function fechaEn(fecha, opciones = {}) {
   const { conDia = true, soloMesAnio = false } = opciones;
-  const { dia, mes, anio } = parsearFecha(fecha);
+  const partes = parsearFecha(fecha);
+  if (!partes) return '';
+  const { dia, mes, anio } = partes;
 
   if (soloMesAnio) {
     return `${MESES_EN[mes]}, ${anio}`;

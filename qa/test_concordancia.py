@@ -253,9 +253,12 @@ log("Ensamblador itera partes via loop (ofertante + propietario)",
     "for (const parteDef of plantilla.partes)" in ensamblador or
     "parteDef" in ensamblador)
 
+# El rol se pasa via rolEfectivo: para la parte vendedora el titulo es dinamico
+# (propietario / fideicomisario_vendedor / vendedor) y cae en parteDef.rol por defecto.
 log("Ensamblador pasa rol + personas + usarSingularColectivo",
     "usarSingularColectivo: true" in ensamblador and
-    "rol: parteDef.rol" in ensamblador)
+    ("rol: rolEfectivo" in ensamblador or "rol: parteDef.rol" in ensamblador) and
+    "parteDef.rol" in ensamblador)
 
 log("ctx.ofertante.referencia usada en plantilla",
     "ctx.ofertante.referencia" in plantilla)
