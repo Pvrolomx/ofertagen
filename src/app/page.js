@@ -946,13 +946,31 @@ export default function OfertaGenPage() {
   const importDraft = useCallback(() => {
     const input = document.createElement("input");
     input.type = "file";
-    input.accept = ".json";
+    input.accept = ".json,.docx";
     input.onchange = async (e) => {
       const file = e.target.files?.[0];
       if (!file) return;
+      const isDocx = (file.name || "").toLowerCase().endsWith(".docx");
       try {
-        const text = await file.text();
-        const parsed = JSON.parse(text);
+        let parsed;
+        if (isDocx) {
+          // DOCX: extraer el JSON incrustado en docProps/custom.xml (ofertagen_data).
+          const JSZip = (await import("jszip")).default;
+          const zip = await JSZip.loadAsync(await file.arrayBuffer());
+          const cx = zip.file("docProps/custom.xml");
+          if (!cx) throw new Error("no-custom-props");
+          const xml = await cx.async("string");
+          const m = xml.match(/name="ofertagen_data"[^>]*>\s*<vt:lpwstr>([\s\S]*?)<\/vt:lpwstr>/);
+          if (!m) throw new Error("no-ofertagen-data");
+          // Desescape XML (&amp; al final para no doble-decodificar), luego JSON.parse.
+          const raw = m[1]
+            .replace(/&lt;/g, "<").replace(/&gt;/g, ">")
+            .replace(/&quot;/g, '"').replace(/&apos;/g, "'")
+            .replace(/&amp;/g, "&");
+          parsed = JSON.parse(raw);
+        } else {
+          parsed = JSON.parse(await file.text());
+        }
         if (parsed.data) {
           setData(parsed.data);
           if (typeof parsed.step === "number") setStep(parsed.step);
@@ -961,7 +979,7 @@ export default function OfertaGenPage() {
           setData(parsed);
         }
       } catch (err) {
-        alert("Error al cargar el archivo. Verifica que sea un borrador válido.");
+        alert("Error al cargar el archivo. Verifica que sea un borrador válido de OfertaGen (.json) o un DOCX generado por OfertaGen (.docx).");
       }
     };
     input.click();
@@ -1077,7 +1095,7 @@ export default function OfertaGenPage() {
     setFieldErrors({});
     setGenerating(true);
     try {
-      const blob = await generarDocxBlob(bloques, PLANTILLA.meta, { logoBase64, idiomaSecundario: lang2, firmasEnLinea: data.bloques.firmas_en_linea });
+      const blob = await generarDocxBlob(bloques, PLANTILLA.meta, { logoBase64, idiomaSecundario: lang2, firmasEnLinea: data.bloques.firmas_en_linea, borrador: { version: "3.0", exportedAt: new Date().toISOString(), step, data } });
       const nombre = data.partes.ofertante.personas[0]?.nombre?.replace(/\s+/g, "_") || "OFERTA";
       const idiomaSufijo = lang2 === 'es' ? '_ES' : lang2 === 'fr' ? '_FR' : '';
       const url = URL.createObjectURL(blob);
@@ -1095,7 +1113,7 @@ export default function OfertaGenPage() {
   const doGenerateWord = useCallback(async () => {
     setGenerating(true);
     try {
-      const blob = await generarDocxBlob(bloques, PLANTILLA.meta, { logoBase64, idiomaSecundario: lang2, firmasEnLinea: data.bloques.firmas_en_linea });
+      const blob = await generarDocxBlob(bloques, PLANTILLA.meta, { logoBase64, idiomaSecundario: lang2, firmasEnLinea: data.bloques.firmas_en_linea, borrador: { version: "3.0", exportedAt: new Date().toISOString(), step, data } });
       const nombre = data.partes.ofertante.personas[0]?.nombre?.replace(/\s+/g, "_") || "OFERTA";
       const idiomaSufijo = lang2 === 'es' ? '_ES' : lang2 === 'fr' ? '_FR' : '';
       const url = URL.createObjectURL(blob);

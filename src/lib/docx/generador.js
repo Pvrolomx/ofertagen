@@ -554,7 +554,7 @@ function crearAceptacion(soloEs = false) {
  * @returns {Promise<Buffer>} Buffer del archivo .docx
  */
 export async function generarDocx(bloques, meta = {}, opciones = {}) {
-  const { logoBase64, idiomaSecundario = 'en', firmasEnLinea = false } = opciones;
+  const { logoBase64, idiomaSecundario = 'en', firmasEnLinea = false, borrador = null } = opciones;
   const soloEs = !idiomaSecundario || idiomaSecundario === 'es' || idiomaSecundario === 'none'; // documento monolingüe: una sola columna
 
   // Separar bloques normales de firmas
@@ -743,6 +743,10 @@ export async function generarDocx(bloques, meta = {}, opciones = {}) {
   }
 
   const doc = new Document({
+    // Incrusta el borrador completo en docProps/custom.xml → ofertagen_data,
+    // de modo que el propio .docx pueda recargarse en el formulario (round-trip).
+    // Mismo mecanismo que PoderGen y GeneralesGen.
+    ...(borrador ? { customProperties: [{ name: 'ofertagen_data', value: JSON.stringify(borrador) }] } : {}),
     styles: {
       default: {
         document: {

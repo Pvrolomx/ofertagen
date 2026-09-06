@@ -48,3 +48,5 @@ next-env.d.ts
 
 # drivers/scripts locales con datos de cliente — NO subir (PII)
 /generar_oferta_*.mjs
+/exportar_json_*.mjs
+.claude/

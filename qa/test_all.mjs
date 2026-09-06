@@ -9,6 +9,7 @@
  * - test_fideicomiso.mjs (26 assertions) - Lógica fideicomiso
  * - test_integration.mjs (48 assertions) - Generación documentos
  * - test_modalidad.mjs (37 assertions) - Modalidad por nacionalidad y moneda (comportamiento)
+ * - test_roundtrip_docx.mjs (15 assertions) - Borrador embebido en el .docx
  */
 
 import { spawn } from 'child_process';
@@ -27,6 +28,7 @@ const tests = [
   { name: 'Análisis Estático', file: 'test_full.mjs' },
   { name: 'Lógica Fideicomiso', file: 'test_fideicomiso.mjs' },
   { name: 'Modalidad y Moneda', file: 'test_modalidad.mjs' },
+  { name: 'Round-trip DOCX', file: 'test_roundtrip_docx.mjs' },
   { name: 'Integración DOCX', file: 'test_integration.mjs' },
 ];
 
