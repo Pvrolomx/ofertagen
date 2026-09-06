@@ -29,7 +29,7 @@ Ambos quedaron cubiertos con 6 assertions nuevas en `qa/test_modalidad.mjs` (43/
 
 ## 2. Lo que el borrador manual tiene y el molde NO — candidatos a adicionar
 
-### 2.1 · Libertad de gravámenes como CONDICIÓN INDISPENSABLE, con carta de saldo ⭐ prioridad alta
+### 2.1 · Libertad de gravámenes como CONDICIÓN INDISPENSABLE, con carta de saldo — ✅ IMPLEMENTADO (ver §6)
 
 El borrador manual dedica una cláusula entera a esto:
 
@@ -97,8 +97,27 @@ Vale la pena señalarlo porque es plausible que sea **la razón por la que el bo
 
 | Prioridad | Qué | Dónde |
 |---|---|---|
-| Alta | Bloque `gravamen_por_cancelar` (carta de saldo + cancelación previa/simultánea) como condición indispensable | `oferta_compra.js` + UI |
+| ~~Alta~~ **✅ hecho** | Bloque `gravamen_por_cancelar` (carta de saldo + cancelación previa/simultánea) como condición indispensable — ver §6 | `oferta_compra.js` + UI |
 | Media | Variante de `inventario` para negocio en marcha | `oferta_compra.js` |
 | Media | §10 con exención parcial cuando el inmueble es de uso mixto | `oferta_compra.js` + campo `uso_mixto` |
 | Baja | Nombre del organismo operador de agua | campo de texto |
 | Baja | Fallback de título en exportadores Markdown: `etiqueta` en vez de `id` | exportadores |
+
+---
+
+## 6. Implementado: bloque `gravamen_por_cancelar`
+
+Cubre el hueco de §2.1. Condicional, **apagado por defecto**, emitido como inciso de las condiciones indispensables — si el gravamen no se cancela, no hay operación.
+
+Los incisos se renumeran solos según qué bloques estén activos: con él encendido queda **A** inspección, **B** documentación, **C** gravamen, **D** inventario; apagado, el inventario recupera la C.
+
+**Campos:** `campos.gravamen.acreedor` (con fórmula genérica *"la institución acreedora"* si se omite) y `campos.gravamen.dias_carta_saldo` (default 10, emitido en número y letra).
+
+**Qué obliga**, incluyendo dos cosas que el borrador manual no decía:
+
+- carta de saldo o de no adeudo del acreedor, con plazo propio anterior al cierre;
+- documentación de cancelación, otorgada **previa o simultáneamente** a la escritura definitiva;
+- **los gastos, derechos e impuestos de la cancelación son por cuenta del vendedor** ← no estaba en el manual;
+- **salida para el comprador**: si no se cancela en plazo, puede extender la FECHA DE FORMALIZACIÓN o terminar la oferta sin responsabilidad, **con devolución íntegra del depósito en garantía** ← tampoco estaba.
+
+Bilingüe ES/EN. Expuesto en la UI con su toggle y sus dos campos. 12 assertions en `qa/test_modalidad.mjs` (55/55), incluida la renumeración de incisos con y sin el bloque.

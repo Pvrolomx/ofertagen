@@ -916,6 +916,34 @@ B) PERSONAL PROPERTY PURCHASE: The purchase price for ${mueblesEn} shall be the 
     },
 
     // ---- SUB-BLOQUE: INVENTARIO / INCLUSION LIST ----
+    // ---- SUB-BLOQUE 15: GRAVAMEN VIGENTE POR CANCELAR ----
+    // Para inmuebles con hipoteca u otro gravamen inscrito todavia vivo. No basta
+    // con el Certificado de No Gravamen (que solo lo constata): hace falta la carta
+    // de saldo del acreedor y la cancelacion previa o simultanea a la firma.
+    {
+      id: 'gravamen_por_cancelar',
+      condicional: true,
+      default: false,
+      despues_de: 'doc_fideicomiso',
+      sub_clausula: 'C',
+      etiqueta: 'Cancelaci\u00f3n de gravamen vigente (carta de saldo)',
+      etiqueta_en: 'Release of existing lien (payoff letter)',
+      render: (ctx) => {
+        const acreedorEs = ctx.gravamen?.acreedor || 'la instituci\u00f3n acreedora';
+        const acreedorEn = ctx.gravamen?.acreedor || 'the creditor institution';
+        const diasNum = ctx.gravamen?.dias_carta_saldo || 10;
+        const diasLetras = ctx.gravamen?.dias_carta_saldo_letras || 'diez';
+        const diasLetrasEn = ctx.gravamen?.dias_carta_saldo_letras_en || 'ten';
+        const tipoEs = ctx.gravamen?.tipo_dias?.es || 'h\u00e1biles';
+        const tipoEn = ctx.gravamen?.tipo_dias?.en || 'business';
+
+        return {
+          es: `${ctx._inciso}) Que EL INMUEBLE sea transmitido libre de toda carga, gravamen, embargo, hipoteca o limitaci\u00f3n de dominio. Para tal efecto, ${ctx.propietario.referencia_negrita} se obliga a tramitar y exhibir ante el Notario P\u00fablico designado, con al menos ${diasLetras} (${diasNum}) d\u00edas ${tipoEs} de anticipaci\u00f3n a la FECHA DE FORMALIZACI\u00d3N, la carta de saldo o de no adeudo expedida por ${acreedorEs}, as\u00ed como la documentaci\u00f3n jur\u00eddica necesaria para la cancelaci\u00f3n de los grav\u00e1menes inscritos en los antecedentes registrales de EL INMUEBLE.\n\nDicha cancelaci\u00f3n deber\u00e1 otorgarse en forma previa o simult\u00e1nea a la escritura definitiva de compraventa, y los honorarios, derechos e impuestos que genere ser\u00e1n por cuenta exclusiva de ${ctx.propietario.referencia}.\n\nDe no obtenerse la cancelaci\u00f3n dentro del plazo se\u00f1alado, ${ctx.ofertante.referencia_negrita} podr\u00e1 optar por extender la FECHA DE FORMALIZACI\u00d3N o por dar por terminada la presente oferta sin responsabilidad alguna, en cuyo caso le ser\u00e1 devuelta \u00edntegramente la cantidad depositada en la cuenta escrow.`,
+          en: `${ctx._inciso}) That THE PROPERTY be transferred free of any lien, encumbrance, attachment, mortgage or limitation of title. To that effect, ${ctx.propietario.en.referencia_negrita} undertakes to obtain and deliver to the designated Notary Public, at least ${diasLetrasEn} (${diasNum}) ${tipoEn} days prior to THE FORMALIZING DATE, the payoff or no-debt letter issued by ${acreedorEn}, as well as the legal documentation required to release the liens recorded against THE PROPERTY.\n\nSaid release shall be granted prior to or simultaneously with the definitive purchase deed, and the fees, duties and taxes arising from it shall be borne exclusively by ${ctx.propietario.en.referencia}.\n\nShould the release not be obtained within said term, ${ctx.ofertante.en.referencia_negrita} may elect to extend THE FORMALIZING DATE or to terminate this offer without any liability, in which case the amount deposited in the escrow account shall be returned in full.`,
+        };
+      },
+    },
+
     {
       id: 'inventario',
       condicional: true,

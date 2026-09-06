@@ -268,7 +268,49 @@ section('6. Régimen del inmueble y objeto configurable');
 }
 
 // ============================================================
-section('7. Bloque doc_fideicomiso pide el documento correcto');
+section('7. Gravamen vigente por cancelar');
+
+{
+  const r = render(compuesto);
+  test('Apagado por defecto: no aparece la carta de saldo', !r.es.includes('carta de saldo'));
+}
+{
+  const r = render((d) => {
+    compuesto(d);
+    d.bloques.gravamen_por_cancelar = true;
+    d.campos.gravamen = { acreedor: 'Hipotecaria Nacional, S.A. de C.V. / SHF', dias_carta_saldo: 10 };
+  });
+  const g = r.bloque('gravamen_por_cancelar');
+  test('Encendido: emite el bloque', !!g);
+  test('Nombra al acreedor configurado', (g?.es || '').includes('Hipotecaria Nacional'));
+  test('Exige carta de saldo con plazo en número y letra',
+    (g?.es || '').includes('carta de saldo') && (g?.es || '').includes('diez (10) días hábiles'));
+  test('Cancelación previa o simultánea a la escritura',
+    (g?.es || '').includes('previa o simultánea a la escritura definitiva'));
+  test('Los gastos de cancelación son del vendedor',
+    (g?.es || '').includes('por cuenta exclusiva de LA PROPIETARIA'));
+  test('Da salida al comprador si no se cancela (con devolución del depósito)',
+    (g?.es || '').includes('dar por terminada la presente oferta') &&
+    (g?.es || '').includes('devuelta íntegramente'));
+  test('EN: payoff letter y release', (g?.en || '').includes('payoff') && (g?.en || '').includes('release'));
+  test('Es inciso de las condiciones indispensables', /^[A-Z]\)/.test(g?.es || ''));
+  test('Sin acreedor configurado usa una fórmula genérica',
+    (render((d) => { compuesto(d); d.bloques.gravamen_por_cancelar = true; })
+      .bloque('gravamen_por_cancelar')?.es || '').includes('la institución acreedora'));
+}
+{
+  // Los incisos se renumeran solos según qué bloques estén activos.
+  const conGrav = render((d) => { compuesto(d); d.bloques.gravamen_por_cancelar = true; });
+  const letra = (r, id) => (r.bloque(id)?.es || '').match(/^([A-Z])\)/)?.[1];
+  test('Con gravamen: A inspección, B documentación, C gravamen, D inventario',
+    letra(conGrav, 'inspeccion') === 'A' && letra(conGrav, 'doc_fideicomiso') === 'B' &&
+    letra(conGrav, 'gravamen_por_cancelar') === 'C' && letra(conGrav, 'inventario') === 'D');
+  const sinGrav = render(compuesto);
+  test('Sin gravamen: el inventario recupera la C', letra(sinGrav, 'inventario') === 'C');
+}
+
+// ============================================================
+section('8. Bloque doc_fideicomiso pide el documento correcto');
 
 {
   const r = render();

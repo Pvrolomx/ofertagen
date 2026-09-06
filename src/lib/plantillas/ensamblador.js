@@ -400,6 +400,20 @@ export function ensamblarContexto(plantilla, datos) {
     tipo_revision: tipoDias(insRevTipo),
   };
 
+  // Gravamen vigente por cancelar (hipoteca inscrita todavía viva).
+  const gravDias = datos.campos?.gravamen?.dias_carta_saldo || 10;
+  const gravTipo = datos.campos?.gravamen?.tipo_dias || 'habiles';
+  ctx.gravamen = {
+    acreedor: datos.campos?.gravamen?.acreedor || '',
+    dias_carta_saldo: gravDias,
+    dias_carta_saldo_letras: diasALetras(gravDias),
+    dias_carta_saldo_letras_en: diasALetrasEn(gravDias),
+    tipo_dias: {
+      es: gravTipo === 'naturales' ? 'naturales' : 'hábiles',
+      en: gravTipo === 'naturales' ? 'calendar' : 'business',
+    },
+  };
+
   // Doc fideicomiso con plazos configurables
   const docEntDias = plazos.doc_fideicomiso_entregar_dias || 5;
   const docEntTipo = plazos.doc_fideicomiso_entregar_tipo || 'habiles';
@@ -542,7 +556,7 @@ export function renderizarBloques(plantilla, ctx) {
     try {
       // Si el bloque tiene sub_clausula, calcular el inciso dinámico
       if (bloque.sub_clausula || bloque.despues_de === 'cl_condiciones' || 
-          (bloque.despues_de && ['inspeccion', 'doc_fideicomiso', 'financiamiento', 'inventario', 'arrendamientos', 'zona_federal', 'litigios_pendientes', 'empleados_condicion'].includes(bloque.despues_de))) {
+          (bloque.despues_de && ['inspeccion', 'doc_fideicomiso', 'gravamen_por_cancelar', 'financiamiento', 'inventario', 'arrendamientos', 'zona_federal', 'litigios_pendientes', 'empleados_condicion'].includes(bloque.despues_de))) {
         ctx._inciso = incisos[incisoCounter];
         incisoCounter++;
       } else if (bloque.id === 'cl_condiciones') {
