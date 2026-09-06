@@ -99,7 +99,7 @@ Vale la pena señalarlo porque es plausible que sea **la razón por la que el bo
 |---|---|---|
 | ~~Alta~~ **✅ hecho** | Bloque `gravamen_por_cancelar` (carta de saldo + cancelación previa/simultánea) como condición indispensable — ver §6 | `oferta_compra.js` + UI |
 | Media | Variante de `inventario` para negocio en marcha | `oferta_compra.js` |
-| Media | §10 con exención parcial cuando el inmueble es de uso mixto | `oferta_compra.js` + campo `uso_mixto` |
+| ~~Media~~ **✅ hecho** | §10 con exención parcial cuando el inmueble es de uso mixto — ver §7 | `oferta_compra.js` + campo `uso_mixto` |
 | Baja | Nombre del organismo operador de agua | campo de texto |
 | Baja | Fallback de título en exportadores Markdown: `etiqueta` en vez de `id` | exportadores |
 
@@ -121,3 +121,24 @@ Los incisos se renumeran solos según qué bloques estén activos: con él encen
 - **salida para el comprador**: si no se cancela en plazo, puede extender la FECHA DE FORMALIZACIÓN o terminar la oferta sin responsabilidad, **con devolución íntegra del depósito en garantía** ← tampoco estaba.
 
 Bilingüe ES/EN. Expuesto en la UI con su toggle y sus dos campos. 12 assertions en `qa/test_modalidad.mjs` (55/55), incluida la renumeración de incisos con y sin el bloque.
+
+---
+
+## 7. Implementado: §10 ISR con exención parcial por uso mixto
+
+Cubre el hueco de §2.3, y de la forma que ahí se advertía: **no basta con citar el art. 93 fr. XIX**. Citarlo a secas en un inmueble mixto promete una exención total que no existe.
+
+**Campos:** `campos.inmueble.uso_mixto` (bool) y, opcionalmente, `superficie_habitacional_m2` / `superficie_comercial_m2`.
+
+Con `uso_mixto` activo, la §10 añade que:
+
+- el inmueble es de uso mixto, **con las superficies si se capturaron**;
+- la exención del art. 93 fr. XIX inciso a) aplica **únicamente a la proporción habitacional**, quedando gravada la restante;
+- la apartición la determina el fedatario con base en el avalúo;
+- el vendedor se obliga a aportar la documentación para **acreditar el destino habitacional** de la porción exenta.
+
+Sin superficies capturadas emite el texto **sin cifras**, en vez de inventarlas. Y convive con la lógica de fideicomiso de la misma cláusula: un vendedor extranjero con inmueble mixto recibe ambos párrafos.
+
+Bilingüe ES/EN. En la UI va junto al régimen de condominio, con las dos superficies desplegables y la advertencia de por qué importa. 8 assertions en `qa/test_modalidad.mjs` (63/63).
+
+**Caso Valle Dorado:** con 62.05 m² habitacionales y 58.58 m² comerciales tomados del avalúo MIPSA, la cláusula ahora dice en el documento que la exención alcanza solo a la primera porción.

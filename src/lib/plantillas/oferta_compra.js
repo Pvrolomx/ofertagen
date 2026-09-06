@@ -670,10 +670,32 @@ B) PERSONAL PROPERTY PURCHASE: The purchase price for ${mueblesEn} shall be the 
       numero: 10,
       siempre: true,
       titulo: { es: 'IMPUESTO SOBRE LA RENTA', en: 'CAPITAL GAINS TAX' },
-      render: (ctx) => ({
-        es: `Será a cargo exclusivo de ${ctx.propietario.referencia_negrita} el Impuesto Sobre la Renta que legalmente resulte de la operación, una vez aplicadas, en su caso, las exenciones, costos, inversiones, mejoras, actualizaciones y demás deducciones que procedan conforme a la legislación fiscal, cuya determinación y entero corresponderán al fedatario público en los términos legales aplicables.${ctx.propietario.esMexicano ? '' : `\n\nAsí mismo, serán a cargo de ${ctx.propietario.referencia_negrita} los honorarios fiduciarios por cesión, instrucción o extinción de fideicomiso, debiendo estar al corriente de las anualidades del fideicomiso.`}`,
-        en: `${ctx.propietario.en.referencia_negrita} shall bear exclusively the Income Tax legally arising from the transaction, after applying, as applicable, the exemptions, costs, investments, improvements, inflationary adjustments and any other deductions available under tax law, the determination and payment of which shall correspond to the acting Notary under applicable law.${ctx.propietario.esMexicano ? '' : `\n\nLikewise, ${ctx.propietario.en.referencia_negrita} shall bear the trustee fees for the assignment, instruction or termination of the trust, and must be current on the annual trust fees.`}`,
-      }),
+      render: (ctx) => {
+        // Uso mixto: la exenci\u00f3n del art. 93 fr. XIX a) LISR alcanza s\u00f3lo la
+        // porci\u00f3n habitacional. Decirlo evita que el vendedor firme creyendo que
+        // va exento del total y se entere del c\u00e1lculo real en la notar\u00eda.
+        const mixto = ctx.inmueble?.uso_mixto === true;
+        const supHab = ctx.inmueble?.superficie_habitacional_m2;
+        const supCom = ctx.inmueble?.superficie_comercial_m2;
+        const detalleEs = (supHab && supCom)
+          ? ` \u2014aproximadamente ${supHab} m\u00b2 de superficie habitacional y ${supCom} m\u00b2 de superficie comercial\u2014`
+          : '';
+        const detalleEn = (supHab && supCom)
+          ? ` \u2014approximately ${supHab} sq.m. of residential area and ${supCom} sq.m. of commercial area\u2014`
+          : '';
+
+        const mixtoEs = mixto
+          ? `\n\nLas partes reconocen que EL INMUEBLE es de uso mixto${detalleEs}, por destinarse parcialmente a casa habitaci\u00f3n y parcialmente a uso comercial. En consecuencia, la exenci\u00f3n prevista en el art\u00edculo 93, fracci\u00f3n XIX, inciso a) de la Ley del Impuesto Sobre la Renta ser\u00e1 aplicable \u00fanicamente a la proporci\u00f3n que corresponda a la superficie destinada a casa habitaci\u00f3n, quedando gravada la proporci\u00f3n restante. La determinaci\u00f3n de dicha proporci\u00f3n corresponder\u00e1 al fedatario p\u00fablico con base en el aval\u00fao y dem\u00e1s elementos que obren en el expediente.\n\n${ctx.propietario.referencia_negrita} se obliga a proporcionar oportunamente la documentaci\u00f3n que el fedatario le requiera para acreditar el destino habitacional de la porci\u00f3n exenta.`
+          : '';
+        const mixtoEn = mixto
+          ? `\n\nThe parties acknowledge that THE PROPERTY is of mixed use${detalleEn}, being partially allocated to residential and partially to commercial use. Accordingly, the exemption set forth in article 93, section XIX, subsection a) of the Income Tax Law shall apply solely to the portion corresponding to the residential area, the remaining portion being taxable. Such apportionment shall be determined by the acting Notary based on the appraisal and the other elements of record.\n\n${ctx.propietario.en.referencia_negrita} undertakes to timely provide the documentation the Notary may require in order to evidence the residential use of the exempt portion.`
+          : '';
+
+        return ({
+        es: `Será a cargo exclusivo de ${ctx.propietario.referencia_negrita} el Impuesto Sobre la Renta que legalmente resulte de la operación, una vez aplicadas, en su caso, las exenciones, costos, inversiones, mejoras, actualizaciones y demás deducciones que procedan conforme a la legislación fiscal, cuya determinación y entero corresponderán al fedatario público en los términos legales aplicables.${mixtoEs}${ctx.propietario.esMexicano ? '' : `\n\nAsí mismo, serán a cargo de ${ctx.propietario.referencia_negrita} los honorarios fiduciarios por cesión, instrucción o extinción de fideicomiso, debiendo estar al corriente de las anualidades del fideicomiso.`}`,
+        en: `${ctx.propietario.en.referencia_negrita} shall bear exclusively the Income Tax legally arising from the transaction, after applying, as applicable, the exemptions, costs, investments, improvements, inflationary adjustments and any other deductions available under tax law, the determination and payment of which shall correspond to the acting Notary under applicable law.${mixtoEn}${ctx.propietario.esMexicano ? '' : `\n\nLikewise, ${ctx.propietario.en.referencia_negrita} shall bear the trustee fees for the assignment, instruction or termination of the trust, and must be current on the annual trust fees.`}`,
+        });
+      },
     },
 
     // ---- CLÁUSULA 11: DOCUMENTACIÓN ----

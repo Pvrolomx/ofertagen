@@ -310,7 +310,50 @@ section('7. Gravamen vigente por cancelar');
 }
 
 // ============================================================
-section('8. Bloque doc_fideicomiso pide el documento correcto');
+section('8. §10 ISR — uso mixto y exención parcial');
+
+{
+  const r = render(compuesto);
+  const isr = r.bloque('cl_isr')?.es || '';
+  test('Sin uso mixto: no menciona el art. 93 ni proporciones', !isr.includes('artículo 93'));
+}
+{
+  const r = render((d) => {
+    compuesto(d);
+    d.campos.inmueble.uso_mixto = true;
+    d.campos.inmueble.superficie_habitacional_m2 = 62.05;
+    d.campos.inmueble.superficie_comercial_m2 = 58.58;
+  });
+  const isr = r.bloque('cl_isr')?.es || '';
+  const isrEn = r.bloque('cl_isr')?.en || '';
+  test('Uso mixto: cita el art. 93 fr. XIX inciso a)',
+    isr.includes('artículo 93, fracción XIX, inciso a)'));
+  test('Uso mixto: dice que la exención es SOLO de la porción habitacional',
+    isr.includes('únicamente a la proporción') && isr.includes('quedando gravada la proporción restante'));
+  test('Uso mixto: cita las superficies configuradas',
+    isr.includes('62.05 m²') && isr.includes('58.58 m²'));
+  test('Uso mixto: obliga al vendedor a acreditar el destino habitacional',
+    isr.includes('acreditar el destino habitacional'));
+  test('Uso mixto (EN): exemption applies solely to the residential portion',
+    isrEn.includes('article 93') && isrEn.includes('solely to the portion'));
+}
+{
+  // Sin superficies, el texto sigue siendo correcto: solo omite las cifras.
+  const r = render((d) => { compuesto(d); d.campos.inmueble.uso_mixto = true; });
+  const isr = r.bloque('cl_isr')?.es || '';
+  test('Uso mixto sin superficies: emite el texto sin inventar cifras',
+    isr.includes('artículo 93, fracción XIX') && !isr.includes('aproximadamente'));
+}
+{
+  // El uso mixto no debe interferir con la lógica de fideicomiso de la misma cláusula.
+  const r = render((d) => { compuesto(d); d.campos.inmueble.uso_mixto = true; vendedorExtranjero(d); });
+  const isr = r.bloque('cl_isr')?.es || '';
+  test('Uso mixto + vendedor extranjero: conviven exención parcial y honorarios fiduciarios',
+    isr.includes('artículo 93, fracción XIX') && isr.includes('honorarios fiduciarios'));
+}
+
+// ============================================================
+section('9. Bloque doc_fideicomiso pide el documento correcto');
 
 {
   const r = render();

@@ -1401,6 +1401,19 @@ export default function OfertaGenPage() {
                 <p className="text-xs" style={{color:"var(--og-secondary)"}}>{t.fields.es_condominio_sub || "Incluye actas de asamblea, estados financieros, carta no adeudo del administrador"}</p>
               </div>
             </div>
+            <div className="col-span-2 flex items-start gap-3 p-3 rounded-lg" style={{background:"var(--og-surface)",border:"1px solid var(--og-border)"}}>
+              <input type="checkbox" checked={data.campos.inmueble?.uso_mixto === true} onChange={e=>upCampo("inmueble","uso_mixto",e.target.checked)} className="rounded mt-1" />
+              <div className="flex-1">
+                <label className="text-sm font-medium" style={{color:"var(--og-primary)"}}>Uso mixto (habitacional + comercial)</label>
+                <p className="text-xs" style={{color:"var(--og-secondary)"}}>La exenci\u00f3n de casa habitaci\u00f3n (art. 93 fr. XIX LISR) s\u00f3lo alcanza la porci\u00f3n habitacional. Act\u00edvalo para que la cl\u00e1usula de ISR lo diga y el vendedor no firme esperando exenci\u00f3n total.</p>
+                {data.campos.inmueble?.uso_mixto === true ? (
+                  <div className="grid grid-cols-2 gap-3 mt-3">
+                    <Input label="Superficie habitacional (m2)" value={data.campos.inmueble?.superficie_habitacional_m2||""} onChange={v=>upCampo("inmueble","superficie_habitacional_m2",v)} type="number" />
+                    <Input label="Superficie comercial (m2)" value={data.campos.inmueble?.superficie_comercial_m2||""} onChange={v=>upCampo("inmueble","superficie_comercial_m2",v)} type="number" />
+                  </div>
+                ) : null}
+              </div>
+            </div>
           </Section>
           <Section title={t.sections.antecedente}>
             <Input label={t.fields.fecha_escritura} value={data.campos.antecedente?.fecha_escritura} onChange={v=>upCampo("antecedente","fecha_escritura",v)} type="date" required />
