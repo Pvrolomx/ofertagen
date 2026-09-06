@@ -1455,7 +1455,7 @@ export default function OfertaGenPage() {
                 <div className="col-span-2 px-1 py-2 text-sm font-medium" style={{color:"var(--og-secondary)"}}>
                   Total: ${((+data.campos.precio?.precio_inmueble||0) + (+data.campos.precio?.precio_muebles||0)).toLocaleString('en-US', {minimumFractionDigits:2, maximumFractionDigits:2})} {data.campos.precio?.moneda||"USD"}
                 </div>
-                <Input label="Objeto de la operacion de muebles (opcional)" value={data.campos.muebles?.objeto_es||""} onChange={v=>upCampo("muebles","objeto_es",v)} placeholder="el mobiliario, decoracion y electrodomesticos que se encuentran dentro del inmueble" />
+                <Input label="Objeto de la operacion de muebles (opcional)" value={data.campos.muebles?.objeto_es||""} onChange={v=>upCampo("muebles","objeto_es",v)} placeholder="del mobiliario, decoracion y electrodomesticos que se encuentran dentro del inmueble" />
                 <Input label="Nombre del convenio de muebles (opcional)" value={data.campos.muebles?.convenio_es||""} onChange={v=>upCampo("muebles","convenio_es",v)} placeholder="Contrato Privado de Compraventa de Bienes Muebles" />
                 <div className="col-span-2">
                   <Toggle

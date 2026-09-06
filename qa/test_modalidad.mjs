@@ -232,6 +232,20 @@ section('6. Régimen del inmueble y objeto configurable');
   test('No condominio: sin contracción incorrecta "de el inmueble"',
     !r.es.includes('de el inmueble'));
   test('documentos_integrales: sin el "Vehículo" hardcodeado', !r.es.includes('Vehículo'));
+  test('No condominio: obligaciones NO piden carta de la Administración de Condóminos',
+    !r.es.includes('Administración de Condóminos'));
+  test('No condominio: el prorrateo no menciona cuotas de condóminos',
+    !r.es.includes('cuotas ordinarias y extraordinarias de condóminos'));
+  test('No condominio (EN): sin Homeowner\'s Administration', !r.en.includes("Homeowner's Administration"));
+  test('Sin contracciones "de el" en todo el documento',
+    !/\bde el [a-záéíóúñ]/.test(r.es), r.es.match(/.{0,40}\bde el [a-záéíóúñ]\w*/)?.[0]);
+}
+{
+  const r = render((d) => { compuesto(d); d.campos.inmueble.es_condominio = true; });
+  test('Condominio: SÍ pide carta de la Administración de Condóminos',
+    r.es.includes('Administración de Condóminos'));
+  test('Condominio: el prorrateo SÍ menciona cuotas de condóminos',
+    r.es.includes('cuotas ordinarias y extraordinarias de condóminos'));
 }
 {
   const r = render((d) => { compuesto(d); d.campos.inmueble.es_condominio = true; });
