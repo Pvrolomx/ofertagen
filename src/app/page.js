@@ -2026,6 +2026,34 @@ export default function OfertaGenPage() {
       <div className="flex justify-between items-center">
         {step > 0 ? <button onClick={() => setStep(s => s - 1)} className="px-5 py-2 text-sm rounded-xl transition" style={{background:"var(--og-surface)",border:"1px solid var(--og-border)",color:"var(--og-secondary)"}}>{t.nav.anterior}</button> : <div />}
         <div className="flex gap-3">
+          {step === 4 && data.bloques.precio_compuesto && (
+            <button onClick={() => {
+              // Precargar el convenio de muebles: la oferta ya remite a el.
+              const preload = {
+                partes: {
+                  enajenante: data.partes.propietario,
+                  adquirente: data.partes.ofertante,
+                },
+                campos: {
+                  inmueble: { identificacion: data.campos.inmueble?.descripcion_corta || '' },
+                  precio: {
+                    precio_muebles: data.campos.precio?.precio_muebles || 0,
+                    moneda: data.campos.precio?.moneda || 'USD',
+                  },
+                  escrow: { empresa_escrow: data.campos.escrow?.empresa_escrow || '' },
+                  fechas: {
+                    ciudad: data.campos.fechas?.ciudad_presentacion || '',
+                    fecha_firma: data.campos.fechas?.fecha_presentacion || '',
+                  },
+                  jurisdiccion: { ciudad: data.campos.jurisdiccion?.ciudad_jurisdiccion || '' },
+                },
+              };
+              localStorage.setItem("convenio_preload", JSON.stringify(preload));
+              window.location.href = "/convenio-muebles";
+            }} className="px-4 py-2 text-sm font-medium rounded-xl transition" style={{background:"var(--og-surface)",border:"1px solid var(--og-border)",color:"var(--og-primary)"}}>
+              📦 Convenio de muebles
+            </button>
+          )}
           {step === 4 && (
             <button onClick={() => {
               // Precargar datos para contraoferta

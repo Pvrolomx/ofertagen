@@ -29,6 +29,17 @@ const ROLES = {
     sustantivo_en: { ms: 'SELLER', fs: 'SELLER', mp: 'SELLERS', fp: 'SELLERS' },
     sustantivo_fr: { ms: 'VENDEUR', fs: 'VENDEUSE', mp: 'VENDEURS', fp: 'VENDEUSES' },
   },
+  // Convenio de bienes muebles: el que enajena y el que adquiere.
+  enajenante: {
+    sustantivo: { ms: 'ENAJENANTE', fs: 'ENAJENANTE', mp: 'ENAJENANTES', fp: 'ENAJENANTES' },
+    sustantivo_en: { ms: 'SELLER', fs: 'SELLER', mp: 'SELLERS', fp: 'SELLERS' },
+    sustantivo_fr: { ms: 'CÉDANT', fs: 'CÉDANTE', mp: 'CÉDANTS', fp: 'CÉDANTES' },
+  },
+  adquirente: {
+    sustantivo: { ms: 'ADQUIRENTE', fs: 'ADQUIRENTE', mp: 'ADQUIRENTES', fp: 'ADQUIRENTES' },
+    sustantivo_en: { ms: 'BUYER', fs: 'BUYER', mp: 'BUYERS', fp: 'BUYERS' },
+    sustantivo_fr: { ms: 'ACQUÉREUR', fs: 'ACQUÉREUSE', mp: 'ACQUÉREURS', fp: 'ACQUÉREUSES' },
+  },
   comprador: {
     sustantivo: { ms: 'COMPRADOR', fs: 'COMPRADORA', mp: 'COMPRADORES', fp: 'COMPRADORAS' },
     sustantivo_en: { ms: 'BUYER', fs: 'BUYER', mp: 'BUYERS', fp: 'BUYERS' },
