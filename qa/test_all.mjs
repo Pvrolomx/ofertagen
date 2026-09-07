@@ -11,6 +11,7 @@
  * - test_modalidad.mjs (37 assertions) - Modalidad por nacionalidad y moneda (comportamiento)
  * - test_roundtrip_docx.mjs (15 assertions) - Borrador embebido en el .docx
  * - test_convenio_muebles.mjs (43 assertions) - Convenio de bienes muebles
+ * - test_invariantes.mjs - Invariantes sobre cobertura por pares (grafo de interruptores)
  */
 
 import { spawn } from 'child_process';
@@ -32,6 +33,7 @@ const tests = [
   { name: 'Round-trip DOCX', file: 'test_roundtrip_docx.mjs' },
   { name: 'Convenio de Muebles', file: 'test_convenio_muebles.mjs' },
   { name: 'Integración DOCX', file: 'test_integration.mjs' },
+  { name: 'Invariantes (pairwise)', file: 'test_invariantes.mjs' },
 ];
 
 async function runTest(test) {

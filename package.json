@@ -11,6 +11,7 @@
     "test:static": "node qa/test_full.mjs",
     "test:fideicomiso": "node qa/test_fideicomiso.mjs",
     "test:integration": "node qa/test_integration.mjs",
+    "test:invariantes": "node qa/test_invariantes.mjs",
     "test:e2e": "playwright test",
     "test:e2e:ui": "playwright test --ui",
     "test:e2e:debug": "playwright test --debug",

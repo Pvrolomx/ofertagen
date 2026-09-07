@@ -374,10 +374,29 @@ const PLANTILLA_OFERTA_COMPRA = {
       etiqueta: 'Adjudicación de derechos de cónyuge fallecido',
       etiqueta_en: 'Deceased spouse rights adjudication',
       campos_requeridos: [],
-      render: (ctx) => ({
-        es: `Así mismo manifiesta ${ctx.propietario.referencia_negrita} que simultáneamente a la venta actual, será adjudicataria del 50% de los derechos fideicomisarios que le correspondían a su difunto esposo, consolidándose el 100% de los derechos fideicomisarios en ella.`,
-        en: `Likewise, ${ctx.propietario.en.referencia_negrita} states that simultaneously with the current sale, she will be adjudicated 50% of the trust rights that corresponded to her deceased husband, consolidating 100% of the trust rights in her.`,
-      }),
+      render: (ctx) => {
+        // Concordancia con el CÓNYUGE SUPERVIVIENTE (quien comparece), no con el fallecido.
+        // "cónyuge" / "spouse" son neutros a propósito: el género de la persona fallecida no
+        // se captura en ningún campo, y derivarlo del superviviente presupondría matrimonio
+        // heterosexual. La redacción neutra evita la suposición sin perder precisión jurídica.
+        const esF = ctx.propietario.clave === 'fs' || ctx.propietario.clave === 'fp';
+
+        // Modalidad: entre mexicanos la operación es de dominio pleno y no hay derechos
+        // fideicomisarios que adjudicar; lo que se consolida es la mitad proindivisa.
+        const enFideicomiso = !(ctx.propietario.esMexicano && ctx.ofertante.esMexicano);
+
+        const objetoEs = enFideicomiso
+          ? 'del 50% de los derechos fideicomisarios que le correspondían a su difunto cónyuge, consolidándose el 100% de los derechos fideicomisarios'
+          : 'de la mitad proindivisa que le correspondía a su difunto cónyuge, consolidándose el 100% de la propiedad';
+        const objetoEn = enFideicomiso
+          ? `50% of the trust rights that corresponded to ${esF ? 'her' : 'his'} deceased spouse, consolidating 100% of the trust rights`
+          : `the undivided half that corresponded to ${esF ? 'her' : 'his'} deceased spouse, consolidating 100% of the ownership`;
+
+        return {
+          es: `Así mismo manifiesta ${ctx.propietario.referencia_negrita} que simultáneamente a la venta actual, será ${esF ? 'adjudicataria' : 'adjudicatario'} ${objetoEs} en ${esF ? 'ella' : 'él'}.`,
+          en: `Likewise, ${ctx.propietario.en.referencia_negrita} states that simultaneously with the current sale, ${esF ? 'she' : 'he'} will be adjudicated ${objetoEn} in ${esF ? 'her' : 'him'}.`,
+        };
+      },
     },
 
     // ---- CLÁUSULA 3: ANTECEDENTE DEL INMUEBLE ----
@@ -766,12 +785,33 @@ B) PERSONAL PROPERTY PURCHASE: The purchase price for ${mueblesEn} shall be the 
       id: 'holdback_escrow',
       condicional: true,
       default: false,
-      etiqueta: 'Holdback en escrow por adeudos de condominio',
-      etiqueta_en: 'Escrow holdback for condominium assessments',
-      render: (ctx) => ({
-        es: `En caso de que al momento del cierre existiere cualquier cuota extraordinaria (assessment), derrama, o cargo pendiente de determinación por parte de la Administración de Condóminos, las partes acuerdan retener en la cuenta escrow una cantidad igual al monto estimado de dicho adeudo, o la cantidad que las partes acuerden por escrito.\n\nDicha retención será liberada a ${ctx.propietario.referencia} una vez que se determine el monto exacto del adeudo y se acredite fehacientemente su pago total. En caso de que la retención resulte insuficiente, ${ctx.propietario.referencia} será responsable de cubrir la diferencia. En caso de que la retención exceda el monto adeudado, el excedente será liberado a ${ctx.propietario.referencia}.\n\nPara efectos de lo anterior, ${ctx.propietario.referencia} deberá obtener y entregar a ${ctx.ofertante.referencia} una carta del Administrador del Condominio declarando que no existen cargos pendientes o, en su caso, detallando los cargos existentes y sus montos estimados.`,
-        en: `In the event that at the time of closing there are any extraordinary assessments, special levies, or pending charges by the Homeowner's Administration, the parties agree to retain in the escrow account an amount equal to the estimated amount of such debt, or the amount agreed upon in writing by the parties.\n\nSaid holdback shall be released to ${ctx.propietario.en.referencia} once the exact amount of the debt is determined and its full payment is duly proven. In the event that the holdback is insufficient, ${ctx.propietario.en.referencia} shall be responsible for covering the difference. In the event that the holdback exceeds the amount owed, the surplus shall be released to ${ctx.propietario.en.referencia}.\n\nFor purposes of the foregoing, ${ctx.propietario.en.referencia} shall obtain and deliver to ${ctx.ofertante.en.referencia} a letter from the Condominium Administrator stating that there are no pending charges or, as the case may be, detailing the existing charges and their estimated amounts.`,
-      }),
+      etiqueta: 'Holdback en escrow por adeudos pendientes de determinación',
+      etiqueta_en: 'Escrow holdback for pending assessments',
+      render: (ctx) => {
+        // Mismo patrón que obligaciones_vendedor: el mecanismo de retención es idéntico,
+        // lo que cambia es QUIÉN determina el adeudo. Fuera de régimen de condominio no
+        // hay Administración de Condóminos a la cual pedirle carta.
+        const esCondo = ctx.inmueble?.es_condominio !== false;
+
+        const origenEs = esCondo
+          ? 'cualquier cuota extraordinaria (assessment), derrama, o cargo pendiente de determinación por parte de la Administración de Condóminos'
+          : 'cualquier contribución de mejoras, derrama, cuota de asociación de colonos o cargo pendiente de determinación que corresponda a EL INMUEBLE';
+        const origenEn = esCondo
+          ? "any extraordinary assessments, special levies, or pending charges by the Homeowner's Administration"
+          : 'any betterment contributions, special levies, homeowners association dues or pending charges attributable to THE PROPERTY';
+
+        const constanciaEs = esCondo
+          ? 'una carta del Administrador del Condominio'
+          : 'constancia de la autoridad u organismo correspondiente';
+        const constanciaEn = esCondo
+          ? 'a letter from the Condominium Administrator'
+          : 'a certificate from the corresponding authority or agency';
+
+        return {
+          es: `En caso de que al momento del cierre existiere ${origenEs}, las partes acuerdan retener en la cuenta escrow una cantidad igual al monto estimado de dicho adeudo, o la cantidad que las partes acuerden por escrito.\n\nDicha retención será liberada a ${ctx.propietario.referencia} una vez que se determine el monto exacto del adeudo y se acredite fehacientemente su pago total. En caso de que la retención resulte insuficiente, ${ctx.propietario.referencia} será responsable de cubrir la diferencia. En caso de que la retención exceda el monto adeudado, el excedente será liberado a ${ctx.propietario.referencia}.\n\nPara efectos de lo anterior, ${ctx.propietario.referencia} deberá obtener y entregar a ${ctx.ofertante.referencia} ${constanciaEs} declarando que no existen cargos pendientes o, en su caso, detallando los cargos existentes y sus montos estimados.`,
+          en: `In the event that at the time of closing there are ${origenEn}, the parties agree to retain in the escrow account an amount equal to the estimated amount of such debt, or the amount agreed upon in writing by the parties.\n\nSaid holdback shall be released to ${ctx.propietario.en.referencia} once the exact amount of the debt is determined and its full payment is duly proven. In the event that the holdback is insufficient, ${ctx.propietario.en.referencia} shall be responsible for covering the difference. In the event that the holdback exceeds the amount owed, the surplus shall be released to ${ctx.propietario.en.referencia}.\n\nFor purposes of the foregoing, ${ctx.propietario.en.referencia} shall obtain and deliver to ${ctx.ofertante.en.referencia} ${constanciaEn} stating that there are no pending charges or, as the case may be, detailing the existing charges and their estimated amounts.`,
+        };
+      },
     },
 
     // ---- CLÁUSULA 13: POSESIÓN ----

@@ -142,3 +142,248 @@ Sin superficies capturadas emite el texto **sin cifras**, en vez de inventarlas.
 Bilingüe ES/EN. En la UI va junto al régimen de condominio, con las dos superficies desplegables y la advertencia de por qué importa. 8 assertions en `qa/test_modalidad.mjs` (63/63).
 
 **Caso Valle Dorado:** con 62.05 m² habitacionales y 58.58 m² comerciales tomados del avalúo MIPSA, la cláusula ahora dice en el documento que la exención alcanza solo a la primera porción.
+
+---
+
+# 8. Segunda ronda de brechas — caso Nitta 504 / Braatz (6-sep-2026)
+
+**Caso de prueba:** MX→extranjero, fideicomiso BBVA vivo, compra de contado negociada 15% bajo
+asking, comprador que NO quiere el mobiliario, cierre diferido ~5 meses por flujo de fondos.
+
+Detectadas al armar la oferta a mano. Ninguna se solapa con las de §2.
+
+## 8.0 · Defecto de fondo en §4 (`cl_precio`, línea 509) — corregir, no adicionar
+
+La cláusula dice que el precio pactado será *"el valor único y definitivo que se asentará en la
+Escritura Pública … **y sobre el cual se calcularán los impuestos de adquisición y
+enajenación**"*.
+
+**Las partes no pueden pactar eso.** El ISABI/traslado de dominio se causa sobre el valor
+**mayor** de los tres (operación / catastral / avalúo), y el ISR por adquisición del art. 125
+LISR se determina por el avalúo. La frase crea una expectativa contractual contra la ley y es
+exactamente la que un comprador citará si el avalúo sale alto.
+
+**Fix:** recortar en `es` y `en` a "…valor único y definitivo que se asentará en la Escritura
+Pública correspondiente ante el Notario Público designado." La determinación fiscal ya está bien
+tratada en §10 (`cl_isr`) y en el párrafo de moneda de `cl_saldo`.
+
+## 8.1 · Bloque `ajuste_avaluo` ⭐ prioridad alta
+
+**No existe nada en los 57 bloques que toque el art. 125 LISR.** Si el avalúo excede en más del
+10% la contraprestación, la diferencia completa es *ingreso por adquisición de bienes* del
+COMPRADOR y el fedatario retiene el 20% (arts. 125, 130 fr. IV y 132 LISR). En Nitta 504, a USD
+$500,000 el umbral se dispara si el TC al cierre cae por debajo de 17.58; a $490,000, por debajo
+de 17.93. No es teórico.
+
+**Campos:** `avaluo.margen_pct` (default 10) · `avaluo.dias_acceso` (default 15) ·
+`avaluo.dias_eleccion` (default 5) · `avaluo.a_cargo_de` (comprador | vendedor).
+
+**Qué debe obligar:**
+- que el vendedor **dé acceso al perito valuador** dentro de N días de aceptada la oferta ← esta
+  es la mitad operativa y la que se olvida: sin acceso temprano, el comprador conoce el número
+  en la mesa de firma, cuando ya no puede reaccionar;
+- si el avalúo excede el margen, el comprador elige en N días entre **renegociar / absorber el
+  impuesto / terminar sin responsabilidad con devolución íntegra del escrow**.
+
+**Beneficio lateral:** el avalúo temprano tiene vigencia de 6 meses, así que el mismo documento
+sirve de protección y de insumo del cierre. No se paga dos veces.
+
+Va como inciso de condiciones indispensables → se engancha a la renumeración automática ya
+construida para `gravamen_por_cancelar` (§6).
+
+## 8.2 · Modo de elección en `inventario` ⭐ prioridad alta
+
+El bloque actual **obliga al comprador a recibir todos los muebles**: prohíbe al vendedor retirar
+nada y transmite el inmueble "con todos los bienes muebles, instalaciones y electrodomésticos".
+Es protección correcta para el caso normal (que el vendedor no desmantele) y contraproducente
+para el comprador que va a renovar y no quiere el mobiliario — el caso Braatz.
+
+El campo `inventario.exclusiones` **no lo resuelve**: es una lista estática que se escribe *antes*
+de ver el inventario. Lo que falta es la elección *posterior* a recibirlo.
+
+**Campo:** `inventario.modo` = `incluye_todo` (default, comportamiento actual) |
+`eleccion_comprador` | `entrega_vacio`. Más `dias_eleccion` (5) y `dias_retiro` (3, sincronizado
+con la ventana de walk-through que ya emite `obligaciones_vendedor`).
+
+⚠ **El carve-out de bienes adheridos no debe ser configurable.** Instalaciones fijas, aire
+acondicionado, cocina integral y muebles de baño se transmiten siempre. Sin eso, un vendedor
+literal arranca la cocina alegando que el comprador "no la eligió".
+
+**Nota de negociación** (para la UI, no para el documento): al vendedor extranjero le cuesta caro
+retirar muebles a distancia. El fallback que suele cerrar es crédito en precio por desalojo.
+
+## 8.3 · Constructor de `fecha_formalizacion` ⭐ prioridad alta, costo bajo
+
+Tres defectos encadenados:
+
+1. El campo es `requerido: true` pero **no se valida**: el JSON de marzo lo traía vacío y el motor
+   emitió *"…a más tardar el día ."* — documento roto, enviado a firma.
+2. Es **texto libre en dos idiomas**. Toda la prosa (incluido el derecho de adelantar el cierre)
+   se teclea a mano, duplicada. Es el campo con más superficie de error del formulario.
+3. `fecha_extension` es independiente, pero `cl_demora` ya afirma "un mes después" → hoy se
+   pueden capturar valores que se contradicen dentro del mismo documento.
+
+**Fix:** date picker + modificador (`a más tardar el` | `cualquier día hábil dentro de…`) + toggle
+de **derecho de adelantar** con N días hábiles de aviso, generando ambos idiomas desde
+`core/fechas.js`. Y `fecha_extension` calculada por default como formalización + 1 mes, editable.
+
+## 8.4 · `adquisicion.ruta` para compradores extranjeros ⭐ prioridad media-alta
+
+`cl_precio` (línea 526) ya emite una frase opcional: *"tendrá la opción de asumir los derechos
+fideicomisarios existentes o constituir un nuevo fideicomiso"*. Pero eso **difiere** la decisión;
+no la modela. Y es el mayor driver de tiempo y costo de toda la operación:
+
+- **cesión sobre fideicomiso existente** → sin permiso SRE nuevo, sin constitución, hereda plazo
+  remanente. Más rápida y barata;
+- **fideicomiso nuevo** → permiso SRE (2–4 semanas), constitución (~USD $2,000–2,500), plazo
+  fresco de 50 años.
+
+**Campo:** `adquisicion.ruta` = `cesion_derechos` | `fideicomiso_nuevo` | `opcion_comprador`
+(actual). Debe alimentar quién paga qué en §9, los plazos de autorización y KYC del fiduciario, y
+si se requiere permiso SRE.
+
+## 8.5 · Datos del fideicomiso existente ⭐ prioridad media
+
+`doc_fideicomiso` pide la copia del fideicomiso pero no captura sus datos. Para una cesión son
+materiales.
+
+**Campos:** `fideicomiso.numero` · `fideicomiso.institucion` · `fideicomiso.fecha_constitucion` ·
+`fideicomiso.plazo_anios` (default 50). Permite emitir el **plazo remanente**, que es dato de
+decisión del comprador. En Nitta 504: F/4046991, BBVA, 15-jun-2009, 50 años → remanente ~2059.
+
+## 8.6 · Vigencia como plazo, no fecha absoluta ⭐ prioridad media
+
+`fecha_vigencia` es absoluta e independiente de `fecha_presentacion`. Si se recorre la
+presentación y no se recuerda mover el vencimiento, la oferta nace con una vigencia mal calculada
+—o vencida—. **Fix:** capturar `dias_vigencia` (default 5 naturales) y calcular la fecha,
+mostrándola; permitir override manual.
+
+## 8.7 · Resumen accionable
+
+| Prioridad | Qué | Dónde |
+|---|---|---|
+| Alta | Recortar la promesa fiscal de §4 | `oferta_compra.js:509` (es/en) |
+| Alta | Bloque `ajuste_avaluo` | `oferta_compra.js` + UI |
+| Alta | `inventario.modo` con elección y carve-out de adheridos | `oferta_compra.js` + UI |
+| Alta (barata) | Constructor de `fecha_formalizacion` + extensión calculada + validación | `app/page.js`, `core/fechas.js` |
+| Media-alta | `adquisicion.ruta` | `oferta_compra.js` + UI |
+| Media | Datos del fideicomiso existente | campos nuevos |
+| Media | `dias_vigencia` calculado | `core/fechas.js` + UI |
+
+**Escape hatch mientras tanto:** `condicion_libre` puede hospedar la cláusula de ajuste por
+avalúo hoy mismo, numerada e integrada. El modo de inventario no cabe ahí (modifica el inciso
+existente, no agrega uno nuevo).
+
+
+---
+
+# 9. Andamiaje de invariantes — implementado (6-sep-2026)
+
+Responde a la decisión de que la app crezca en cobertura **sin** que aparezcan
+contradicciones. La revisión —humana o de tres IAs— cubre un caso a la vez; el espacio de
+combinaciones crece exponencialmente. Esto cambia lo que revisamos, no cuánto.
+
+## 9.1 · Lo que se levantó
+
+| Archivo | Qué hace |
+|---|---|
+| `src/lib/plantillas/grafo.js` | Declara los **39 interruptores** y las **7 relaciones** (requiere / incompatible_con), cada una con su `porque`. Fuente de verdad de qué combinaciones son legales. |
+| `qa/lib/pairwise.mjs` | Generador all-pairs con restricciones + verificador de cobertura. |
+| `qa/lib/invariantes.mjs` | 9 invariantes, cada uno con el defecto real que lo motiva. |
+| `qa/test_invariantes.mjs` | Runner: anti-deriva + generación + evaluación. Registrado en `test_all.mjs` y en `npm run test:invariantes`. |
+
+**Resultado de la corrida:** 16 casos generados cubren **2,598/2,598 pares alcanzables**, de un
+espacio exhaustivo de 2^39 ≈ 5.5×10^11. Evaluación sobre 32 renders (16 casos × 2 escenarios de
+modalidad).
+
+## 9.2 · Hallazgo estructural: 6 banderas fantasma
+
+El catálogo declara **33 bloques condicionales**, pero el código lee **39 interruptores** desde
+`ctx.bloques.*`. Las 6 restantes —`precio_compuesto`, `mobiliario_separado`,
+`pacto_no_incluir_muebles`, `opcion_fideicomiso`, `obligaciones_vendedor_agua`,
+`condiciones_remocion`— ramifican texto y **no aparecían en ningún catálogo**. Ahora están
+declaradas en `INTERRUPTORES` con `tipo: 'bandera'`. Moverlas a `campos` sería el siguiente paso:
+hoy comparten namespace con los bloques sin serlo.
+
+## 9.3 · Anti-deriva
+
+Seis chequeos impiden que el grafo se vuelva documentación muerta. Si alguien adiciona un bloque
+o un `ctx.bloques.X` y no lo declara, **el test falla**. Ese es el mecanismo que permite crecer a
+80 o 120 bloques sin que la confiabilidad baje.
+
+## 9.4 · Dos defectos encontrados en la primera corrida — ambos CORREGIDOS
+
+Detectados por los invariantes en su primera ejecución, verificados contra el código fuente antes
+de llamarlos defectos, y corregidos con autorización expresa por tratarse de texto que va a firma.
+
+### a) `adjudicacion_conyuge` — ✅ CORREGIDO (6-sep-2026)
+
+Emite *"será adjudicataria del 50% de los **derechos fideicomisarios**"* / *"trust rights"*
+**siempre**, sin consultar nacionalidad. Es el mismo defecto que motivó `test_modalidad.mjs`,
+en otro bloque: entre dos mexicanos con dominio pleno, la redacción correcta es *derechos de
+copropiedad* o *la mitad proindivisa*, no derechos fideicomisarios.
+
+**Segundo defecto en el mismo bloque:** el género está hardcodeado —*"su difunto esposo"*,
+*"she"*, *"her"*— pese a que el bloque ya usa `ctx.propietario.referencia_negrita`, o sea que la
+maquinaria de concordancia está disponible y no se aplicó. Un viudo recibe el texto en femenino.
+
+**Corregido en dos frentes.**
+
+**Modalidad.** Ahora ramifica con el mismo idioma que el resto del molde
+(`propietario.esMexicano && ofertante.esMexicano`):
+
+| | Redacción |
+|---|---|
+| Fideicomiso | *…será adjudicataria **del 50% de los derechos fideicomisarios** que le correspondían a su difunto cónyuge, consolidándose el 100% de los derechos fideicomisarios en ella.* |
+| Dominio pleno | *…será adjudicataria **de la mitad proindivisa** que le correspondía a su difunto cónyuge, consolidándose el 100% de la propiedad en ella.* |
+
+⚠️ **Ojo con la aritmética al redactar variantes:** la propuesta inicial decía *"el 50% de la
+mitad proindivisa"*, que es 25% y no consolida el 100%. En la variante de fideicomiso el "50%"
+sí funciona porque *"los derechos fideicomisarios"* es el todo; *"la mitad proindivisa"* ya es
+la mitad. Un invariante de texto no atrapa esto — es aritmética dentro de la prosa. Queda como
+recordatorio de que el andamiaje cubre consistencia estructural, no corrección sustantiva.
+
+**Género.** Se aplica concordancia con el **cónyuge superviviente** (`propietario.clave`), que es
+quien comparece: adjudicataria/adjudicatario · ella/él · she/he · her/him. Verificado en las 4
+combinaciones (viuda/viudo × fideicomiso/dominio pleno).
+
+**Y el género del fallecido dejó de importar:** la redacción usa *"su difunto cónyuge"* /
+*"deceased spouse"*, neutro en ambos idiomas. Derivarlo del superviviente habría presupuesto
+matrimonio heterosexual, y capturarlo habría agregado un campo para un dato que la redacción
+correcta no necesita. **La solución al problema de concordancia fue redactar sin el dato**, no
+modelar el dato.
+
+### b) `holdback_escrow` ignoraba `es_condominio` — ✅ CORREGIDO (6-sep-2026)
+
+Emite *"Administración de Condóminos"* / *"Homeowner's Administration"* y exige carta del
+Administrador del Condominio aunque el inmueble esté **fuera de régimen**. Es el **defecto 12
+replicado**: se corrigió en `obligaciones_vendedor` y no en este bloque.
+
+**Corregido** con el mismo patrón de `obligaciones_vendedor`: el mecanismo de retención es
+idéntico en ambos regímenes, lo que cambia es **quién determina el adeudo**.
+
+| | En condominio | Fuera de régimen |
+|---|---|---|
+| Origen del cargo | cuota extraordinaria (assessment), derrama o cargo de la Administración de Condóminos | contribución de mejoras, derrama, cuota de asociación de colonos o cargo atribuible a EL INMUEBLE |
+| Constancia | carta del Administrador del Condominio | constancia de la autoridad u organismo correspondiente |
+
+La etiqueta del bloque pasó de *"Holdback en escrow por adeudos de condominio"* a *"…por adeudos
+pendientes de determinación"*, porque ya sirve a los dos regímenes. Bilingüe ES/EN.
+
+**Sin assertions nuevas en `test_modalidad.mjs`, a propósito:** el invariante
+`sin_condominos_fuera_de_regimen` ya lo verifica sobre 16 renders en vez de sobre un caso escrito
+a mano. Agregar una assertion por caso sería volver al método que este andamiaje reemplaza.
+
+## 9.5 · Nota de método
+
+Dos de los cuatro fallos de la primera corrida eran del andamiaje, no del molde:
+
+- el generador declaraba irrealizables dos pares legales porque sembraba desde los **defaults**
+  (con `ad_corpus` encendido, todo par con `precio_compuesto` parecía prohibido). Corregido:
+  siembra desde todo apagado;
+- el invariante de incisos mezclaba **dos series de letras independientes** — §4 tiene su propia
+  A)/B) para las formas de pago, aparte de la serie de §15. Corregido acotándolo a §15.
+
+Vale registrarlo: un invariante mal escrito produce alarmas que erosionan la confianza en la
+suite más rápido de lo que la falta de cobertura produce defectos. **Todo invariante nuevo debe
+verificarse contra el código antes de darse por bueno.**
