@@ -532,3 +532,60 @@ Anexo A que no recibió. Renombrado a `ANEXO A` / `ADDENDUM A` en ES y EN.
 
 Si algún día se agrega un segundo anexo, la numeración debería generarse sola — mismo patrón que
 la renumeración de incisos de §15.
+
+# 11. Mecánica de condiciones-primero: cerrar los cabos (6-sep-2026)
+
+Segunda ronda de CX y Agy sobre la v6. Confirmaron que el ancla del depósito quedó bien puesta,
+pero encontraron que **el resto del clausulado seguía escrito para el orden anterior**.
+
+## 11.1 · Siete vestigios de reembolso, no tres
+
+Agy detectó que varios incisos de §15 seguían prometiendo *"reembolsar el depósito"* si una
+condición fallaba — cuando bajo el nuevo orden **no hay depósito todavía**. Yo había corregido el
+inciso de avalúo y no barrí el resto: una corrección a medias, que es peor que ninguna porque
+parece completa. Eran **siete** ocurrencias entre ES y EN.
+
+**Diverge de la corrección propuesta:** Agy sugería borrar la mención. Se optó por **condicionarla**
+(*"de haberse constituido el depósito en garantía, éste será reembolsado…"*), igual que el inciso
+de avalúo. Borrarla quita una protección al comprador que no cuesta nada conservar, y si algún día
+se invierte la secuencia el derecho sobrevive.
+
+## 11.2 · El gatillo del depósito era un evento difuso
+
+*"Dentro de los 3 días hábiles siguientes al cumplimiento de las condiciones"* no dice **qué día**
+se cumplió la última condición. Con plazos escalonados —inspección, título, avalúo— el vencimiento
+quedaba indeterminado, y de eso se cuelga cualquier controversia.
+
+Ahora el plazo corre desde la **suscripción por ambas partes de la CARTA DE CUMPLIMIENTO Y REMOCIÓN
+DE CONDICIONES INDISPENSABLES**, documento que la cláusula de anexos ya mencionaba. Un evento
+documental y fechado, no un estado de hecho.
+
+## 11.3 · Circularidad de arrendamientos
+
+La decisión sobre continuidad de rentas debía comunicarse *"al momento de constituir el depósito"*,
+pero el depósito depende de que las condiciones estén cumplidas — y ésta es una de ellas. Se mordía
+la cola. Ahora se comunica dentro de los 5 días de recibidos los contratos y **antes** de la carta
+de remoción; el bloqueo del calendario de reservaciones se activa al acreditarse el depósito.
+
+## 11.4 · El inventario mezclaba condición con obligación de cierre
+
+Dentro de las condiciones indispensables convivían *entregar y elegir el inventario* (condición) y
+*retirar los muebles 3 días antes del cierre* (obligación de cierre). Lectura literal: la condición
+no se cumple hasta el cierre, luego el depósito nunca vence.
+
+Se agregó la separación expresa: la condición **se satisface al quedar definido el inventario
+final**; retiro, conservación y entrega subsisten como obligaciones exigibles a la FECHA DE
+FORMALIZACIÓN y **no difieren el vencimiento del depósito**.
+
+## 11.5 · Lección de diseño
+
+Cambiar `ancla_deposito` es una línea. Hacer que el documento **sea coherente** con ese cambio tocó
+cuatro bloques y once fragmentos de texto. La opción existía en el motor desde antes y nadie la
+había usado — probablemente porque activarla a secas produce un documento contradictorio.
+
+> Una opción de configuración que exige cambios coordinados en otros bloques no es una opción: es
+> una trampa. `ancla_deposito: 'condiciones'` debería arrastrar automáticamente la redacción
+> dependiente, o el molde debería declarar esa dependencia en `grafo.js` para que QA la verifique.
+
+Candidato concreto: invariante que, con `ancla_deposito === 'condiciones'`, prohíba la frase
+*"al momento de constituir el depósito"* como gatillo de cualquier condición.

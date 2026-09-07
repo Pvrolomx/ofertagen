@@ -346,6 +346,10 @@ export function generarContextoParte(config) {
       has: (claveReal === 'mp' || claveReal === 'fp') ? 'have' : 'has',
       is: (claveReal === 'mp' || claveReal === 'fp') ? 'are' : 'is',
       s: (claveReal === 'mp' || claveReal === 'fp') ? '' : 's',
+      // Posesivo sajón: plural termina en -s, así que lleva sólo apóstrofo.
+      pos: (claveReal === 'mp' || claveReal === 'fp') ? "'" : "'s",
+      // Pronombre objeto, para "paid by ___".
+      obj: (claveReal === 'mp' || claveReal === 'fp') ? 'them' : (claveReal === 'fs' ? 'her' : 'him'),
     },
 
     // Francés
