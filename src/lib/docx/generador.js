@@ -89,6 +89,28 @@ const LOGO_HEIGHT = 50;  // pixels (ratio ~2.4:1 típico de logos)
 // ============================================================
 
 /**
+ * Términos literales que deben ir en negrita, provistos por el llamador.
+ *
+ * Existe porque el detector por patrón NO puede reconocer nombres que son DATO:
+ * la razón social del escrow salía partida en tres ("ARMOUR SECURE ESCROW" en
+ * negrita, ", S " normal, "DE RL DE CV" en negrita otra vez) porque el lookahead
+ * enganchaba distinto en cada idioma. Agregar conectores a la regex ya causó un
+ * defecto antes; lo correcto es que quien tiene el dato lo declare.
+ *
+ * Es módulo-global y no parámetro porque el render de generarDocx() es síncrono
+ * de principio a fin: no hay dos documentos armándose a la vez.
+ */
+let TERMINOS_NEGRITA = [];
+
+/** Fuente del detector genérico por patrón (referencias, nombres, términos clave). */
+const PATRON_GENERICO = '(?:"|")?(?:EL|LA|LOS|LAS|THE)\\s+(?:OFERTANTE|PROPIETARI[OA]|VENDEDOR[A]?|COMPRADOR[A]?|OFFERER|OWNER|SELLER|BUYER|INMUEBLE|PROPERTY|FORMALIZ\\w+|BENEFICIARI[OA]?|FIDEICOMISO)(?:S)?(?:"|")?|(?:FECHA DE FORMALIZACIÓN|TÉRMINO DE VIGENCIA|TERM OF EFFECT|FORMALIZING DATE|GASTOS DE ESCRITURACIÓN|CLOSING COSTS|CUENTA ESCROW|ESCROW ACCOUNT|ANEXO [A-Z])|(?:[A-ZÁÉÍÓÚÑÜ]{2,}(?:\\s+[A-ZÁÉÍÓÚÑÜ]{2,}){1,5})(?=,|\\s+(?:quien|who|manifiesta|states|por|de|herein|y\\s|and\\s|en\\s|a\\s))';
+
+/** Escapa un literal para incrustarlo en una expresión regular. */
+function escaparRegex(s) {
+  return s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+}
+
+/**
  * Detecta referencias contractuales en el texto y las pone en negrita.
  * Ej: "EL OFERTANTE" → negrita, "LA PROPIETARIA" → negrita
  * También detecta texto entre comillas que son referencias: "EL OFERTANTE"
@@ -105,7 +127,13 @@ function parseTextoConNegritas(texto, fontSize = FONT_SIZE_BODY) {
   // Debe incluir "and": al unir los nombres ingleses con "and" en vez de "y", el
   // PRIMER nombre de cada parte dejaba de calificar y salía sin negrita
   // (", ALAN BRAATZ and *NICOLE BRAATZ*"). El segundo se salvaba por la coma.
-  const pattern = /((?:"|")?(?:EL|LA|LOS|LAS|THE)\s+(?:OFERTANTE|PROPIETARI[OA]|VENDEDOR[A]?|COMPRADOR[A]?|OFFERER|OWNER|SELLER|BUYER|INMUEBLE|PROPERTY|FORMALIZ\w+|BENEFICIARI[OA]?|FIDEICOMISO)(?:S)?(?:"|")?|(?:FECHA DE FORMALIZACIÓN|TÉRMINO DE VIGENCIA|TERM OF EFFECT|FORMALIZING DATE|GASTOS DE ESCRITURACIÓN|CLOSING COSTS|CUENTA ESCROW|ESCROW ACCOUNT|ANEXO [A-Z])|(?:[A-ZÁÉÍÓÚÑÜ]{2,}(?:\s+[A-ZÁÉÍÓÚÑÜ]{2,}){1,5})(?=,|\s+(?:quien|who|manifiesta|states|por|de|herein|y\s|and\s|en\s|a\s)))/g;
+  // Los literales van PRIMERO en la alternancia: la regex es codiciosa de
+  // izquierda a derecha, así que un término declarado gana sobre el patrón.
+  const literales = [...TERMINOS_NEGRITA]
+    .sort((a, b) => b.length - a.length)
+    .map(escaparRegex);
+  const prefijo = literales.length ? literales.join('|') + '|' : '';
+  const pattern = new RegExp('(' + prefijo + PATRON_GENERICO + ')', 'g');
 
   let lastIndex = 0;
   let match;
@@ -559,7 +587,12 @@ function crearAceptacion(soloEs = false) {
  * @returns {Promise<Buffer>} Buffer del archivo .docx
  */
 export async function generarDocx(bloques, meta = {}, opciones = {}) {
-  const { logoBase64, idiomaSecundario = 'en', firmasEnLinea = false, borrador = null } = opciones;
+  const { logoBase64, idiomaSecundario = 'en', firmasEnLinea = false, borrador = null,
+    terminosNegrita = [] } = opciones;
+
+  // Términos que sólo el llamador conoce (razón social del escrow, etc.).
+  // Se limpian al terminar para no filtrarse al siguiente documento.
+  TERMINOS_NEGRITA = terminosNegrita.filter(Boolean);
   const soloEs = !idiomaSecundario || idiomaSecundario === 'es' || idiomaSecundario === 'none'; // documento monolingüe: una sola columna
 
   // Separar bloques normales de firmas
@@ -763,6 +796,7 @@ export async function generarDocx(bloques, meta = {}, opciones = {}) {
   });
 
   const buffer = await Packer.toBuffer(doc);
+  TERMINOS_NEGRITA = [];  // no filtrar términos al siguiente documento
   return buffer;
 }
 

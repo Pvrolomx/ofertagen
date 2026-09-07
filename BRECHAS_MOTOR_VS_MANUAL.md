@@ -490,3 +490,45 @@ Los tres invariantes que faltan y que cerrarían la familia:
 
 El (2) habría cazado este defecto de inmediato y es el más barato de los tres: comparar el
 conjunto de fragmentos en negrita de `es` contra el de `en` por bloque.
+
+## 10.7 · Cierre de la familia: lo que es DATO lo declara quien lo tiene
+
+Detectado por Rolo: la razón social del escrow salía **partida en tres** —
+`ARMOUR SECURE ESCROW` en negrita, `, S ` en texto normal, `DE RL DE CV` en negrita otra vez— y
+en inglés sólo la primera parte.
+
+Causa: el detector engancha por lo que **sigue** al nombre. En español seguía *"por la cantidad"*
+(y `por` está en el lookahead); en inglés seguía *"to constitute"*, que no está. Mismo mecanismo
+que §10.6, distinta manifestación.
+
+**No se parchó la regex por tercera vez.** Ese camino ya produjo un defecto. `generarDocx` ahora
+acepta `opciones.terminosNegrita`: literales que el llamador declara y que se anteponen en la
+alternancia, ganando sobre el detector genérico. La razón social es **dato**, no patrón — ningún
+lookahead iba a reconocerla, y agregarle conectores sólo movía el problema de lugar.
+
+```js
+generarDocx(bloques, meta, { terminosNegrita: [datos.campos.escrow.empresa_escrow] })
+```
+
+`TERMINOS_NEGRITA` es módulo-global y se limpia tras empacar: el render es síncrono de principio a
+fin, no hay dos documentos armándose a la vez.
+
+**Regla que cierra la familia de §10.2 / §10.6 / §10.7:**
+
+> El detector por patrón sirve para lo que es **estructura** (referencias contractuales, términos
+> definidos). Lo que es **dato** —nombres de personas, razones sociales, denominaciones— lo debe
+> declarar quien lo tiene. Cada vez que se intentó que el patrón adivinara un dato, el resultado
+> fue un defecto silencioso distinto en cada idioma.
+
+## 10.8 · ANEXO B sin ANEXO A
+
+También detectado por Rolo. El molde emitía una sola referencia a anexo en todo el documento —
+`ANEXO B (Escrow Agreement)`— y **nunca un Anexo A**. Herencia del machote original: las tres
+versiones del expediente Braatz (la manual del 24-mar, la de Ofertagen del 30-mar y la de hoy) lo
+traían igual.
+
+No es cosmético: un contrato que llama "Anexo B" a su único anexo le dice al lector que existe un
+Anexo A que no recibió. Renombrado a `ANEXO A` / `ADDENDUM A` en ES y EN.
+
+Si algún día se agrega un segundo anexo, la numeración debería generarse sola — mismo patrón que
+la renumeración de incisos de §15.
