@@ -645,8 +645,9 @@ del propietario dentro del término de vigencia.
 Redacción propuesta por CX y adoptada con dos ajustes:
 
 1. **Referencias dinámicas.** CX escribió "todos los ofertantes y propietarios"; los roles del molde
-   son variables (vendedor/comprador, promitente, fideicomisario cedente). Se usan
-    y .
+   son variables (vendedor/comprador, promitente, fideicomisario cedente). Se usan las
+   referencias del contexto (`ofertante.referencia_negrita` y `propietario.referencia_negrita`)
+   en vez de literales.
 2. **Se conservó la rúbrica en todas las páginas**, que la propuesta eliminaba. Tiene valor
    probatorio —impide sustituir una hoja intermedia— y no estorba al arreglo. Quedó como oración
    aparte. También se conservó el párrafo de comunicaciones electrónicas, que la propuesta omitía.
