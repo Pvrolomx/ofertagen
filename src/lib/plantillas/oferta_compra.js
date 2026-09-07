@@ -601,8 +601,12 @@ B) PERSONAL PROPERTY PURCHASE: The purchase price for ${mueblesEn} shall be the 
           ? `\n\nThe price and payments remain denominated and payable in US Dollars; exchange-rate fluctuations shall not modify said price and bank fees shall not reduce the net amount credited to it. For tax purposes, the equivalent in national currency of the price and of the amounts denominated in foreign currency shall be determined in accordance with the applicable tax provisions. The Income Tax, the exemptions, the verified acquisition cost, investments, improvements, indexation adjustments, and any other deductions shall be determined by the Notary in accordance with the applicable tax legislation.`
           : '';
         return {
-          es: `B) La cantidad restante, o sea ${ctx.saldo.completo}, deberá ser pagada ${ctx.bloques.escrow ? 'mediante transferencia a la cuenta asignada por la empresa depositaria, ' : ''}al menos ${ctx.precio.dias_saldo_letras} (${ctx.precio.dias_saldo}) días hábiles anteriores a la FECHA DE FORMALIZACIÓN, la cual se estipula más adelante.${usdEs}`,
-          en: `B) The balance, that is ${ctx.saldo.completo_en}, shall be paid ${ctx.bloques.escrow ? 'by wire transfer to the account assigned by the escrow company, ' : ''}at least ${ctx.precio.dias_saldo_letras_en} (${ctx.precio.dias_saldo}) business days prior to THE FORMALIZING DATE which is stipulated below.${usdEn}`,
+          es: `B) La cantidad restante, o sea ${ctx.saldo.completo}, deberá ser pagada ${ctx.bloques.escrow ? 'mediante transferencia a la cuenta asignada por la empresa depositaria, ' : ''}al menos ${ctx.precio.dias_saldo_letras} (${ctx.precio.dias_saldo}) días hábiles anteriores a la FECHA DE FORMALIZACIÓN, la cual se estipula más adelante.
+
+En todo caso, la exigibilidad del saldo presupone que las CONDICIONES INDISPENSABLES hayan quedado satisfechas y que el Depósito en Garantía se encuentre constituido. El ejercicio por parte de ${ctx.ofertante.referencia_negrita} de la facultad de anticipar la FECHA DE FORMALIZACIÓN no altera dicho orden ni reduce los plazos previstos para el cumplimiento de las condiciones.${usdEs}`,
+          en: `B) The balance, that is ${ctx.saldo.completo_en}, shall be paid ${ctx.bloques.escrow ? 'by wire transfer to the account assigned by the escrow company, ' : ''}at least ${ctx.precio.dias_saldo_letras_en} (${ctx.precio.dias_saldo}) business days prior to THE FORMALIZING DATE which is stipulated below.
+
+In any event, the balance shall not become due unless the INDISPENSABLE CONDITIONS have been satisfied and the Guarantee Deposit has been constituted. The exercise by ${ctx.ofertante.en.referencia_negrita} of the right to bring THE FORMALIZING DATE forward shall not alter that sequence nor shorten the terms provided for the satisfaction of the conditions.${usdEn}`,
         };
       },
     },
@@ -679,10 +683,14 @@ B) PERSONAL PROPERTY PURCHASE: The purchase price for ${mueblesEn} shall be the 
           ? `, including the ESCROW ACCOUNT fees in the amount of ${ctx.escrow.honorarios_completo.completo_en}`
           : (incluirHon ? ', including the ESCROW ACCOUNT fees' : '');
         const anticipo = ctx.precio.anticipo_gastos > 0
-          ? `\n\n${ctx.ofertante.referencia_negrita} deberá establecer de inmediato con el Notario Público designado un anticipo de gastos de escrituración por la cantidad de ${ctx.precio.anticipo_completo.completo}, a fin de poder llevar a cabo dentro del término establecido los trámites correspondientes, abonando el saldo pendiente en la FECHA DE FORMALIZACIÓN.`
+          ? `\n\n${ctx.ofertante.referencia_negrita} deberá entregar al Notario Público designado un anticipo de gastos de escrituración por la cantidad de ${ctx.precio.anticipo_completo.completo}, dentro de los 3 (tres) días hábiles siguientes a la constitución del Depósito en Garantía, a fin de poder llevar a cabo dentro del término establecido los trámites correspondientes, abonando el saldo pendiente en la FECHA DE FORMALIZACIÓN.
+
+En caso de que la operación no llegue a formalizarse por cualquier causa, dicho anticipo será reembolsado a ${ctx.ofertante.referencia_negrita} en la medida en que la Notaría no hubiere erogado gasto alguno con cargo al mismo, previa comprobación de los gastos efectivamente realizados.`
           : '';
         const anticipoEn = ctx.precio.anticipo_gastos > 0
-          ? `\n\n${ctx.ofertante.en.referencia_negrita} shall immediately provide the designated Notary Public with a deposit for closing costs in the amount of ${ctx.precio.anticipo_completo.completo_en}, in order to convey within the term established the corresponding legal procedures, the balance shall be paid on THE FORMALIZING DATE.`
+          ? `\n\n${ctx.ofertante.en.referencia_negrita} shall provide the designated Notary Public with a deposit for closing costs in the amount of ${ctx.precio.anticipo_completo.completo_en}, within 3 (three) business days following the constitution of the Guarantee Deposit, in order to convey within the term established the corresponding legal procedures, the balance shall be paid on THE FORMALIZING DATE.
+
+Should the transaction fail to be formalized for any reason, said advance shall be refunded to ${ctx.ofertante.en.referencia_negrita} to the extent the Notary's office has not incurred any expense chargeable against it, upon supporting evidence of the expenses actually incurred.`
           : '';
         return {
           es: `Los gastos, impuestos y honorarios notariales de formalización del contrato definitivo, los cuales comúnmente se conocen como GASTOS DE ESCRITURACIÓN serán por cuenta de ${ctx.ofertante.referencia_negrita}${escrowFee}.${anticipo}`,

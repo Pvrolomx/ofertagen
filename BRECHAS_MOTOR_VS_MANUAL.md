@@ -656,3 +656,33 @@ Redacción propuesta por CX y adoptada con dos ajustes:
 (roja, conforme a la regla) y un PDF derivado. Regenerar encima habría destruido ambos, así que la
 versión corregida salió con nombre propio. Todo documento que recibe edición manual deja de ser
 reproducible desde el motor: conviene decidir el orden —generar, luego marcar— y no al revés.
+
+## 11.10 · Anticipo notarial y saldo: cerrar la cadena de exigibilidad
+
+Últimos dos puntos del dictamen de CX. Ambos comparten diagnóstico: obligaciones de pago del
+comprador ancladas a eventos difusos en vez de a hechos fechados.
+
+**Anticipo notarial (USD 3,000).** Decía *"deberá establecer de inmediato"*. Práctica real de Rolo:
+se entrega cuando el dinero ya está en escrow, y el notario lo reembolsa si la notaría no ha
+erogado gasto — lo habitual, porque el expediente se le turna cuando sólo falta el CLG y ya se
+tiene el visto bueno del banco. Ahora: dentro de los 3 días hábiles siguientes a la constitución
+del Depósito en Garantía, con reembolso *"en la medida en que"* la Notaría no hubiere erogado
+gasto, *"previa comprobación"*.
+
+El reembolso quedó relativo y no absoluto a propósito: el 1% en que sí hubo gasto existe, y una
+promesa de devolución total chocaría con un CLG ya pagado. La comprobación protege del otro lado:
+que la notaría no retenga alegando gastos que no puede documentar.
+
+Importa más de lo que parece: los 3,000 salen del bolsillo del comprador y van a un **tercero que
+no firma la oferta**. El escrow lo controla un depositario con reglas escritas; el anticipo
+notarial no. Era el único dinero del comprador sin red.
+
+**Saldo (§4.B).** Exigible 5 días hábiles antes del cierre, sin decir que respeta la secuencia si
+se adelanta la FECHA DE FORMALIZACIÓN. Con el derecho del comprador a anticipar el cierre avisando
+10 días hábiles, el saldo podía volverse exigible antes que el depósito. Ahora se declara que la
+exigibilidad presupone condiciones satisfechas y depósito constituido, y que anticipar el cierre no
+altera ese orden ni acorta plazos.
+
+**Cadena completa, toda anclada a hechos fechados:**
+condiciones → carta de remoción → depósito en garantía → anticipo notarial → saldo → formalización.
+Ningún eslabón depende ya de *"de inmediato"* ni de un estado de hecho sin fecha.
