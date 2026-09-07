@@ -462,3 +462,31 @@ condiciones indispensables**"* en vez de anclar a la aceptación.
 Importa porque invierte quién soporta el riesgo: con el dinero depositado antes de cumplirse las
 condiciones, liberarlo del escrow exige **firma de ambas partes** y el comprador queda de rehén.
 Debería ser el **default** del bloque `escrow`, no una opción que hay que recordar.
+
+## 10.6 · Tercer defecto de la divergencia ES/EN: las negritas
+
+Detectado por Rolo al revisar la oferta final: en la columna inglesa, **el primer nombre de cada
+parte salía sin negrita** (", ALAN BRAATZ and **NICOLE BRAATZ**"). El segundo se salvaba.
+
+Causa: `parseTextoConNegritas` (generador.js) reconoce nombres propios en mayúsculas mediante un
+lookahead que lista los conectores que pueden seguirlos — `quien|who|manifiesta|states|por|de|
+herein|y\s|en\s|a\s`. Incluía `y` pero **no `and`**. Al cambiar el conector inglés en §10.2, el
+primer nombre dejó de calificar; el segundo seguía calificando por la coma que lo sigue.
+
+Corregido agregando `and\s` al lookahead.
+
+**Es el tercer defecto de la misma familia en dos días**, después de los verbos en singular y de
+los nombres unidos con "y". El patrón vale más que los tres arreglos juntos:
+
+> Cada vez que el inglés deja de ser una copia estructural del español, algo que dependía de esa
+> simetría se rompe **en silencio**. Ninguno de los tres lo cazó la suite; los tres los cazó
+> alguien leyendo el documento generado.
+
+Los tres invariantes que faltan y que cerrarían la familia:
+1. **concordancia sujeto-verbo en inglés** (pendiente desde §10.2);
+2. **paridad de negritas ES/EN** — un nombre en negrita en una columna debe estarlo en la otra;
+3. **paridad de conectores** — la lista de la columna española y la inglesa deben tener el mismo
+   número de nombres propios.
+
+El (2) habría cazado este defecto de inmediato y es el más barato de los tres: comparar el
+conjunto de fragmentos en negrita de `es` contra el de `en` por bloque.

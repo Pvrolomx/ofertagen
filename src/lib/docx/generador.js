@@ -100,7 +100,12 @@ function parseTextoConNegritas(texto, fontSize = FONT_SIZE_BODY) {
   // Patrón 1: referencias contractuales (EL OFERTANTE, THE OWNER, etc.)
   // Patrón 2: nombres propios en mayúsculas (DENNIS DREISBACH DOTY, etc.)
   // Patrón 3: términos clave (FECHA DE FORMALIZACIÓN, TÉRMINO DE VIGENCIA, etc.)
-  const pattern = /((?:"|")?(?:EL|LA|LOS|LAS|THE)\s+(?:OFERTANTE|PROPIETARI[OA]|VENDEDOR[A]?|COMPRADOR[A]?|OFFERER|OWNER|SELLER|BUYER|INMUEBLE|PROPERTY|FORMALIZ\w+|BENEFICIARI[OA]?|FIDEICOMISO)(?:S)?(?:"|")?|(?:FECHA DE FORMALIZACIÓN|TÉRMINO DE VIGENCIA|TERM OF EFFECT|FORMALIZING DATE|GASTOS DE ESCRITURACIÓN|CLOSING COSTS|CUENTA ESCROW|ESCROW ACCOUNT|ANEXO [A-Z])|(?:[A-ZÁÉÍÓÚÑÜ]{2,}(?:\s+[A-ZÁÉÍÓÚÑÜ]{2,}){1,5})(?=,|\s+(?:quien|who|manifiesta|states|por|de|herein|y\s|en\s|a\s)))/g;
+  //
+  // El lookahead del patrón 2 lista los conectores que pueden seguir a un nombre.
+  // Debe incluir "and": al unir los nombres ingleses con "and" en vez de "y", el
+  // PRIMER nombre de cada parte dejaba de calificar y salía sin negrita
+  // (", ALAN BRAATZ and *NICOLE BRAATZ*"). El segundo se salvaba por la coma.
+  const pattern = /((?:"|")?(?:EL|LA|LOS|LAS|THE)\s+(?:OFERTANTE|PROPIETARI[OA]|VENDEDOR[A]?|COMPRADOR[A]?|OFFERER|OWNER|SELLER|BUYER|INMUEBLE|PROPERTY|FORMALIZ\w+|BENEFICIARI[OA]?|FIDEICOMISO)(?:S)?(?:"|")?|(?:FECHA DE FORMALIZACIÓN|TÉRMINO DE VIGENCIA|TERM OF EFFECT|FORMALIZING DATE|GASTOS DE ESCRITURACIÓN|CLOSING COSTS|CUENTA ESCROW|ESCROW ACCOUNT|ANEXO [A-Z])|(?:[A-ZÁÉÍÓÚÑÜ]{2,}(?:\s+[A-ZÁÉÍÓÚÑÜ]{2,}){1,5})(?=,|\s+(?:quien|who|manifiesta|states|por|de|herein|y\s|and\s|en\s|a\s)))/g;
 
   let lastIndex = 0;
   let match;
