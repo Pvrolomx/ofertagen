@@ -21,6 +21,20 @@ const RE_FIDEICOMISO = /fideicomis\w*|fiduciari\w*|trust\b|trustee/i;
 /** Condóminos como sujetos/cuotas — distinto de "régimen de condominio", que sí puede citarse. */
 const RE_CONDOMINOS = /cond[óo]min[oa]s\b|Homeowner['’]s Administration|Administraci[óo]n de Cond[óo]minos/i;
 
+/**
+ * Puntuación huérfana: lo que queda cuando una interpolación resuelve a cadena vacía.
+ *
+ * NO es un caso hipotético. La v1 de la oferta Braatz salió con la cláusula 8 así:
+ *   "Dicha escritura pública se celebrará ante la fe del , Notario Público  de ."
+ * porque el id del notario no existía en el catálogo. El motor no emitió "undefined"
+ * ni inyectó ⟦Pendiente⟧: emitió nada. Sintaxis intacta, sentido nulo, y ninguno de
+ * los invariantes de esta suite lo vio.
+ */
+// Sólo patrones imposibles en prosa bien formada. Deliberadamente NO se incluye
+// ':' al final de párrafo: una cláusula que introduce incisos termina así de forma
+// legítima (cl_precio lo hace) y generaba un falso positivo en los 32 renders.
+const RE_PUNTUACION_HUERFANA = /\s+,|\(\s*\)|\s+\.(?:\s|$)|\bde\s+\.|\bdel\s+,|\bof\s+\.|\bfe del\s+,|[ \t]{3,}/;
+
 /** Referencias cruzadas por número de cláusula: se rompen en cuanto un bloque se apaga. */
 const RE_REF_NUMERICA = /punto n[úu]mero \d|point number \d|cl[áa]usula n[úu]mero \d/i;
 
@@ -63,6 +77,15 @@ export const INVARIANTES = [
     check: ({ texto }) => {
       const m = texto.match(RE_FUGAS);
       return { ok: !m, detalle: m ? `encontrado: "${m[0]}" · …${contexto(texto, m.index)}…` : '' };
+    },
+  },
+  {
+    id: 'sin_puntuacion_huerfana',
+    descripcion: 'Ninguna interpolación resolvió a vacío dejando puntuación colgando',
+    porque: 'Un campo vacío no produce "undefined" — produce nada, y deja ", Notario Público de ." La cláusula queda bien formada y sin sentido. Cazarlo por la puntuación es la única señal que queda cuando el dato desaparece limpiamente.',
+    check: ({ bloques }) => {
+      const h = buscarEnBloques(bloques, RE_PUNTUACION_HUERFANA);
+      return { ok: !h, detalle: h ? `[${h.bloque}.${h.idioma}] …${h.ctx}…` : '' };
     },
   },
   {

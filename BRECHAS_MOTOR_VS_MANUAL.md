@@ -387,3 +387,78 @@ Dos de los cuatro fallos de la primera corrida eran del andamiaje, no del molde:
 Vale registrarlo: un invariante mal escrito produce alarmas que erosionan la confianza en la
 suite más rápido de lo que la falta de cobertura produce defectos. **Todo invariante nuevo debe
 verificarse contra el código antes de darse por bueno.**
+
+
+---
+
+# 10. Cierre del ciclo — fiscalización Braatz (6-sep-2026)
+
+La oferta Nitta 504 pasó por CX y Agy. Sus hallazgos produjeron correcciones de plantilla y
+**un invariante nuevo nacido de un defecto que esta misma suite no vio**.
+
+## 10.1 · El fallo que el andamiaje NO atrapó
+
+La v1 salió a fiscalización con la cláusula 8 así:
+
+> *"Dicha escritura pública se celebrará ante la fe del , Notario Público  de ."*
+
+Causa: el id del notario era `meza_29`, que **no existe** — el catálogo lo llama `buc_29`. El id
+venía arrastrado del JSON de marzo, o sea que **la oferta de marzo también salió con el notario
+en blanco** y nadie lo notó en seis meses.
+
+Por qué se escapó: `sin_fugas_de_plantilla` busca `undefined` / `NaN`. El motor no produjo eso —
+produjo **cadena vacía**. La cláusula quedó sintácticamente intacta y semánticamente nula.
+
+**Dos correcciones:**
+
+1. **Invariante `sin_puntuacion_huerfana`** — caza la puntuación que queda colgando cuando una
+   interpolación resuelve a vacío (`\s+,`, `de\s+\.`, `\(\s*\)`, sangrías triples…). Deliberadamente
+   **no** incluye `:` al final de párrafo: `cl_precio` termina así de forma legítima al introducir
+   sus incisos, y con esa regla los 32 renders daban falso positivo.
+2. **Guarda en el motor** (`ensamblador.js`): un `notario_seleccion` que no está en el catálogo
+   ahora inyecta `⟦Pendiente⟧` en lugar de vaciarse. El hueco ya no puede viajar en silencio.
+
+## 10.2 · Concordancia inglesa — la corrección que destapó otras cuatro
+
+Agy señaló tres defectos gramaticales. Corregirlos tuvo efecto dominó:
+
+| Defecto | Corrección |
+|---|---|
+| *"adquirió"* con dos vendedores | `cl_antecedente` concuerda con `clave` (`adquirieron`) |
+| Nombres unidos con *"y"* en inglés | `formatearNombresEn()` + `nombres_en` en el contexto; `cl_propietario` y `buildComparecenciaEn` lo usan |
+| *"Once THE OWNER have accepted"* | `sustEn` pasa a usar `claveReal`: el singular colectivo (*"EL PROPIETARIO"* para dos personas) es convención notarial mexicana y **no existe en inglés** |
+
+⚠️ **La tercera corrección introdujo una regresión propia.** Al pluralizar el sustantivo quedaron
+al descubierto **seis verbos fijos en singular** repartidos por la plantilla: *"THE OWNERS **has**
+timely delivered"*, *"**is** forbidden to remove"*, *"**is** obligated to block/fulfill/inform"*.
+Se agregaron helpers `en.has` / `en.is` / `en.s` al contexto de la parte y se aplicaron en los seis
+puntos.
+
+**Lección de método:** un cambio de concordancia nunca es local. El sustantivo y sus verbos viven
+en archivos distintos, y la suite pasó en verde **entre** la primera corrección y las seis
+siguientes — el documento generado era el único lugar donde el desacuerdo se veía. Un invariante
+de concordancia sujeto-verbo en inglés sería el siguiente candidato natural.
+
+## 10.3 · Campo `tipo_superficie`
+
+El molde afirmaba *"superficie de construcción"* siempre. En Nitta 504 el antecedente dice
+*"extensión superficial aproximada"* e incluye terrazas y **alberca**: llamarle construcción a ese
+número afirma algo que la escritura no dice. Campo nuevo `inmueble.tipo_superficie`
+(`construccion` | `extension`), default = comportamiento anterior. Propagado a ES, EN y FR.
+
+## 10.4 · Plazo de subsanación acotado
+
+`doc_fideicomiso` daba al vendedor N días hábiles *"—o hasta la FECHA DE FORMALIZACIÓN, si ésta
+fuera posterior—"* para subsanar observaciones materiales. Esa frase mantiene viva una observación
+hasta el cierre. Ahora: *"N días hábiles **improrrogables**, plazo que en ningún caso se extenderá
+hasta la FECHA DE FORMALIZACIÓN"*.
+
+## 10.5 · Doctrina de orden: condiciones antes del depósito
+
+Hallazgo de proceso, no de código: **el motor ya soportaba `escrow.ancla_deposito: 'condiciones'`**
+y no se estaba usando. Emite *"dentro de los N días hábiles siguientes **al cumplimiento de las
+condiciones indispensables**"* en vez de anclar a la aceptación.
+
+Importa porque invierte quién soporta el riesgo: con el dinero depositado antes de cumplirse las
+condiciones, liberarlo del escrow exige **firma de ambas partes** y el comprador queda de rehén.
+Debería ser el **default** del bloque `escrow`, no una opción que hay que recordar.

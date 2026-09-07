@@ -88,7 +88,7 @@ function datosBase() {
         fecha_formalizacion_en: 'no later than January 31, 2027',
         fecha_extension: '28 de febrero de 2027', fecha_extension_en: 'February 28, 2027',
       },
-      notario: { notario_seleccion: 'meza_29' },
+      notario: { notario_seleccion: 'buc_29' },
       comision: {
         porcentaje_total: '8%', incluye_iva: true,
         agencia1_nombre: 'Bienvenidos Real Estate', agencia1_porcentaje: '4%',

@@ -334,10 +334,17 @@ export function ensamblarContexto(plantilla, datos) {
       ciudad_notaria: notarioCat.ciudad,
     };
   } else {
+    // Un id que NO está en el catálogo no puede vaciarse en silencio: dejaría
+    // "ante la fe del , Notario Público  de ." — sintaxis intacta, sentido nulo.
+    // Fue el defecto de la oferta Braatz v1: el id 'meza_29' no existe (es
+    // 'buc_29') y el documento llegó a fiscalización con la cláusula 8 en blanco,
+    // sin que ningún test lo señalara. Con id desconocido se marca ⟦Pendiente⟧.
+    const idDesconocido = Boolean(seleccion) && seleccion !== 'otro' && !notarioCat;
+    const oPendiente = (v) => v || (idDesconocido ? PENDIENTE_MARK : '');
     ctx.notario = {
-      nombre_notario: notarioRaw.nombre_notario || '',
-      numero_notaria: notarioRaw.numero_notaria || '',
-      ciudad_notaria: notarioRaw.ciudad_notaria || '',
+      nombre_notario: oPendiente(notarioRaw.nombre_notario),
+      numero_notaria: oPendiente(notarioRaw.numero_notaria),
+      ciudad_notaria: oPendiente(notarioRaw.ciudad_notaria),
     };
   }
 
@@ -632,11 +639,11 @@ export function renderizarBloques(plantilla, ctx) {
  */
 function buildComparecenciaEn(ctxParte, datoParte) {
   if (ctxParte.tipoPersona === 'moral') {
-    return `${ctxParte.nombres}, represented in this act by ${datoParte.representante?.nombre || '[REPRESENTATIVE]'}, who certifies their legal capacity by means of the corresponding notarial instrument`;
+    return `${ctxParte.nombres_en || ctxParte.nombres}, represented in this act by ${datoParte.representante?.nombre || '[REPRESENTATIVE]'}, who certifies their legal capacity by means of the corresponding notarial instrument`;
   }
 
   const verbHas = ctxParte.clave === 'mp' || ctxParte.clave === 'fp' ? 'have' : 'has';
   const verbStates = ctxParte.clave === 'mp' || ctxParte.clave === 'fp' ? 'state' : 'states';
 
-  return `${ctxParte.nombres}, who ${verbStates} that ${ctxParte.clave === 'ms' ? 'he' : ctxParte.clave === 'fs' ? 'she' : 'they'} ${verbHas} the legal and economic capacity that are necessary to enter into the present contract and, whom hereinafter will be solely referred to as ${ctxParte.en.referenciaConComillas}`;
+  return `${ctxParte.nombres_en || ctxParte.nombres}, who ${verbStates} that ${ctxParte.clave === 'ms' ? 'he' : ctxParte.clave === 'fs' ? 'she' : 'they'} ${verbHas} the legal and economic capacity that are necessary to enter into the present contract and, whom hereinafter will be solely referred to as ${ctxParte.en.referenciaConComillas}`;
 }

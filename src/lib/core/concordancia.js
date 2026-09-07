@@ -184,6 +184,19 @@ export function formatearNombres(personas) {
 }
 
 /**
+ * Igual que formatearNombres, pero con la conjunción inglesa.
+ * El español y el inglés no comparten conector: "A y B" / "A and B".
+ */
+export function formatearNombresEn(personas) {
+  if (personas.length === 1) return personas[0].nombre;
+  if (personas.length === 2) {
+    return `${personas[0].nombre} and ${personas[1].nombre}`;
+  }
+  const ultimos = personas.slice(0, -1).map(p => p.nombre).join(', ');
+  return `${ultimos} and ${personas[personas.length - 1].nombre}`;
+}
+
+/**
  * Genera el contexto lingüístico completo para una parte.
  * Este es el objeto que alimenta las plantillas.
  * 
@@ -268,7 +281,10 @@ export function generarContextoParte(config) {
   // ---- Contexto para INGLÉS ----
 
   const artEn = GRAMATICA.articulo_en[claveSingularColectivo];
-  const sustEn = rolData.sustantivo_en[claveSingularColectivo];
+  // El singular colectivo ("EL PROPIETARIO" para dos personas) es convención
+  // notarial mexicana y no existe en inglés: allí dos vendedores son THE OWNERS.
+  // Usar la clave real evita el desacuerdo "THE OWNER have accepted".
+  const sustEn = rolData.sustantivo_en[claveReal];
   const referenciaEn = `${artEn} ${sustEn}`;
 
   // ---- Contexto para FRANCÉS ----
@@ -289,6 +305,7 @@ export function generarContextoParte(config) {
 
     // Nombres
     nombres,
+    nombres_en: tipoPersona === 'moral' ? nombres : formatearNombresEn(personas),
     nombresFormateados: nombres,
 
     // Referencias (lo que se usa en el cuerpo del contrato)
@@ -322,6 +339,13 @@ export function generarContextoParte(config) {
       sustantivo: sustEn,
       referencia: referenciaEn,
       referenciaConComillas: `"${referenciaEn}"`,
+      // Concordancia verbal inglesa. Existe porque al pluralizar el sustantivo
+      // (THE OWNER -> THE OWNERS) quedaron al descubierto verbos fijos en singular
+      // repartidos por la plantilla ("THE OWNERS has timely delivered").
+      esPlural: claveReal === 'mp' || claveReal === 'fp',
+      has: (claveReal === 'mp' || claveReal === 'fp') ? 'have' : 'has',
+      is: (claveReal === 'mp' || claveReal === 'fp') ? 'are' : 'is',
+      s: (claveReal === 'mp' || claveReal === 'fp') ? '' : 's',
     },
 
     // Francés
