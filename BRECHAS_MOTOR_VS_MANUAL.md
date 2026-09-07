@@ -604,3 +604,33 @@ y la de PENALIDAD reconoce el supuesto (condicionado a que el bloque escrow est�
 Las referencias van **por nombre de cláusula, no por número** — el invariante
  lo exige, y con incisos que se renumeran solos una
 referencia numérica se rompe en cuanto se apaga un bloque.
+
+## 11.7 · AS-IS sin reserva de inspección
+
+La cláusula AD CORPUS declaraba, en pasado, que el comprador adquiere el inmueble en su estado
+actual *"habiendo tenido la oportunidad de inspeccionarlo"* y que *"acepta las condiciones en que
+se encuentra"*. Pero se firma el día de la oferta, **antes** de la inspección, que es una condición
+indispensable posterior a la aceptación.
+
+El mismo documento decía que ya inspeccionaron y aceptaron, y cuatro cláusulas más abajo les
+concedía días para inspeccionar y rechazar. En el caso Braatz había además un agravante de hecho:
+los compradores están en Canadá y firmar que tuvieron oportunidad de inspección física podía
+simplemente no ser cierto.
+
+Se agregó reserva expresa: *"Lo anterior queda expresamente sujeto al resultado de las CONDICIONES
+INDISPENSABLES … y no limita las obligaciones de EL PROPIETARIO de conservar y entregar EL INMUEBLE
+en los términos aquí pactados."* El AS-IS sigue cubriendo antigüedad y desgaste normal, que es lo
+que debe cubrir; deja de ser renuncia anticipada de lo que aún no se ha visto.
+
+## 11.8 · Celda bilingüe en la columna española
+
+Detectado por Rolo: la columna ES emitía  — los dos
+idiomas dentro de la misma celda. La variante inglesa sí estaba limpia.
+
+Vestigio de cuando el bloque se escribió como blob bilingüe, antes de que el documento fuera a
+doble columna. Barrido del resto del molde: las otras cuatro coincidencias de ese patrón son
+comentarios del código fuente, no texto emitido.
+
+**Candidato a invariante:** ninguna celda española debe contener una etiqueta en inglés en
+VERSALES, y viceversa. Es de la misma familia que los tres defectos ES/EN de §10 — divergencias
+entre columnas que nadie ve hasta que alguien lee el documento impreso.
