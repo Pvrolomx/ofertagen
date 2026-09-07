@@ -634,3 +634,24 @@ comentarios del código fuente, no texto emitido.
 **Candidato a invariante:** ninguna celda española debe contener una etiqueta en inglés en
 VERSALES, y viceversa. Es de la misma familia que los tres defectos ES/EN de §10 — divergencias
 entre columnas que nadie ve hasta que alguien lee el documento impreso.
+
+## 11.9 · Ejemplares: bastaba la firma de una sola parte
+
+El molde decía que la oferta *"será válida una vez firmada y rubricada en todas sus páginas por
+cualquiera de las partes"*. Literalmente: válida con la firma de UNA. Contradice de frente la
+cláusula de CONTRATO BILATERAL OBLIGATORIO, que condiciona el nacimiento del contrato a la firma
+del propietario dentro del término de vigencia.
+
+Redacción propuesta por CX y adoptada con dos ajustes:
+
+1. **Referencias dinámicas.** CX escribió "todos los ofertantes y propietarios"; los roles del molde
+   son variables (vendedor/comprador, promitente, fideicomisario cedente). Se usan
+    y .
+2. **Se conservó la rúbrica en todas las páginas**, que la propuesta eliminaba. Tiene valor
+   probatorio —impide sustituir una hoja intermedia— y no estorba al arreglo. Quedó como oración
+   aparte. También se conservó el párrafo de comunicaciones electrónicas, que la propuesta omitía.
+
+**Nota de proceso:** el documento del expediente ya llevaba marca de agua DRAFT aplicada a mano
+(roja, conforme a la regla) y un PDF derivado. Regenerar encima habría destruido ambos, así que la
+versión corregida salió con nombre propio. Todo documento que recibe edición manual deja de ser
+reproducible desde el motor: conviene decidir el orden —generar, luego marcar— y no al revés.

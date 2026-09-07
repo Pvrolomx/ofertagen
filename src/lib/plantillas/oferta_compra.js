@@ -1436,8 +1436,8 @@ In the event that THE PROPERTY is not delivered with the complete approved inven
       etiqueta: 'Duplicados / Counterparts',
       etiqueta_en: 'Counterparts and electronic communications',
       render: (ctx) => ({
-        es: `La presente oferta podrá ser firmada en más de una copia, y bastará con que esté firmada y rubricada en todas sus páginas por cualquiera de las partes para su validez. Las partes acuerdan reconocer las comunicaciones electrónicas entre ellas, así como el consentimiento otorgado por dichos medios.`,
-        en: `This offer may be signed in more than one copy, and it will be valid once signed and initialed in all of its pages by any Party. The Parties agree to recognize electronic communications between them, as well as their consent given through such means.`,
+        es: `La presente oferta podrá firmarse en ejemplares separados, los cuales, considerados conjuntamente, deberán contener las firmas de ${ctx.ofertante.referencia_negrita} y de ${ctx.propietario.referencia_negrita}, y constituirán un solo instrumento. Cada ejemplar deberá ser firmado y rubricado en todas sus páginas por quien lo suscriba. Las partes acuerdan reconocer las comunicaciones electrónicas entre ellas, así como el consentimiento otorgado por dichos medios.`,
+        en: `This offer may be executed in separate counterparts which, taken together, shall bear the signatures of ${ctx.ofertante.en.referencia_negrita} and ${ctx.propietario.en.referencia_negrita}, and shall constitute one and the same instrument. Each counterpart shall be signed and initialed on every page by the party executing it. The Parties agree to recognize electronic communications between them, as well as their consent given through such means.`,
       }),
     },
 
