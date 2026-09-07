@@ -589,3 +589,18 @@ había usado — probablemente porque activarla a secas produce un documento con
 
 Candidato concreto: invariante que, con `ancla_deposito === 'condiciones'`, prohíba la frase
 *"al momento de constituir el depósito"* como gatillo de cualquier condición.
+
+## 11.6 · La salida sin depósito: excepción, no contradicción
+
+Único punto en que CX y Agy discreparon. Agy: dejar tal cual la terminación automática sin
+responsabilidad del 4.A, porque favorece al comprador. CX: choca con la cláusula de PENALIDAD y
+hay que resolverlo.
+
+Ambos tenían razón en su mitad — conviene al comprador, y dos cláusulas del mismo documento decían
+cosas opuestas. Se conserva el beneficio y se elimina la contradicción declarándolo **excepción
+expresa en los dos lugares**: el 4.A dice que constituye una EXCEPCIÓN a la cláusula de PENALIDAD,
+y la de PENALIDAD reconoce el supuesto (condicionado a que el bloque escrow esté activo).
+
+Las referencias van **por nombre de cláusula, no por número** — el invariante
+ lo exige, y con incisos que se renumeran solos una
+referencia numérica se rompe en cuanto se apaga un bloque.
