@@ -36,6 +36,7 @@ import {
   VerticalAlign,
   ImageRun,
 } from 'docx';
+import JSZip from 'jszip';
 import { PENDIENTE_MARK } from '../plantillas/ensamblador.js';
 
 // ============================================================
@@ -601,6 +602,54 @@ function crearAceptacion(soloEs = false) {
   ];
 }
 
+/**
+ * Suprime las iniciales en la ÚLTIMA página, reescribiendo el footer ya empacado.
+ *
+ * Por qué post-proceso y no un componente de la librería:
+ *   · Word NO ofrece "footer distinto en la última página" (sólo primera/pares).
+ *   · Un salto de sección CONTINUOUS no puede mostrar dos footers en la misma
+ *     página física: usa el de la primera sección aunque el XML declare otro.
+ *   · SectionType.NEXT_PAGE sí lo lograba, pero desperdiciaba una hoja entera
+ *     cuando la página anterior tenía espacio de sobra.
+ *   · ImportedXmlComponent.fromXmlString() NO funciona dentro de un Footer en
+ *     docx 9.x — Word rechaza el archivo completo, incluso con un párrafo de
+ *     texto plano (verificado por bisección).
+ *
+ * Queda el idioma estándar de Word: { IF { PAGE } <> { NUMPAGES } "…" "" },
+ * que exige fldChar anidados. Se inyecta sobre el zip resultante.
+ */
+async function suprimirInicialesEnUltimaPagina(buffer, texto) {
+  if (!texto || !texto.trim()) return buffer;
+  const esc = (t) => t.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+  // El orden de los hijos de w:rPr lo fija el esquema (rFonts, color, sz…);
+  // invertir dos hace que Word rechace el archivo con un error genérico.
+  const rPr = `<w:rPr><w:rFonts w:ascii="${FONT}" w:hAnsi="${FONT}"/><w:color w:val="333333"/><w:sz w:val="14"/></w:rPr>`;
+  const fld = (t) => `<w:r>${rPr}<w:fldChar w:fldCharType="${t}"/></w:r>`;
+  const ins = (t) => `<w:r>${rPr}<w:instrText xml:space="preserve">${t}</w:instrText></w:r>`;
+  const parrafo =
+    '<w:p><w:pPr><w:jc w:val="center"/></w:pPr>' +
+    fld('begin') + ins(' IF ') +
+    fld('begin') + ins(' PAGE ') + fld('end') +
+    ins(' &lt;&gt; ') +
+    fld('begin') + ins(' NUMPAGES ') + fld('end') +
+    ins(` "${esc(texto)}" "" `) +
+    fld('separate') +
+    `<w:r>${rPr}<w:t xml:space="preserve">${esc(texto)}</w:t></w:r>` +
+    fld('end') + '</w:p>';
+
+  const zip = await JSZip.loadAsync(buffer);
+  let tocado = false;
+  for (const nombre of Object.keys(zip.files)) {
+    if (!/^word\/footer\d+\.xml$/.test(nombre)) continue;
+    const xml = await zip.file(nombre).async('string');
+    if (!xml.includes(esc(texto))) continue;         // sólo el footer de iniciales
+    zip.file(nombre, xml.replace(/<w:p\b[\s\S]*?<\/w:p>/, parrafo));
+    tocado = true;
+  }
+  if (!tocado) return buffer;
+  return zip.generateAsync({ type: 'nodebuffer', compression: 'DEFLATE' });
+}
+
 // ============================================================
 // API PÚBLICA
 // ============================================================
@@ -846,7 +895,8 @@ export async function generarDocx(bloques, meta = {}, opciones = {}) {
     sections,
   });
 
-  const buffer = await Packer.toBuffer(doc);
+  let buffer = await Packer.toBuffer(doc);
+  buffer = await suprimirInicialesEnUltimaPagina(buffer, inicialesText);
   TERMINOS_NEGRITA = [];  // no filtrar términos al siguiente documento
   return buffer;
 }
