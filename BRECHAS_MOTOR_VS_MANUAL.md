@@ -745,10 +745,14 @@ partes y el bloque de aceptación caen juntos en hoja limpia, **sin costar una p
 **Montos sin negritas.** Agregados al detector como primera alternancia de `PATRON_GENERICO`.
 
 ⚠️ **Trampa de escapes:** el patrón vive dentro de un literal de cadena JS, así que cada `\` de la
-regex debe escribirse `\`. Dos intentos escribieron backslash sencillo y el literal se lo comió
+regex debe escribirse `\\`. Dos intentos escribieron backslash sencillo y el literal se lo comió
 —la regex terminaba buscando la letra `s` en vez de un espacio— **fallando en silencio, sin error,
 simplemente sin encontrar nada**. Se cerró construyendo los escapes carácter por carácter y
 releyendo el archivo para confirmar, en vez de confiar en que el reemplazo tomó.
 
 Es el mismo modo de falla que el notario en blanco de §10.1: no truena, no dice nada, sólo no hace
 lo que debía.
+
+*(Nota al margen: este mismo párrafo se escribió mal la primera vez — la herramienta que lo redactó
+se comió un nivel de escape y dejó "cada `\` debe escribirse `\`", perdiendo justo lo que explicaba.
+La trampa muerde también a quien la documenta.)*
