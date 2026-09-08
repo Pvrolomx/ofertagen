@@ -686,3 +686,69 @@ altera ese orden ni acorta plazos.
 **Cadena completa, toda anclada a hechos fechados:**
 condiciones → carta de remoción → depósito en garantía → anticipo notarial → saldo → formalización.
 Ningún eslabón depende ya de *"de inmediato"* ni de un estado de hecho sin fecha.
+
+---
+
+# 12. Cierre de la oferta Braatz: contenido y maquetación (8-sep-2026)
+
+## 12.1 · AS-IS separado del AD CORPUS
+
+Decisión de Rolo: el AS-IS **contradice la condición de inspección por más que se le agregue una
+reserva**, así que sale. Pero vivía en el mismo bloque que el AD CORPUS, y son cosas distintas:
+
+- **AD CORPUS** habla de **superficie** — una diferencia de medidas no ajusta el precio.
+- **AS-IS** habla de **estado físico** — y ahí está el choque: el comprador no puede declarar que
+  ya aceptó lo que todavía no ha visto.
+
+El bloque `ad_corpus` ahora emite el AS-IS sólo si la bandera `as_is` está encendida (default true,
+comportamiento histórico).
+
+⚠️ **Bandera declarada ≠ bandera conectada.** Al apagarla, el AS-IS **siguió saliendo**. Causa:
+`ctx.bloques` se llena iterando los BLOQUES de la plantilla, y las banderas que no son bloques se
+copian **una por una a mano** en el ensamblador. `as_is` llegaba como `undefined`, y
+`undefined !== false` es verdadero.
+
+El anti-deriva no lo vio: verifica que las lecturas estén *declaradas*, no que la bandera esté
+*cableada*. Es la versión activa del problema de las 6 banderas fantasma de §9.2.
+
+> **Invariante pendiente (el más valioso de los cinco anotados):** para cada bandera, cambiar su
+> valor debe cambiar el documento. Si el render sale idéntico encendida y apagada, está inerte.
+
+## 12.2 · Condición de avalúo retirada
+
+También decisión de Rolo. El razonamiento operativo es mejor que la cláusula: durante el desahogo
+de las condiciones se obtiene un **preavalúo**, y si sale alto **simplemente no se firma la carta
+de remoción** — y como el depósito no vence hasta esa firma, se salen sin un peso expuesto.
+
+La estructura de condiciones-primero (§11) ya era la salida; la cláusula era redundante.
+
+*(Nota numérica para el archivo: el umbral del art. 125 no se dispara "arriba de 9 millones" sino
+arriba de 1.10 × precio en pesos — $9.70M a TC 18.0, $10.24M a TC 19.0 — contra un avalúo estimado
+de ~$9.67M para el 504. El margen a TC 18 es de 0.4%, no de 700 mil. Por eso el preavalúo importa.)*
+
+## 12.3 · Maquetación — tres defectos que sólo se ven impresos
+
+**Footer de iniciales, una casilla por PARTE.** Emitía `AByNJB _____`: las iniciales de dos personas
+pegadas y una sola raya compartida. Estaba diseñado para partes de una sola persona. Ahora una
+casilla por **persona**, raya del doble de largo y más separación.
+
+**Firmas partidas entre páginas.** Dos defectos apilados:
+1. Los cuatro párrafos de cada firma iban sueltos, sin `keepNext` → Word partía entre la raya y el
+   nombre de quien firma.
+2. La sección de firmas estaba declarada **`SectionType.CONTINUOUS`** — fluía a media página —
+   cuando el comentario del propio código decía *"Sección de firmas (página final)"*. La intención
+   estaba escrita; la implementación decía otra cosa.
+
+Con sólo (1) las firmas dejaban de partirse pero quedaban en páginas distintas. Con (1)+(2) ambas
+partes y el bloque de aceptación caen juntos en hoja limpia, **sin costar una página extra**.
+
+**Montos sin negritas.** Agregados al detector como primera alternancia de `PATRON_GENERICO`.
+
+⚠️ **Trampa de escapes:** el patrón vive dentro de un literal de cadena JS, así que cada `\` de la
+regex debe escribirse `\`. Dos intentos escribieron backslash sencillo y el literal se lo comió
+—la regex terminaba buscando la letra `s` en vez de un espacio— **fallando en silencio, sin error,
+simplemente sin encontrar nada**. Se cerró construyendo los escapes carácter por carácter y
+releyendo el archivo para confirmar, en vez de confiar en que el reemplazo tomó.
+
+Es el mismo modo de falla que el notario en blanco de §10.1: no truena, no dice nada, sólo no hace
+lo que debía.

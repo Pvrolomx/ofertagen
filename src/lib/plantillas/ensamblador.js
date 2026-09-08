@@ -152,6 +152,9 @@ export function ensamblarContexto(plantilla, datos) {
 
   // Flags de UI que NO son bloques del molde pero el render sí consulta (ej. opcion_fideicomiso en §4).
   ctx.bloques.opcion_fideicomiso = datos.bloques?.opcion_fideicomiso ?? false;
+  // AS-IS: segundo párrafo de ad_corpus. Default true (comportamiento histórico);
+  // se apaga cuando el AS-IS chocaría con la condición de inspección.
+  ctx.bloques.as_is = datos.bloques?.as_is ?? true;
   // Precio compuesto (inmueble + muebles). El render de §4 consulta ctx.bloques,
   // así que el flag debe copiarse aquí o la rama compuesta nunca se alcanza.
   ctx.bloques.precio_compuesto = datos.bloques?.precio_compuesto ?? false;

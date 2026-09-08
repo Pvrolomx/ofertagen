@@ -102,8 +102,13 @@ const LOGO_HEIGHT = 50;  // pixels (ratio ~2.4:1 típico de logos)
  */
 let TERMINOS_NEGRITA = [];
 
-/** Fuente del detector genérico por patrón (referencias, nombres, términos clave). */
-const PATRON_GENERICO = '(?:"|")?(?:EL|LA|LOS|LAS|THE)\\s+(?:OFERTANTE|PROPIETARI[OA]|VENDEDOR[A]?|COMPRADOR[A]?|OFFERER|OWNER|SELLER|BUYER|INMUEBLE|PROPERTY|FORMALIZ\\w+|BENEFICIARI[OA]?|FIDEICOMISO)(?:S)?(?:"|")?|(?:FECHA DE FORMALIZACIÓN|TÉRMINO DE VIGENCIA|TERM OF EFFECT|FORMALIZING DATE|GASTOS DE ESCRITURACIÓN|CLOSING COSTS|CUENTA ESCROW|ESCROW ACCOUNT|ANEXO [A-Z])|(?:[A-ZÁÉÍÓÚÑÜ]{2,}(?:\\s+[A-ZÁÉÍÓÚÑÜ]{2,}){1,5})(?=,|\\s+(?:quien|who|manifiesta|states|por|de|herein|y\\s|and\\s|en\\s|a\\s))';
+/**
+ * Fuente del detector genérico por patrón (montos, referencias, nombres, términos clave).
+ *
+ * Los MONTOS van primero en la alternancia: son lo que el lector busca al hojear
+ * el documento, y deben ganar sobre cualquier otro patrón que pudiera solaparse.
+ */
+const PATRON_GENERICO = '\\$\\s?[\\d,]+\\.\\d{2}\\s*(?:USD|MXN)|(?:"|")?(?:EL|LA|LOS|LAS|THE)\\s+(?:OFERTANTE|PROPIETARI[OA]|VENDEDOR[A]?|COMPRADOR[A]?|OFFERER|OWNER|SELLER|BUYER|INMUEBLE|PROPERTY|FORMALIZ\\w+|BENEFICIARI[OA]?|FIDEICOMISO)(?:S)?(?:"|")?|(?:FECHA DE FORMALIZACIÓN|TÉRMINO DE VIGENCIA|TERM OF EFFECT|FORMALIZING DATE|GASTOS DE ESCRITURACIÓN|CLOSING COSTS|CUENTA ESCROW|ESCROW ACCOUNT|ANEXO [A-Z])|(?:[A-ZÁÉÍÓÚÑÜ]{2,}(?:\\s+[A-ZÁÉÍÓÚÑÜ]{2,}){1,5})(?=,|\\s+(?:quien|who|manifiesta|states|por|de|herein|y\\s|and\\s|en\\s|a\\s))';
 
 /** Escapa un literal para incrustarlo en una expresión regular. */
 function escaparRegex(s) {
@@ -521,10 +526,14 @@ function extraerIniciales(nombre) {
  */
 function generarInicialesFooter(bloqueFirmas) {
   const firmas = bloqueFirmas?.firmas || [];
-  return firmas.map(f => {
-    const ini = extraerIniciales(f.nombre);
-    return `${ini} _____`;
-  }).join('          ');
+  // Una casilla POR PERSONA, no por parte. Con dos compradores y dos vendedores
+  // la versión anterior emitía "AByNJB _____": una sola raya compartida, con
+  // las iniciales de ambos pegadas y sin espacio material para rubricar.
+  const personas = firmas.flatMap(f => String(f.nombre || '').split(/\s+(?:y|and|&|e)\s+/i))
+    .map(n => n.trim()).filter(Boolean);
+  return personas
+    .map(n => `${extraerIniciales(n)} __________`)
+    .join('        ');
 }
 
 // ============================================================
@@ -638,19 +647,27 @@ export async function generarDocx(bloques, meta = {}, opciones = {}) {
         // Primera firma: más espacio (600), siguientes: menos (300)
         const spacingBefore = i === 0 ? 600 : 300;
 
+        // keepNext encadena espaciador -> raya -> nombre -> rol para que Word NO
+        // parta el grupo: sin esto la línea de firma queda al pie de una página
+        // y el nombre de quien firma aparece en la siguiente.
         contenidoFirmas.push(
-          new Paragraph({ spacing: { before: spacingBefore }, children: [] }),
+          new Paragraph({ spacing: { before: spacingBefore }, keepNext: true, children: [] }),
           new Paragraph({
             alignment: AlignmentType.CENTER,
+            keepNext: true,
+            keepLines: true,
             children: [new TextRun({ text: '___________________________', font: FONT, size: FONT_SIZE_FIRMA })],
           }),
           new Paragraph({
             alignment: AlignmentType.CENTER,
             spacing: { before: 80 },
+            keepNext: true,
+            keepLines: true,
             children: [new TextRun({ text: firma.nombre, font: FONT, size: FONT_SIZE_FIRMA, bold: true })],
           }),
           new Paragraph({
             alignment: AlignmentType.CENTER,
+            keepLines: true,
             children: [new TextRun({ text: firma.rol_es || '', font: FONT, size: FONT_SIZE_FIRMA })],
           }),
         );
@@ -772,7 +789,12 @@ export async function generarDocx(bloques, meta = {}, opciones = {}) {
     sections.push({
       properties: {
         ...pageProps,
-        type: SectionType.CONTINUOUS,
+        // NEXT_PAGE, no CONTINUOUS: con flujo continuo las firmas arrancaban a
+        // media página, dejando a una parte al pie de una hoja y a la otra en la
+        // siguiente. La sección de firmas es la "página final" que el comentario
+        // de arriba ya prometía; ahora sí empieza en hoja limpia y las partes
+        // quedan juntas.
+        type: SectionType.NEXT_PAGE,
       },
       headers: { default: headerDefault },
       footers: { default: footerVacio },

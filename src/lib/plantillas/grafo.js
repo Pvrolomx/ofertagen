@@ -31,6 +31,7 @@ export const INTERRUPTORES = {
   // ---- partes y precio ----
   adjudicacion_conyuge:     { tipo: 'bloque',  default: false },
   ad_corpus:                { tipo: 'bloque',  default: true  },
+  as_is:                    { tipo: 'bandera', default: true  },
   precio_compuesto:         { tipo: 'bandera', default: false },
   mobiliario_separado:      { tipo: 'bandera', default: false },
   pacto_no_incluir_muebles: { tipo: 'bandera', default: false },
@@ -92,6 +93,10 @@ export const INTERRUPTORES = {
  */
 export const RELACIONES = [
   {
+    interruptor: 'as_is', requiere: ['ad_corpus'],
+    porque: 'El AS-IS es el segundo párrafo del bloque ad_corpus; sin el bloque no hay dónde emitirlo.',
+  },
+  {
     interruptor: 'holdback_escrow', requiere: ['escrow'],
     porque: 'La retención se practica SOBRE la cuenta escrow. Sin escrow no hay de dónde retener.',
   },
@@ -129,6 +134,7 @@ export const RELACIONES = [
  * Es lo que impide que el grafo se vuelva documentación muerta.
  */
 export const LECTURAS = {
+  ad_corpus:             ['as_is'],
   cl_precio:             ['precio_compuesto', 'mobiliario_separado', 'pacto_no_incluir_muebles', 'opcion_fideicomiso'],
   cl_saldo:              ['escrow'],
   cl_gastos:             ['escrow'],
