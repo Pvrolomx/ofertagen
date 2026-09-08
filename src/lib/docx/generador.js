@@ -110,6 +110,21 @@ let TERMINOS_NEGRITA = [];
  */
 const PATRON_GENERICO = '\\$\\s?[\\d,]+\\.\\d{2}\\s*(?:USD|MXN)|(?:"|")?(?:EL|LA|LOS|LAS|THE)\\s+(?:OFERTANTE|PROPIETARI[OA]|VENDEDOR[A]?|COMPRADOR[A]?|OFFERER|OWNER|SELLER|BUYER|INMUEBLE|PROPERTY|FORMALIZ\\w+|BENEFICIARI[OA]?|FIDEICOMISO)(?:S)?(?:"|")?|(?:FECHA DE FORMALIZACIÓN|TÉRMINO DE VIGENCIA|TERM OF EFFECT|FORMALIZING DATE|GASTOS DE ESCRITURACIÓN|CLOSING COSTS|CUENTA ESCROW|ESCROW ACCOUNT|ANEXO [A-Z])|(?:[A-ZÁÉÍÓÚÑÜ]{2,}(?:\\s+[A-ZÁÉÍÓÚÑÜ]{2,}){1,5})(?=,|\\s+(?:quien|who|manifiesta|states|por|de|herein|y\\s|and\\s|en\\s|a\\s))';
 
+/**
+ * Lee ancho/alto de un PNG desde su cabecera IHDR.
+ *
+ * Sin esto el logo se estira: la transformación usaba 120x50 fijos (ratio 2.4)
+ * y el logo real de Castle Solutions es 824x323 (ratio 2.55). Un 6% de
+ * deformación es invisible en un cuadro y muy visible en un logotipo con
+ * letras finas.
+ */
+function dimensionesPng(buffer) {
+  // Firma PNG (8 bytes) + longitud (4) + 'IHDR' (4) -> ancho y alto en 16..24
+  if (buffer.length < 24) return null;
+  if (buffer.toString('ascii', 12, 16) !== 'IHDR') return null;
+  return { width: buffer.readUInt32BE(16), height: buffer.readUInt32BE(20) };
+}
+
 /** Escapa un literal para incrustarlo en una expresión regular. */
 function escaparRegex(s) {
   return s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
@@ -544,8 +559,9 @@ function crearTestigos(soloEs = false) {
   const testigo1 = soloEs ? 'TESTIGO 1:' : 'TESTIGO 1 / WITNESS 1:';
   const testigo2 = soloEs ? 'TESTIGO 2:' : 'TESTIGO 2 / WITNESS 2:';
   return [
-    new Paragraph({ spacing: { before: 400 }, children: [] }),
+    new Paragraph({ spacing: { before: 400 }, keepNext: true, children: [] }),
     new Paragraph({
+      keepNext: true,
       children: [new TextRun({ text: testigo1, font: FONT, size: FONT_SIZE_FIRMA })],
     }),
     new Paragraph({
@@ -554,6 +570,7 @@ function crearTestigos(soloEs = false) {
     }),
     new Paragraph({ spacing: { before: 200 }, children: [] }),
     new Paragraph({
+      keepNext: true,
       children: [new TextRun({ text: testigo2, font: FONT, size: FONT_SIZE_FIRMA })],
     }),
     new Paragraph({
@@ -568,9 +585,10 @@ function crearAceptacion(soloEs = false) {
     ? 'LUGAR, FECHA Y HORA DE ACEPTACIÓN:'
     : 'LUGAR, FECHA Y HORA DE ACEPTACIÓN / ACCEPTANCE PLACE, DATE AND TIME:';
   return [
-    new Paragraph({ spacing: { before: 400 }, children: [] }),
+    new Paragraph({ spacing: { before: 400 }, keepNext: true, children: [] }),
     new Paragraph({
       alignment: AlignmentType.CENTER,
+      keepNext: true,
       children: [
         new TextRun({ text: labelAceptacion, font: FONT, size: FONT_SIZE_FIRMA, bold: true }),
       ],
@@ -667,6 +685,7 @@ export async function generarDocx(bloques, meta = {}, opciones = {}) {
           }),
           new Paragraph({
             alignment: AlignmentType.CENTER,
+            keepNext: true,
             keepLines: true,
             children: [new TextRun({ text: firma.rol_es || '', font: FONT, size: FONT_SIZE_FIRMA })],
           }),
@@ -703,18 +722,18 @@ export async function generarDocx(bloques, meta = {}, opciones = {}) {
 
   // Crear children del header
   const headerChildren = [];
+  let logoRun = null;
   
   if (tieneLogoReal) {
     const logoBuffer = Buffer.from(logoBase64, 'base64');
     const logoType = detectImageType(logoBase64);
-    headerChildren.push(
-      new ImageRun({
-        data: logoBuffer,
-        transformation: { width: LOGO_WIDTH, height: LOGO_HEIGHT },
-        type: logoType,
-      })
-    );
-    headerChildren.push(new TextRun({ children: [new Tab()] }));
+    const dims = logoType === 'png' ? dimensionesPng(logoBuffer) : null;
+    const alto = dims ? Math.round(LOGO_WIDTH * dims.height / dims.width) : LOGO_HEIGHT;
+    logoRun = new ImageRun({
+      data: logoBuffer,
+      transformation: { width: LOGO_WIDTH, height: alto },
+      type: logoType,
+    });
   }
   
   // Paginación (siempre presente, a la derecha si hay logo, centrada si no)
@@ -740,15 +759,23 @@ export async function generarDocx(bloques, meta = {}, opciones = {}) {
   }
 
   // Header: Logo izquierda + Paginación derecha (usando TabStops)
-  const headerDefault = new Header({
-    children: [
-      new Paragraph({
-        tabStops: tieneLogoReal ? [{ type: TabStopType.RIGHT, position: CONTENT_WIDTH }] : [],
-        alignment: tieneLogoReal ? undefined : AlignmentType.RIGHT,
-        children: headerChildren,
-      }),
-    ],
-  });
+  // Logo CENTRADO en su propio párrafo y la paginación debajo, alineada a la
+  // derecha. Antes iban en la misma línea (logo izquierda + tab + paginación),
+  // lo que impedía centrar el logo sin arrastrar el número de página con él.
+  const parrafosHeader = [];
+  if (logoRun) {
+    parrafosHeader.push(new Paragraph({
+      alignment: AlignmentType.CENTER,
+      spacing: { after: 60 },
+      children: [logoRun],
+    }));
+  }
+  parrafosHeader.push(new Paragraph({
+    alignment: AlignmentType.RIGHT,
+    children: headerChildren,
+  }));
+
+  const headerDefault = new Header({ children: parrafosHeader });
 
   // Footer con iniciales (sección principal)
   const footerIniciales = new Footer({
@@ -789,12 +816,14 @@ export async function generarDocx(bloques, meta = {}, opciones = {}) {
     sections.push({
       properties: {
         ...pageProps,
-        // NEXT_PAGE, no CONTINUOUS: con flujo continuo las firmas arrancaban a
-        // media página, dejando a una parte al pie de una hoja y a la otra en la
-        // siguiente. La sección de firmas es la "página final" que el comentario
-        // de arriba ya prometía; ahora sí empieza en hoja limpia y las partes
-        // quedan juntas.
-        type: SectionType.NEXT_PAGE,
+        // CONTINUOUS + keepNext encadenado en TODO el bloque de firmas.
+        //
+        // NEXT_PAGE resolvía el corte pero desperdiciaba una hoja entera cuando
+        // la página anterior tenía espacio de sobra. Lo correcto no es forzar el
+        // salto sino volver el bloque INDIVISIBLE: con keepNext en cada párrafo
+        // (firmas + testigos + aceptación), Word lo acomoda donde quepa completo
+        // y sólo lo empuja entero si no cabe. Nunca partido, nunca una hoja de más.
+        type: SectionType.CONTINUOUS,
       },
       headers: { default: headerDefault },
       footers: { default: footerVacio },

@@ -756,3 +756,28 @@ lo que debía.
 *(Nota al margen: este mismo párrafo se escribió mal la primera vez — la herramienta que lo redactó
 se comió un nivel de escape y dejó "cada `\` debe escribirse `\`", perdiendo justo lo que explicaba.
 La trampa muerde también a quien la documenta.)*
+
+## 12.4 · Logo centrado y firmas indivisibles
+
+**Logo.** El header ataba logo (izquierda) y paginación (derecha) en una sola línea con un
+tabulador, así que no se podía centrar el logo sin arrastrar el número de página. Se separó: logo
+en párrafo propio centrado, paginación debajo a la derecha.
+
+De paso, la transformación usaba **alto fijo 50px con ancho 120** (ratio 2.4) y el logo real de
+Castle Solutions es 824x323 (ratio 2.55). Se agregó , que lee ancho/alto de la
+cabecera IHDR y calcula el alto real. Un 6% de estiramiento es invisible en una foto y muy visible
+en un logotipo de letras finas.
+
+**Firmas: el arreglo correcto no era forzar el salto.** En §12.3 se cambió la sección a NEXT_PAGE
+para que las firmas no se partieran. Funcionaba, pero **desperdiciaba una hoja entera** cuando la
+página anterior tenía espacio de sobra — y con el logo sumando alto de encabezado, el documento
+pasó de 12 a 13 páginas por ese salto forzado.
+
+Lo correcto es volver el bloque **INDIVISIBLE**, no forzarlo a otra hoja: 
+otra vez, con  encadenado en **todos** los párrafos del bloque (firmas + testigos +
+aceptación). Word lo acomoda donde quepa completo y sólo lo empuja entero si no cabe.
+
+> Regla general: cuando un bloque no debe partirse, la respuesta es hacerlo indivisible, no
+> mandarlo a una página nueva. Forzar el salto resuelve el corte y crea un desperdicio.
+
+Resultado: 12 páginas, cláusulas de cierre + ambas firmas + aceptación en la última.
