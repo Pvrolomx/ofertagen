@@ -973,7 +973,14 @@ Should the transaction fail to be formalized for any reason, said advance shall 
         const tipoRevEn = ctx.doc_fideicomiso?.tipo_revisar?.en || 'calendar';
         
         // Determinar si es condominio (default true para retrocompatibilidad)
-        const esCondominio = ctx.inmueble?.es_condominio !== false;
+        // La documentación del CONDOMINIO se pide por bandera propia, no por
+        // es_condominio: hay compradores que ya la tienen de primera mano (un
+        // administrador de unidades del mismo edificio, p. ej.) y pedírsela al
+        // vendedor sólo alarga la ruta crítica sin agregar protección. Apagarla
+        // vía es_condominio sería falso y rompería la carta de no adeudo, el
+        // prorrateo de cuotas y el holdback de derramas.
+        const esCondominio = ctx.inmueble?.es_condominio !== false
+          && ctx.bloques.doc_condominio !== false;
         
         // Texto adicional para condominio
         const condoEs = esCondominio ? ', así como copia simple de las dos últimas actas de asambleas del condominio y sus estados financieros' : '';

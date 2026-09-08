@@ -44,6 +44,7 @@ export const INTERRUPTORES = {
 
   // ---- inmueble / título ----
   doc_fideicomiso:          { tipo: 'bloque',  default: true  },
+  doc_condominio:           { tipo: 'bandera', default: true  },
   opcion_fideicomiso:       { tipo: 'bandera', default: false },
   gravamen_por_cancelar:    { tipo: 'bloque',  default: false },
   zona_federal:             { tipo: 'bloque',  default: false },
@@ -93,6 +94,10 @@ export const INTERRUPTORES = {
  */
 export const RELACIONES = [
   {
+    interruptor: 'doc_condominio', requiere: ['doc_fideicomiso'],
+    porque: 'Es una porción del inciso de documentación; sin ese inciso no hay dónde emitirla.',
+  },
+  {
     interruptor: 'as_is', requiere: ['ad_corpus'],
     porque: 'El AS-IS es el segundo párrafo del bloque ad_corpus; sin el bloque no hay dónde emitirlo.',
   },
@@ -139,6 +144,7 @@ export const LECTURAS = {
   cl_saldo:              ['escrow'],
   cl_gastos:             ['escrow'],
   cl_documentacion:      ['doc_fideicomiso'],
+  doc_fideicomiso:       ['doc_condominio'],
   obligaciones_vendedor: ['mobiliario_separado', 'obligaciones_vendedor_agua'],
   condicion_uso:         ['mobiliario_separado'],
   cl_condiciones:        ['inspeccion', 'doc_fideicomiso', 'financiamiento', 'inventario', 'arrendamientos',

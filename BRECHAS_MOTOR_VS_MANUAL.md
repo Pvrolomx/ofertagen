@@ -781,3 +781,30 @@ aceptación). Word lo acomoda donde quepa completo y sólo lo empuja entero si n
 > mandarlo a una página nueva. Forzar el salto resuelve el corte y crea un desperdicio.
 
 Resultado: 12 páginas, cláusulas de cierre + ambas firmas + aceptación en la última.
+
+## 12.5 · Bandera doc_condominio: separar el título del condominio
+
+La condición de documentación pedía en un solo inciso dos cosas de naturaleza distinta:
+
+1. **El título del vendedor** — escritura o fideicomiso con su cadena de modificatorios.
+2. **La documentación del condominio** — régimen, actas de asamblea, estados financieros.
+
+Y ataba la segunda a . Eso impide el caso real: un comprador que **ya tiene** la
+documentación del condominio de primera mano. En el expediente Braatz, Claudia administra unidades
+en el mismo edificio desde la preventa, así que pedírsela al vendedor sólo alargaba la ruta crítica
+sin agregar protección alguna.
+
+Apagarla vía  habría sido falso y habría roto tres cláusulas que sí dependen del
+régimen: la carta de no adeudo de condóminos, el prorrateo de cuotas y el holdback de derramas.
+De ahí la bandera propia  (default true).
+
+**Distinción que conviene recordar:** conocer el edificio da la documentación *del condominio*, no
+el título *del vendedor*. El fideicomiso de los Ferreira es el único documento que el comprador no
+puede conseguir por su cuenta, y es justo donde vive el riesgo de titularidad. Esa mitad se queda.
+
+**Plazos de la condición**, además, son configurables por dato (): en este
+expediente bajaron de 5 días hábiles + 10 naturales a **2 + 3**, sin tocar el derecho de rechazo
+ni los 10 días hábiles improrrogables de subsanación. Los defaults del molde no se movieron.
+
+**La bandera se cableó en el ensamblador desde el principio** — la lección de 12.1. Una bandera
+declarada en el grafo pero no copiada a  queda inerte y falla en silencio.
